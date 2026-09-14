@@ -55,7 +55,7 @@ function createMemoryFactory() {
           return structuredClone(plan);
         },
         async exportRecovery() {
-          return { format: 'travsen-local-recovery', version: 1, identity, stores: structuredClone(backing) };
+          return { format: 'travert-local-recovery', version: 1, identity, stores: structuredClone(backing) };
         },
         close() {},
       };

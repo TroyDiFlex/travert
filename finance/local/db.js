@@ -48,7 +48,7 @@ export function normalizeLocalIdentity(identity) {
 
 export function localDatabaseName(identity) {
   const normalized = normalizeLocalIdentity(identity);
-  return `travsen-finance:${safeNamePart(normalized.backendId, 'backendId')}:${safeNamePart(normalized.uid, 'uid')}:${safeNamePart(normalized.bookId, 'bookId')}`;
+  return `travert-finance:${safeNamePart(normalized.backendId, 'backendId')}:${safeNamePart(normalized.uid, 'uid')}:${safeNamePart(normalized.bookId, 'bookId')}`;
 }
 
 export class IndexedDbLocalStore {
@@ -246,7 +246,7 @@ export class IndexedDbLocalStore {
     ]));
     await done;
     return {
-      format: 'travsen-local-recovery',
+      format: 'travert-local-recovery',
       version: 1,
       exportedAt: new Date().toISOString(),
       identity: clone(this.identity),
