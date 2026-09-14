@@ -259,11 +259,7 @@ export function planLocalCommand(command, snapshot, localSequence) {
     before: before ? structuredClone(before) : null,
     change: structuredClone(change),
     dependsOn,
-    frozenRequest: dependsOn.length ? null : {
-      protocolVersion: command.protocolVersion,
-      opId: command.opId,
-      changes: [structuredClone(change)],
-    },
+    frozenRequest: null,
     createdAt: command.createdAt,
     lastAttemptAt: null,
     receipt: null,

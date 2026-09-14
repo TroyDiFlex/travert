@@ -6,6 +6,7 @@ import {
   upgradeLocalDatabase,
 } from './migrations.js';
 import { toEntityMap } from '../core/entities.js';
+import { materializeProjection } from './projection.js';
 
 function clone(value) {
   return value === undefined ? undefined : structuredClone(value);
@@ -128,6 +129,106 @@ export class IndexedDbLocalStore {
       }
       await done;
       return clone(plan);
+    } catch (error) {
+      try { transaction.abort(); } catch {}
+      try { await done; } catch {}
+      throw error;
+    }
+  }
+
+  async getOutbox(opId) {
+    const transaction = this.database.transaction(STORE_NAMES.OUTBOX, 'readonly');
+    const done = transactionDone(transaction);
+    const item = await requestResult(transaction.objectStore(STORE_NAMES.OUTBOX).get(opId));
+    await done;
+    return clone(item ?? null);
+  }
+
+  async updateOutbox(opId, updater) {
+    const transaction = this.database.transaction(STORE_NAMES.OUTBOX, 'readwrite');
+    const done = transactionDone(transaction);
+    const store = transaction.objectStore(STORE_NAMES.OUTBOX);
+    try {
+      const current = await requestResult(store.get(opId));
+      if (!current) throw new Error(`Команда очереди не найдена: ${opId}.`);
+      const updated = updater(clone(current));
+      if (!updated || updated.opId !== opId) throw new Error('Обновление очереди изменило opId.');
+      store.put(clone(updated));
+      await done;
+      return clone(updated);
+    } catch (error) {
+      try { transaction.abort(); } catch {}
+      try { await done; } catch {}
+      throw error;
+    }
+  }
+
+  async recordConflict(conflict) {
+    const names = [STORE_NAMES.OUTBOX, STORE_NAMES.CONFLICTS];
+    const transaction = this.database.transaction(names, 'readwrite');
+    const done = transactionDone(transaction);
+    const outboxStore = transaction.objectStore(STORE_NAMES.OUTBOX);
+    try {
+      const item = await requestResult(outboxStore.get(conflict.opId));
+      if (!item) throw new Error('Конфликтующая команда не найдена в очереди.');
+      outboxStore.put({ ...item, state: 'conflict', conflictId: conflict.conflictId });
+      transaction.objectStore(STORE_NAMES.CONFLICTS).put(clone(conflict));
+      await done;
+    } catch (error) {
+      try { transaction.abort(); } catch {}
+      try { await done; } catch {}
+      throw error;
+    }
+  }
+
+  async applyRemotePage(page, confirmedAt = new Date().toISOString()) {
+    const names = [
+      STORE_NAMES.SERVER_ENTITIES,
+      STORE_NAMES.VIEW_ENTITIES,
+      STORE_NAMES.OUTBOX,
+      STORE_NAMES.META,
+    ];
+    const transaction = this.database.transaction(names, 'readwrite');
+    const done = transactionDone(transaction);
+    const serverStore = transaction.objectStore(STORE_NAMES.SERVER_ENTITIES);
+    const viewStore = transaction.objectStore(STORE_NAMES.VIEW_ENTITIES);
+    const outboxStore = transaction.objectStore(STORE_NAMES.OUTBOX);
+    const metaStore = transaction.objectStore(STORE_NAMES.META);
+
+    try {
+      const [serverEntities, outbox, cursorRow, epochRow] = await Promise.all([
+        requestResult(serverStore.getAll()),
+        requestResult(outboxStore.getAll()),
+        requestResult(metaStore.get('cursor')),
+        requestResult(metaStore.get('activeEpoch')),
+      ]);
+      const currentCursor = cursorRow?.value ?? 0;
+      if (epochRow?.value !== page.epoch) throw new Error('Страница относится к другой эпохе.');
+      if (page.commits[0]?.seq !== currentCursor + 1) throw new Error('Страница журнала больше не продолжает локальный cursor.');
+
+      const serverMap = toEntityMap(serverEntities);
+      const confirmedOpIds = new Set();
+      let nextCursor = currentCursor;
+      for (const commit of page.commits) {
+        if (commit.seq !== nextCursor + 1) throw new Error('Страница журнала содержит пропуск.');
+        nextCursor = commit.seq;
+        confirmedOpIds.add(commit.opId);
+        for (const change of commit.changes) {
+          const entity = clone(change.value);
+          serverMap.set(entity.key, entity);
+          serverStore.put(entity);
+        }
+      }
+
+      const remainingOutbox = outbox.filter((item) => !confirmedOpIds.has(item.opId));
+      for (const opId of confirmedOpIds) outboxStore.delete(opId);
+      const projection = materializeProjection([...serverMap.values()], remainingOutbox);
+      viewStore.clear();
+      for (const entity of projection) viewStore.put(clone(entity));
+      metaStore.put({ key: 'cursor', value: nextCursor });
+      metaStore.put({ key: 'lastConfirmedSyncAt', value: confirmedAt });
+      await done;
+      return { cursor: nextCursor, confirmedOpIds: [...confirmedOpIds] };
     } catch (error) {
       try { transaction.abort(); } catch {}
       try { await done; } catch {}
