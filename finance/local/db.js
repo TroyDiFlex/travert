@@ -63,7 +63,7 @@ export class IndexedDbLocalStore {
     const existing = await requestResult(store.get('identity'));
     if (existing && JSON.stringify(existing.value) !== JSON.stringify(this.identity)) {
       transaction.abort();
-      await done;
+      try { await done; } catch {}
       throw new Error('Локальная база принадлежит другой книге.');
     }
     if (!existing) {
@@ -129,9 +129,7 @@ export class IndexedDbLocalStore {
       await done;
       return clone(plan);
     } catch (error) {
-      if (transaction.readyState !== 'done') {
-        try { transaction.abort(); } catch {}
-      }
+      try { transaction.abort(); } catch {}
       try { await done; } catch {}
       throw error;
     }
@@ -168,21 +166,34 @@ export function openIndexedDb(identity, options = {}) {
   }
 
   return new Promise((resolve, reject) => {
+    let settled = false;
     const request = indexedDb.open(localDatabaseName(normalized), LOCAL_DB_VERSION);
     request.addEventListener('upgradeneeded', (event) => {
       upgradeLocalDatabase(request.result, event.oldVersion);
     });
-    request.addEventListener('blocked', () => reject(new Error('Обновление локальной базы заблокировано другой вкладкой.')), { once: true });
-    request.addEventListener('error', () => reject(request.error ?? new Error('Не удалось открыть IndexedDB.')), { once: true });
+    request.addEventListener('blocked', () => {
+      settled = true;
+      reject(new Error('Обновление локальной базы заблокировано другой вкладкой.'));
+    }, { once: true });
+    request.addEventListener('error', () => {
+      settled = true;
+      reject(request.error ?? new Error('Не удалось открыть IndexedDB.'));
+    }, { once: true });
     request.addEventListener('success', async () => {
       const database = request.result;
+      if (settled) {
+        database.close();
+        return;
+      }
       database.addEventListener('versionchange', () => database.close());
       const store = new IndexedDbLocalStore(database, normalized);
       try {
         await store.initialize();
+        settled = true;
         resolve(store);
       } catch (error) {
         database.close();
+        settled = true;
         reject(error);
       }
     }, { once: true });
