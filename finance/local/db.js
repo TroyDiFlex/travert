@@ -37,7 +37,7 @@ function safeNamePart(value, field) {
 export function normalizeLocalIdentity(identity) {
   if (!identity || typeof identity !== 'object') throw new TypeError('Не указана локальная идентичность книги.');
   const normalized = {
-    projectId: String(identity.projectId ?? 'local'),
+    backendId: String(identity.backendId ?? 'local'),
     uid: String(identity.uid ?? 'local-user'),
     bookId: String(identity.bookId ?? 'default'),
     epoch: String(identity.epoch ?? 'local-epoch'),
@@ -48,7 +48,7 @@ export function normalizeLocalIdentity(identity) {
 
 export function localDatabaseName(identity) {
   const normalized = normalizeLocalIdentity(identity);
-  return `potok-finance:${safeNamePart(normalized.projectId, 'projectId')}:${safeNamePart(normalized.uid, 'uid')}:${safeNamePart(normalized.bookId, 'bookId')}`;
+  return `travsen-finance:${safeNamePart(normalized.backendId, 'backendId')}:${safeNamePart(normalized.uid, 'uid')}:${safeNamePart(normalized.bookId, 'bookId')}`;
 }
 
 export class IndexedDbLocalStore {

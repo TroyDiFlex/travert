@@ -10,7 +10,7 @@ import { FinanceRepository } from '../finance/repository.js';
 import { localDatabaseName, normalizeLocalIdentity } from '../finance/local/db.js';
 
 const T0 = '2026-09-14T08:00:00.000Z';
-const IDENTITY = { projectId: 'local', uid: 'demo-user', bookId: 'main', epoch: 'epoch-1' };
+const IDENTITY = { backendId: 'local', uid: 'demo-user', bookId: 'main', epoch: 'epoch-1' };
 
 function options(opId, entityId) {
   return { opId, entityId, createdAt: T0 };

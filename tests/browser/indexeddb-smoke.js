@@ -6,7 +6,7 @@ import {
 import { FinanceRepository } from '../../finance/repository.js';
 
 const result = document.querySelector('#result');
-const identity = { projectId: 'local-smoke', uid: 'demo-user', bookId: 'stage-1', epoch: 'epoch-1' };
+const identity = { backendId: 'local-smoke', uid: 'demo-user', bookId: 'stage-1', epoch: 'epoch-1' };
 const createdAt = '2026-09-14T08:00:00.000Z';
 const options = (opId, entityId) => ({ opId, entityId, createdAt });
 

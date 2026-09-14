@@ -14,7 +14,7 @@ import { SyncConflictError, SyncEpochError } from '../finance/sync/conflicts.js'
 import { SyncEngine } from '../finance/sync/engine.js';
 import { canonicalJson, freezeOutboxRequest, sha256, verifyFrozenRequest } from '../finance/sync/protocol.js';
 
-const IDENTITY = { projectId: 'demo', uid: 'user-a', bookId: 'main', epoch: 'epoch-1' };
+const IDENTITY = { backendId: 'demo', uid: 'user-a', bookId: 'main', epoch: 'epoch-1' };
 const T0 = '2026-09-14T08:00:00.000Z';
 
 function options(opId, entityId, createdAt = T0) {
