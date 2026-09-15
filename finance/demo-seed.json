@@ -1,0 +1,39 @@
+{
+  "format": "travert-demo-seed",
+  "version": 1,
+  "note": "Демо-данные для локальной разработки. Загружаются в IndexedDB через finance/local/seed.js. Сервер не нужен; боевые данные сюда не писать.",
+  "accounts": [
+    { "id": "account_card_main", "name": "Основная карта", "kind": "bank", "currency": "RUB" },
+    { "id": "account_cash", "name": "Наличные", "kind": "cash", "currency": "RUB" },
+    { "id": "account_usd", "name": "Долларовая карта", "kind": "bank", "currency": "USD" },
+    { "id": "account_eur", "name": "Евро-карта", "kind": "bank", "currency": "EUR" }
+  ],
+  "categories": [
+    { "id": "category_food", "name": "Продукты", "iconId": "local:basket", "color": "#22c55e", "sortOrder": 10 },
+    { "id": "category_cafe", "name": "Кафе", "iconId": "local:cafe", "color": "#f59e0b", "sortOrder": 20 },
+    { "id": "category_transport", "name": "Транспорт", "iconId": "local:transport", "color": "#38bdf8", "sortOrder": 30 },
+    { "id": "category_home", "name": "Дом", "iconId": "local:home", "color": "#a78bfa", "sortOrder": 40 },
+    { "id": "category_health", "name": "Здоровье", "iconId": "local:health", "color": "#f472b6", "sortOrder": 50 },
+    { "id": "category_travel", "name": "Путешествия", "iconId": "local:travel", "color": "#34d399", "sortOrder": 60 },
+    { "id": "category_fun", "name": "Развлечения", "iconId": "local:film", "color": "#fb7185", "sortOrder": 70 },
+    { "id": "category_uncategorized", "name": "Без категории", "iconId": "local:circle", "color": "#818cf8", "sortOrder": 1000, "system": true }
+  ],
+  "expenses": [
+    { "id": "txn_seed_01", "date": "2026-07-04", "accountId": "account_card_main", "categoryId": "category_food", "amountMinor": 184320, "currency": "RUB", "note": "Супермаркет" },
+    { "id": "txn_seed_02", "date": "2026-07-11", "accountId": "account_card_main", "categoryId": "category_cafe", "amountMinor": 129000, "currency": "RUB", "note": "Обед" },
+    { "id": "txn_seed_03", "date": "2026-07-18", "accountId": "account_cash", "categoryId": "category_transport", "amountMinor": 6000, "currency": "RUB", "note": "Проездной" },
+    { "id": "txn_seed_04", "date": "2026-07-25", "accountId": "account_card_main", "categoryId": "category_home", "amountMinor": 450000, "currency": "RUB", "note": "Коммуналка" },
+    { "id": "txn_seed_05", "date": "2026-08-02", "accountId": "account_card_main", "categoryId": "category_food", "amountMinor": 211575, "currency": "RUB", "note": "Супермаркет" },
+    { "id": "txn_seed_06", "date": "2026-08-09", "accountId": "account_card_main", "categoryId": "category_fun", "amountMinor": 180000, "currency": "RUB", "note": "Кино" },
+    { "id": "txn_seed_07", "date": "2026-08-14", "accountId": "account_usd", "categoryId": "category_fun", "amountMinor": 1599, "currency": "USD", "note": "Подписка" },
+    { "id": "txn_seed_08", "date": "2026-08-16", "accountId": "account_cash", "categoryId": "category_health", "amountMinor": 234000, "currency": "RUB", "note": "Аптека" },
+    { "id": "txn_seed_09", "date": "2026-08-23", "accountId": "account_card_main", "categoryId": "category_cafe", "amountMinor": 215000, "currency": "RUB", "note": "Ужин с друзьями" },
+    { "id": "txn_seed_10", "date": "2026-09-01", "accountId": "account_card_main", "categoryId": "category_food", "amountMinor": 198740, "currency": "RUB", "note": "Супермаркет" },
+    { "id": "txn_seed_11", "date": "2026-09-05", "accountId": "account_eur", "categoryId": "category_travel", "amountMinor": 8500, "currency": "EUR", "note": "Бронь отеля" },
+    { "id": "txn_seed_12", "date": "2026-09-06", "accountId": "account_card_main", "categoryId": "category_transport", "amountMinor": 75000, "currency": "RUB", "note": "Такси" },
+    { "id": "txn_seed_13", "date": "2026-09-08", "accountId": "account_cash", "categoryId": "category_uncategorized", "amountMinor": 50000, "currency": "RUB", "note": "Пока не разобрано" },
+    { "id": "txn_seed_14", "date": "2026-09-10", "accountId": "account_card_main", "categoryId": "category_health", "amountMinor": 320000, "currency": "RUB", "note": "Стоматолог" },
+    { "id": "txn_seed_15", "date": "2026-09-12", "accountId": "account_card_main", "categoryId": "category_food", "amountMinor": 125050, "currency": "RUB", "note": "Магазин у дома" },
+    { "id": "txn_seed_16", "date": "2026-09-14", "accountId": "account_usd", "categoryId": "category_fun", "amountMinor": 999, "currency": "USD", "note": "Игра" }
+  ]
+}

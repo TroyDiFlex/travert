@@ -7,7 +7,10 @@ export const COMMAND_TYPES = Object.freeze({
   RECORD_EXPENSE: 'record-expense',
   UPDATE_ACCOUNT: 'update-account',
   UPDATE_CATEGORY: 'update-category',
+  UPDATE_EXPENSE: 'update-expense',
   DELETE_TRANSACTION: 'delete-transaction',
+  DELETE_CATEGORY: 'delete-category',
+  DELETE_ACCOUNT: 'delete-account',
 });
 
 function defaultUuid() {
@@ -70,6 +73,18 @@ export function deleteTransactionCommand(id, options = {}) {
   return makeCommand(COMMAND_TYPES.DELETE_TRANSACTION, {}, { ...options, entityId: id });
 }
 
+export function updateExpenseCommand(id, patch, options = {}) {
+  return makeCommand(COMMAND_TYPES.UPDATE_EXPENSE, { patch: structuredClone(patch) }, { ...options, entityId: id });
+}
+
+export function deleteCategoryCommand(id, options = {}) {
+  return makeCommand(COMMAND_TYPES.DELETE_CATEGORY, {}, { ...options, entityId: id });
+}
+
+export function deleteAccountCommand(id, options = {}) {
+  return makeCommand(COMMAND_TYPES.DELETE_ACCOUNT, {}, { ...options, entityId: id });
+}
+
 function assertCommand(command) {
   if (!command || typeof command !== 'object' || command.protocolVersion !== 2) {
     throw new FinanceValidationError('Неподдерживаемый формат команды.', 'command', 'invalid-command');
@@ -101,6 +116,17 @@ function collectDependencies(command, outbox, change) {
       [ENTITY_TYPES.ACCOUNTS, command.payload.accountId],
       [ENTITY_TYPES.CATEGORIES, command.payload.categoryId],
     ]) {
+      const dependency = pendingDependency(outbox, type, id);
+      if (dependency) dependencies.add(dependency);
+    }
+  }
+  if (command.type === COMMAND_TYPES.UPDATE_EXPENSE) {
+    const patch = command.payload.patch ?? {};
+    for (const [type, id] of [
+      [ENTITY_TYPES.ACCOUNTS, patch.accountId],
+      [ENTITY_TYPES.CATEGORIES, patch.categoryId],
+    ]) {
+      if (typeof id !== 'string') continue;
       const dependency = pendingDependency(outbox, type, id);
       if (dependency) dependencies.add(dependency);
     }
@@ -214,6 +240,66 @@ function commandChange(command, entities) {
         action: 'delete',
         expectedVersion: current.version,
         value: validateEntity(ENTITY_TYPES.TRANSACTIONS, {
+          ...current,
+          deletedAt: command.createdAt,
+          updatedAt: command.createdAt,
+          lastOpId: command.opId,
+        }, { entities, allowHistoricalReferences: true }),
+      };
+    }
+    case COMMAND_TYPES.UPDATE_EXPENSE: {
+      const key = entityKey(ENTITY_TYPES.TRANSACTIONS, command.entityId);
+      const current = entities.get(key);
+      if (!current || current.deletedAt) {
+        throw new FinanceValidationError('Изменяемый расход не найден.', 'entityId', 'missing-entity');
+      }
+      if (current.kind !== 'expense') {
+        throw new FinanceValidationError('Можно изменить только расход.', 'entityId', 'unsupported-transaction-kind');
+      }
+      const patch = command.payload.patch;
+      if (!patch || typeof patch !== 'object' || Array.isArray(patch)) {
+        throw new FinanceValidationError('Некорректное изменение расхода.', 'patch', 'invalid-patch');
+      }
+      const allowed = ['date', 'accountId', 'categoryId', 'amountMinor', 'currency', 'note'];
+      const unknown = Object.keys(patch).filter((field) => !allowed.includes(field));
+      if (unknown.length) {
+        throw new FinanceValidationError(`Поле нельзя изменить: ${unknown[0]}.`, unknown[0], 'immutable-field');
+      }
+      if (Object.keys(patch).length === 0) {
+        throw new FinanceValidationError('Нет изменений для сохранения.', 'patch', 'empty-patch');
+      }
+      return {
+        entityType: ENTITY_TYPES.TRANSACTIONS,
+        id: command.entityId,
+        action: 'update',
+        expectedVersion: current.version,
+        value: validateEntity(ENTITY_TYPES.TRANSACTIONS, {
+          ...current,
+          ...patch,
+          updatedAt: command.createdAt,
+          lastOpId: command.opId,
+        }, { entities }),
+      };
+    }
+    case COMMAND_TYPES.DELETE_CATEGORY:
+    case COMMAND_TYPES.DELETE_ACCOUNT: {
+      const entityType = command.type === COMMAND_TYPES.DELETE_CATEGORY
+        ? ENTITY_TYPES.CATEGORIES
+        : ENTITY_TYPES.ACCOUNTS;
+      const key = entityKey(entityType, command.entityId);
+      const current = entities.get(key);
+      if (!current || current.deletedAt) {
+        throw new FinanceValidationError('Удаляемая запись не найдена.', 'entityId', 'missing-entity');
+      }
+      if (current.system === true) {
+        throw new FinanceValidationError('Системную запись нельзя удалить.', 'entityId', 'system-entity');
+      }
+      return {
+        entityType,
+        id: command.entityId,
+        action: 'delete',
+        expectedVersion: current.version,
+        value: validateEntity(entityType, {
           ...current,
           deletedAt: command.createdAt,
           updatedAt: command.createdAt,

@@ -36,6 +36,50 @@ export function selectPendingCount(state) {
   return state.outbox.filter((item) => !['cancelled', 'resolved'].includes(item.state)).length;
 }
 
+export function selectCategoryUsage(state, categoryId) {
+  const expenses = visible(state.viewEntities, 'transactions')
+    .filter((transaction) => transaction.kind === 'expense' && transaction.categoryId === categoryId);
+  const totalByCurrency = {};
+  for (const expense of expenses) {
+    totalByCurrency[expense.currency] = (totalByCurrency[expense.currency] ?? 0) + expense.amountMinor;
+  }
+  return { categoryId, count: expenses.length, totalByCurrency, expenseIds: expenses.map((expense) => expense.id) };
+}
+
+export function selectAccountUsage(state, accountId) {
+  const expenses = visible(state.viewEntities, 'transactions')
+    .filter((transaction) => transaction.kind === 'expense' && transaction.accountId === accountId);
+  const totalByCurrency = {};
+  for (const expense of expenses) {
+    totalByCurrency[expense.currency] = (totalByCurrency[expense.currency] ?? 0) + expense.amountMinor;
+  }
+  return { accountId, count: expenses.length, totalByCurrency, expenseIds: expenses.map((expense) => expense.id) };
+}
+
+export function selectExpenseSummary(state, filters = {}) {
+  const expenses = selectExpenses(state, filters);
+  const totalByCurrency = {};
+  const byCategory = new Map();
+  const byMonth = new Map();
+  for (const expense of expenses) {
+    totalByCurrency[expense.currency] = (totalByCurrency[expense.currency] ?? 0) + expense.amountMinor;
+    const categoryEntry = byCategory.get(expense.categoryId) ?? { categoryId: expense.categoryId, count: 0, totalByCurrency: {} };
+    categoryEntry.count += 1;
+    categoryEntry.totalByCurrency[expense.currency] = (categoryEntry.totalByCurrency[expense.currency] ?? 0) + expense.amountMinor;
+    byCategory.set(expense.categoryId, categoryEntry);
+    const monthEntry = byMonth.get(expense.month) ?? { month: expense.month, count: 0, totalByCurrency: {} };
+    monthEntry.count += 1;
+    monthEntry.totalByCurrency[expense.currency] = (monthEntry.totalByCurrency[expense.currency] ?? 0) + expense.amountMinor;
+    byMonth.set(expense.month, monthEntry);
+  }
+  return {
+    count: expenses.length,
+    totalByCurrency,
+    byCategory: [...byCategory.values()].sort((left, right) => right.count - left.count),
+    byMonth: [...byMonth.values()].sort((left, right) => left.month.localeCompare(right.month)),
+  };
+}
+
 export function runSelector(state, selector) {
   if (typeof selector === 'function') return selector(state);
   switch (selector?.type) {
@@ -43,6 +87,9 @@ export function runSelector(state, selector) {
     case 'accounts': return selectAccounts(state, selector);
     case 'categories': return selectCategories(state, selector);
     case 'expenses': return selectExpenses(state, selector);
+    case 'expense-summary': return selectExpenseSummary(state, selector);
+    case 'category-usage': return selectCategoryUsage(state, selector.categoryId);
+    case 'account-usage': return selectAccountUsage(state, selector.accountId);
     case 'overview': return selectOverview(state);
     case 'pending-count': return selectPendingCount(state);
     default: throw new TypeError('Неизвестный селектор репозитория.');

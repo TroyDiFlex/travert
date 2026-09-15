@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="ru" data-theme="obsidian">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#080808"><meta name="robots" content="noindex,nofollow">
+  <meta name="description" content="Travert — расходы по категориям. Локальный прототип без сервера.">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; manifest-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'">
+  <meta name="referrer" content="no-referrer"><title>Travert · Расходы</title>
+  <link id="site-icon" rel="icon" href="icon.svg?v=4" type="image/svg+xml" sizes="any">
+  <script src="theme-head.js?v=1"></script>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="expenses.css">
+  <script type="module" src="expenses-app.js?v=1"></script>
+</head>
+<body>
+<svg class="icon-defs" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><defs>
+<symbol id="i-chart" viewBox="0 0 24 24"><path d="M4 4v16h16M8 14l4-5 4 3 5-7"/></symbol>
+<symbol id="i-grid" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="4"/><path d="M3 9h18M9 9v12"/></symbol>
+<symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+<symbol id="i-close" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></symbol>
+<symbol id="i-check" viewBox="0 0 24 24"><path d="M5 12l4 4L19 6"/></symbol>
+<symbol id="i-trash" viewBox="0 0 24 24"><path d="M3 6h18M9 6V3h6v3M5 6l1 15h12l1-15M10 10v7M14 10v7"/></symbol>
+<symbol id="i-dots" viewBox="0 0 24 24"><circle cx="5" cy="12" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/></symbol>
+<symbol id="i-wallet" viewBox="0 0 24 24"><path d="M4 7V5a2 2 0 012-2h12v4M18 11h3v6h-3a3 3 0 010-6Z"/><path d="M21 11V9a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2h14a2 2 0 002-2v-2"/></symbol>
+</defs></svg>
+<div class="workspace">
+  <aside class="sidebar">
+    <a class="brand" href="index.html"><span class="brand-mark">t</span><span>travert<span class="brand-dot">.</span></span></a>
+    <div class="nav-label">ЛИЧНЫЕ ФИНАНСЫ</div>
+    <nav aria-label="Основная навигация"><a href="index.html#overview" class="nav-item"><svg class="icon"><use href="#i-chart"/></svg><span>Обзор доходов</span></a><a href="expenses.html" class="nav-item active" aria-current="page"><svg class="icon"><use href="#i-wallet"/></svg><span>Расходы</span></a><a href="index.html#entries" class="nav-item"><svg class="icon"><use href="#i-grid"/></svg><span>Ввод данных</span></a></nav>
+    <div class="sidebar-bottom">
+      <div class="sidebar-caption">Меньше догадок.<br>Больше ясности.</div>
+    </div>
+  </aside>
+  <main class="main">
+<div class="expenses-body">
+  <div class="expenses-top">
+    <span></span>
+    <span class="sync-pill"><i class="sync-dot"></i><span id="sync-status">Открываем локальную книгу…</span></span>
+  </div>
+  <header class="page-header"><div><div class="eyebrow">РАСХОДЫ · ЛОКАЛЬНЫЙ ПРОТОТИП</div><h1>Ваши расходы<span class="title-dot">.</span></h1><p>Счета, категории и каждый расход. Всё хранится в этом браузере, сервер не нужен.</p></div><div class="header-actions"><button class="button subtle" id="export-btn" type="button">Скачать JSON</button><button class="button subtle" id="reset-btn" type="button">Сбросить демо</button></div></header>
+  <div class="expenses-grid">
+    <section class="glass expenses-card" aria-labelledby="accounts-title">
+      <div class="card-head"><div><span class="card-kicker"><span class="accent-dot"></span> ОТКУДА ТРАТИМ</span><h2 id="accounts-title">Счета</h2></div><button class="button subtle" id="add-account" type="button"><svg class="icon"><use href="#i-plus"/></svg>Счёт</button></div>
+      <div id="accounts-list"></div>
+    </section>
+    <section class="glass expenses-card" aria-labelledby="categories-title">
+      <div class="card-head"><div><span class="card-kicker"><span class="accent-dot"></span> НА ЧТО ТРАТИМ</span><h2 id="categories-title">Категории</h2></div><button class="button subtle" id="add-category" type="button"><svg class="icon"><use href="#i-plus"/></svg>Категория</button></div>
+      <div id="categories-list"></div>
+    </section>
+    <section class="glass expenses-card" aria-labelledby="expenses-title">
+      <div class="card-head"><div><span class="card-kicker"><span class="accent-dot"></span> КАЖДЫЙ РАСХОД</span><h2 id="expenses-title">Расходы</h2></div><button class="button primary" id="add-expense" type="button"><svg class="icon"><use href="#i-plus"/></svg>Добавить расход</button></div>
+      <div class="filter-row">
+        <input type="month" id="filter-month" aria-label="Месяц">
+        <select id="filter-account" aria-label="Счёт"></select>
+        <select id="filter-category" aria-label="Категория"></select>
+      </div>
+      <div class="summary-line" id="expenses-summary"></div>
+      <div id="expenses-list"></div>
+    </section>
+    <div class="bottom-note"><span>Суммы в копейках/центах не складываются между валютами. Удаление — навсегда, без корзины: это прототип.</span><span>Сервер не подключён</span></div>
+  </div>
+  </main>
+</div>
+<dialog id="account-dialog"><form id="account-form"><div class="dialog-heading"><div><div class="card-kicker">СЧЁТ</div><h2 id="account-title">Новый счёт</h2></div><button type="button" class="icon-button close-dialog" aria-label="Закрыть"><svg class="icon"><use href="#i-close"/></svg></button></div><input type="hidden" id="account-id"><label>Название<input id="account-name" type="text" required maxlength="120" placeholder="Например, основная карта"></label><label>Тип<select id="account-kind"><option value="bank">Банковский</option><option value="cash">Наличные</option><option value="savings">Накопительный</option></select></label><label>Валюта<select id="account-currency"><option value="RUB">RUB — рубль</option><option value="USD">USD — доллар</option><option value="EUR">EUR — евро</option></select></label><p class="muted help">Валюту счёта потом сменить нельзя: к ней привязаны все расходы.</p><p class="error" id="account-error" role="alert"></p><div class="form-footer"><button type="button" class="button subtle close-dialog">Отмена</button><button type="submit" class="button primary">Сохранить</button></div></form></dialog>
+<dialog id="category-dialog"><form id="category-form"><div class="dialog-heading"><div><div class="card-kicker">КАТЕГОРИЯ РАСХОДОВ</div><h2 id="category-title">Новая категория</h2></div><button type="button" class="icon-button close-dialog" aria-label="Закрыть"><svg class="icon"><use href="#i-close"/></svg></button></div><input type="hidden" id="category-id"><label>Название<input id="category-name" type="text" required maxlength="120" placeholder="Например, продукты"></label><fieldset><legend>Цвет</legend><div id="category-colors" class="color-options"></div></fieldset><label for="icon-search">Иконка</label><input id="icon-search" type="search" placeholder="Поиск: еда, такси, спорт…" autocomplete="off"><div id="icon-picker" class="icon-picker" role="group" aria-label="Иконка категории"></div><p class="error" id="category-error" role="alert"></p><div class="form-footer"><button type="button" class="button subtle close-dialog">Отмена</button><button type="submit" class="button primary">Сохранить</button></div></form></dialog>
+<dialog id="expense-dialog"><form id="expense-form"><div class="dialog-heading"><div><div class="card-kicker">РАСХОД</div><h2 id="expense-title">Новый расход</h2></div><button type="button" class="icon-button close-dialog" aria-label="Закрыть"><svg class="icon"><use href="#i-close"/></svg></button></div><input type="hidden" id="expense-id"><label>Дата<input id="expense-date" type="date" required></label><label>Счёт<select id="expense-account" required></select></label><label>Категория<select id="expense-category" required></select></label><label>Сумма<input id="expense-amount" type="text" inputmode="decimal" required placeholder="0" autocomplete="off"></label><p class="muted help" id="expense-currency-hint"></p><label>Заметка<input id="expense-note" type="text" maxlength="500" placeholder="Необязательно" autocomplete="off"></label><p class="error" id="expense-error" role="alert"></p><div class="form-footer"><button type="button" class="button subtle close-dialog">Отмена</button><button type="submit" class="button primary">Сохранить</button></div></form></dialog>
+<dialog id="remove-dialog"><form id="remove-form" method="dialog"><div class="dialog-heading"><h2 id="remove-title"></h2><button type="button" class="icon-button close-dialog" aria-label="Закрыть"><svg class="icon"><use href="#i-close"/></svg></button></div><p id="remove-text" class="trash-description"></p><div id="remove-extra"></div><p class="error" id="remove-error" role="alert"></p><div class="form-footer"><button type="button" class="button subtle close-dialog" autofocus>Отмена</button><button type="submit" id="remove-submit" class="button danger">Удалить</button></div></form></dialog>
+<div id="toast" class="toast" role="status" hidden></div>
+</body></html>
