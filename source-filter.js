@@ -1,6 +1,6 @@
 import {sortSources} from './model.js';
 
-export const SOURCE_FILTER_KEY='potok-source-filter';
+export const SOURCE_FILTER_KEY='travert-source-filter';
 const escapeHtml=value=>String(value).replace(/[&<>"']/g,character=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[character]));
 
 export function sourceSelectionLabel(selection,sources){

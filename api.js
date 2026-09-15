@@ -1,5 +1,5 @@
 import {CONFIG} from './config.js';
-export const SESSION_KEY='potok-session';
+export const SESSION_KEY='travert-session';
 export class ApiError extends Error { constructor(message,code){super(message);this.code=code;} }
 export class Api {
   token=null;

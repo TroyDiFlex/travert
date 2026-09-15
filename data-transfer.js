@@ -15,11 +15,11 @@ const entryKey=(sourceId,month)=>`${sourceId}|${month}`;
 
 export function backupFilename(createdAt=Date.now()) {
   const stamp=new Date(createdAt).toISOString().replace(/[:.]/g,'-');
-  return `potok-backup-${stamp}.json`;
+  return `travert-backup-${stamp}.json`;
 }
 
 export function csvFilename(createdAt=Date.now()) {
-  return `potok-income-${new Date(createdAt).toISOString().slice(0,10)}.csv`;
+  return `travert-income-${new Date(createdAt).toISOString().slice(0,10)}.csv`;
 }
 
 export function exportWideCsv(data) {
@@ -142,7 +142,7 @@ export function planWideCsvImport(current,text,{mode='merge',idFactory=()=>crypt
 
 export function parseBackup(text) {
   let backup;try{backup=JSON.parse(String(text));}catch{throw new Error('Файл не является корректным JSON.');}
-  if(backup?.schema!==BACKUP_SCHEMA||backup?.version!==BACKUP_VERSION)throw new Error('Это не поддерживаемая резервная копия «Потока».');
+  if(backup?.schema!==BACKUP_SCHEMA||backup?.version!==BACKUP_VERSION)throw new Error('Это не поддерживаемая резервная копия «Travert».');
   if(!Number.isSafeInteger(backup.createdAt)||backup.createdAt<=0||typeof backup.checksum!=='string'||!/^[0-9a-f]{64}$/.test(backup.checksum))throw new Error('В резервной копии повреждены метаданные.');
   if(!backup.data||!Array.isArray(backup.data.sources)||!Array.isArray(backup.data.entries))throw new Error('В резервной копии отсутствуют данные.');
   if(backup.data.sources.length>MAX_SOURCES||backup.data.entries.length>MAX_ENTRIES)throw new Error('Резервная копия превышает допустимый размер данных.');

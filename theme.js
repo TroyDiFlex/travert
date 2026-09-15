@@ -1,5 +1,5 @@
-export const THEME_KEY='potok-theme';
-export const THEME_SETTINGS_KEY='potok-theme-customization';
+export const THEME_KEY='travert-theme';
+export const THEME_SETTINGS_KEY='travert-theme-settings';
 export const THEMES=['violet','midnight','forest','light','obsidian','quartz'];
 export const THEME_ACCENTS=['#fb7185','#f97316','#facc15','#4ade80','#2dd4bf','#38bdf8','#60a5fa','#818cf8','#a78bfa','#e879f9','#f472b6','#f5f5f4'];
 export const CUSTOM_THEME_DEFAULTS={obsidian:{accent:'#fb7185',glow:6},quartz:{accent:'#fb7185',glow:6}};
@@ -63,7 +63,7 @@ export function setupTheme({document=globalThis.document,window=globalThis.windo
   document.querySelectorAll('.theme-select').forEach(button=>button.closest('.theme-card').classList.toggle('selected',button.dataset.theme===value));
   renderControls();
   const styles=window.getComputedStyle(document.documentElement);
-  window.dispatchEvent(new window.CustomEvent('potok-theme-change',{detail:{theme:value,accent:styles.getPropertyValue('--accent').trim(),background:styles.getPropertyValue('--bg').trim()}}));
+  window.dispatchEvent(new window.CustomEvent('travert-theme-change',{detail:{theme:value,accent:styles.getPropertyValue('--accent').trim(),background:styles.getPropertyValue('--bg').trim()}}));
  }
 
  function saveSettings(){try{storage.setItem(THEME_SETTINGS_KEY,JSON.stringify(customThemeSettings));}catch{}}

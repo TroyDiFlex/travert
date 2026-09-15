@@ -15,13 +15,13 @@ test('chart controls start with the selected linear chart, then bars and smooth'
  assert.match(app,/\bchartType='line'/);
 });
 
-test('overview defaults to 24 months and keeps explicit long-range choices',async()=>{
- const periods=[...html.matchAll(/<button\b([^>]*\bdata-period="([^"]+)"[^>]*)>/g)];
- assert.deepEqual(periods.map(([, ,period])=>period),['12','24','36','all','year','custom']);
- assert.deepEqual(periods.filter(([,attributes])=>/class="selected"/.test(attributes)).map(([, ,period])=>period),['24']);
- assert.ok(!periods.some(([, ,period])=>period==='month'));
- assert.match(html,/<button data-mode="month">По месяцу<\/button>/);
- const app=await readFile(new URL('../app.js',import.meta.url),'utf8');assert.match(app,/period='24'/);assert.match(app,/shiftMonth\(end,1-Number\(period\)\)/);
+test('overview defaults to all time with year and custom range choices',async()=>{
+  const periods=[...html.matchAll(/<button\b([^>]*\bdata-period="([^"]+)"[^>]*)>/g)];
+  assert.deepEqual(periods.map(([, ,period])=>period),['all','year','custom']);
+  assert.deepEqual(periods.filter(([,attributes])=>/class="selected"/.test(attributes)).map(([, ,period])=>period),['all']);
+  assert.ok(!periods.some(([, ,period])=>['12','24','36','month'].includes(period)));
+  assert.match(html,/<button data-mode="month">По месяцу<\/button>/);
+  const app=await readFile(new URL('../app.js',import.meta.url),'utf8');assert.match(app,/period='all'/);assert.ok(!/1-Number\(period\)/.test(app));
  const css=await readFile(new URL('../style.css',import.meta.url),'utf8');
  assert.match(css,/\[hidden\]\{display:none!important\}/);
 });
@@ -31,6 +31,14 @@ test('overview replaces the duplicated total card with longitudinal comparisons'
  for(const label of ['Последний месяц','К предыдущему','Год к году','Среднее за 6 мес.','Среднее за 12 мес.','Лучший год'])assert.match(app,new RegExp(label));
  assert.doesNotMatch(app,/\['Общий доход',money\(s\.total\)/);
  assert.match(app,/incomeInsights\(data,from,to,sourceFilter\)/);
+});
+
+test('comparison toggle redraws both the bars and the share donut',async()=>{
+  const app=await readFile(new URL('../app.js',import.meta.url),'utf8');
+  assert.match(app,/comparisonMode==='average'\?x\.average:x\.total/);
+  const handler=app.slice(app.indexOf("$('comparison-mode').addEventListener"),app.indexOf('let chartModel'));
+  assert.match(handler,/renderBreakdowns\(summarize\(data/);
+  assert.doesNotMatch(handler,/renderComparison\(summarize\(data/);
 });
 
 test('chart exposes the selected monthly values as an accessible table',async()=>{
@@ -90,8 +98,8 @@ test('favicon is cache-versioned and matches the narrower interface mark proport
  assert.match(icon,/viewBox="0 0 16 16"/);
  assert.match(icon,/fill="#fb7185"/);
  assert.match(icon,/fill="#080808"/);
- // Match the displayed brand's narrow glyph, thicker stems and lower placement.
- assert.match(icon,/d="M4\.8 12\.4V5\.8h6\.9v6\.6H9\.4V7\.7H7\.1v4\.7Z"/);
+  // Match the displayed Travert "t" glyph.
+  assert.match(icon,/d="M3\.6 3\.4h8\.8v1\.8H3\.6Z M6\.3 3\.4h2\.2v8\.2H6\.3Z M6\.3 9\.8h4\.9v1\.8H6\.3Z"/);
  assert.doesNotMatch(icon,/\bstroke[=-]/);
  assert.equal((icon.match(/<path\b/g)||[]).length,1);
 });

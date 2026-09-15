@@ -1,7 +1,7 @@
 // Apply saved appearance before first paint and point installation metadata at matching assets.
 (() => {
-  const THEME_KEY = 'potok-theme';
-  const SETTINGS_KEY = 'potok-theme-customization';
+  const THEME_KEY = 'travert-theme';
+  const SETTINGS_KEY = 'travert-theme-settings';
   const DEFAULT_ACCENT = '#fb7185';
   const ACCENTS = new Set(['#fb7185','#f97316','#facc15','#4ade80','#2dd4bf','#38bdf8','#60a5fa','#818cf8','#a78bfa','#e879f9','#f472b6','#f5f5f4']);
   const PRESETS = {
@@ -30,7 +30,7 @@
     if (ACCENTS.has(requested?.accent) || Object.values(PRESETS).some(value => value.accent === requested?.accent)) state.accent = requested.accent.toLowerCase();
     if (/^#[0-9a-f]{6}$/i.test(requested?.background || '')) state.background = requested.background.toLowerCase();
     const key = iconKey(state);
-    const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><rect width="16" height="16" rx="4" fill="${state.accent}"/><path d="M4.8 12.4V5.8h6.9v6.6H9.4V7.7H7.1v4.7Z" fill="${state.background}"/></svg>`;
+    const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><rect width="16" height="16" rx="4" fill="${state.accent}"/><path d="M3.6 3.4h8.8v1.8H3.6Z M6.3 3.4h2.2v8.2H6.3Z M6.3 9.8h4.9v1.8H6.3Z" fill="${state.background}"/></svg>`;
     const favicon = document.getElementById('site-icon');
     const manifest = document.getElementById('app-manifest');
     const apple = document.getElementById('apple-touch-icon');
@@ -54,6 +54,6 @@
     document.documentElement.style.setProperty('--accent-soft',`rgb(${color} / .12)`);
     document.documentElement.style.setProperty('--glow',`rgb(${color} / ${glow*.012})`);
   }
-  window.PotokBranding = Object.freeze({apply,resolve,iconKey});
+  window.TravertBranding = Object.freeze({apply,resolve,iconKey});
   apply(initial);
 })();

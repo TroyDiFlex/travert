@@ -19,7 +19,7 @@
 
   function updateThemeColor() {
     const styles = getComputedStyle(document.documentElement);
-    window.PotokBranding?.apply({
+    window.TravertBranding?.apply({
       theme: document.documentElement.dataset.theme,
       accent: styles.getPropertyValue('--accent').trim(),
       background: styles.getPropertyValue('--bg').trim()
@@ -38,7 +38,7 @@
   });
   displayMode.addEventListener('change', updateDisplay);
   window.addEventListener('pageshow', updateDisplay);
-  window.addEventListener('potok-theme-change', updateThemeColor);
+  window.addEventListener('travert-theme-change', updateThemeColor);
 
   buttons.forEach(button => button.addEventListener('click', async () => {
     if (prompting) return;

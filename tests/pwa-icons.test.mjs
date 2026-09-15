@@ -63,8 +63,8 @@ test('desktop PNGs have transparent rounded corners and retain the SVG colors an
     assert.equal(pixel(Math.floor(width * .05), Math.floor(height * .05))[3], 0);
     for (const [x, y] of [[width / 2, 0], [0, height / 2], [width / 2, height - 1]])
       assert.deepEqual(pixel(x, y), [251, 113, 133, 255]);
-    assert.deepEqual(pixel(Math.floor(width * .35), Math.floor(height * .65)), [8, 8, 8, 255]);
-    assert.deepEqual(pixel(width / 2, Math.floor(height * .65)), [251, 113, 133, 255]);
+    assert.deepEqual(pixel(Math.floor(width * .45), Math.floor(height * .65)), [8, 8, 8, 255]);
+    assert.deepEqual(pixel(Math.floor(width * .85), Math.floor(height * .8)), [251, 113, 133, 255]);
   }
 });
 

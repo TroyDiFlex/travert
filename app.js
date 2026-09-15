@@ -14,8 +14,8 @@ const ico=name=>`<svg class="icon"><use href="#i-${name}"/></svg>`;
 const api=CONFIG.apiUrl.includes('FINANCE_V2_LOCAL_PLACEHOLDER')?new LocalIncomeApi():new Api();
 setupTheme();
 let comparisonMode='average';
-try{const saved=localStorage.getItem('potok-comparison-mode');if(['total','average'].includes(saved))comparisonMode=saved;}catch{}
-let data=null,view='overview',period='24',chartType='line',sourceFilter=['all'],selectedYear=currentMonth().slice(0,4),selectedMonth=currentMonth(),customFrom='',customTo='',tableYear=currentMonth().slice(0,4),entryMode=matchMedia('(max-width:650px)').matches?'month':'table',sourceColor=COLORS[0],busy=false,chartSelection=-1,toastTimer,authAttempt=0,restoring=false;
+try{const saved=localStorage.getItem('travert-comparison-mode');if(['total','average'].includes(saved))comparisonMode=saved;}catch{}
+let data=null,view='overview',period='all',chartType='line',sourceFilter=['all'],selectedYear=currentMonth().slice(0,4),selectedMonth=currentMonth(),customFrom='',customTo='',tableYear=currentMonth().slice(0,4),entryMode=matchMedia('(max-width:650px)').matches?'month':'table',sourceColor=COLORS[0],busy=false,chartSelection=-1,toastTimer,authAttempt=0,restoring=false;
 const dirtyForms=new Set();let renderedEntryMonth=currentMonth();
 const sourceFilterUi=setupSourceFilter({getSources:()=>data?.sources||[],getSelection:()=>sourceFilter,setSelection:value=>{sourceFilter=value;},onChange:options=>renderOverview(options)});
 function markDirty(form){dirtyForms.add(form);}
@@ -52,7 +52,7 @@ for(const id of ['edit-form','source-form']){$(id).addEventListener('input',()=>
 document.querySelectorAll('[data-route]').forEach(link=>link.addEventListener('click',event=>{if(view==='entries'&&entryMode==='month'&&!discardAllowed($('month-form')))event.preventDefault();}));
 function navigate(){if(!data)return;view=location.hash==='#entries'?'entries':'overview';$('overview-view').hidden=view!=='overview';$('entries-view').hidden=view!=='entries';$('page-title').innerHTML=view==='overview'?'Обзор доходов<span class="title-dot">.</span>':'Ваши данные<span class="title-dot">.</span>';$('page-eyebrow').textContent=view==='overview'?'ВАШ ФИНАНСОВЫЙ ПУЛЬС':'КАЖДОЕ ПОСТУПЛЕНИЕ НА СВОЁМ МЕСТЕ';$('page-description').textContent=view==='overview'?'От отдельных поступлений — к полной картине.':'Добавляйте доходы и управляйте источниками.';document.querySelectorAll('[data-route]').forEach(a=>{a.classList.toggle('active',a.dataset.route===view);a.setAttribute('aria-current',a.dataset.route===view?'page':'false');});if(view==='overview')renderChart();else renderEntries();}
 window.addEventListener('hashchange',navigate);
-function periodBounds(){if(['12','24','36'].includes(period)){const end=data?.entries.map(entry=>entry.month).sort().at(-1)||currentMonth();return [shiftMonth(end,1-Number(period)),end];}if(period==='year')return [selectedYear+'-01',selectedYear+'-12'];if(period==='custom')return [customFrom,customTo];return ['',''];}
+function periodBounds(){if(period==='year')return [selectedYear+'-01',selectedYear+'-12'];if(period==='custom')return [customFrom,customTo];return ['',''];}
 function years(){const set=new Set([currentMonth().slice(0,4),tableYear,selectedYear]);data.entries.forEach(e=>set.add(e.month.slice(0,4)));return [...set].filter(y=>/^\d{4}$/.test(y)).sort();}
 function yearOptions(value){return years().map(y=>`<option value="${y}" ${y===value?'selected':''}>${y}</option>`).join('');}
 function renderPeriod(){document.querySelectorAll('[data-period]').forEach(b=>{b.classList.toggle('selected',b.dataset.period===period);b.setAttribute('aria-pressed',String(b.dataset.period===period));});let html='';if(period==='year')html=`<label class="sr-only" for="filter-year">Год</label><select id="filter-year">${yearOptions(selectedYear)}</select>`;if(period==='custom')html=`<label class="sr-only" for="filter-from">Начало периода</label><input type="month" id="filter-from" value="${customFrom}"><span class="muted">—</span><label class="sr-only" for="filter-to">Конец периода</label><input type="month" id="filter-to" value="${customTo}">`;$('period-controls').innerHTML=html;
@@ -79,7 +79,8 @@ function renderOverview(chartOptions){
  renderBreakdowns(s);renderChart(chartOptions);
 }
 function renderBreakdowns(s){
- const total=s.sources.reduce((sum,x)=>sum+x.total,0),caption='общий доход',donut=$('donut');
+  const value=x=>comparisonMode==='average'?x.average:x.total;
+  const total=s.sources.reduce((sum,x)=>sum+value(x),0),caption=comparisonMode==='average'?'средний доход':'общий доход',donut=$('donut');
  $('share-count').textContent=`${s.sources.length} ист.`;
  if(!donut.querySelector('svg'))donut.innerHTML='<svg viewBox="0 0 160 160" role="img"><circle cx="80" cy="80" r="63" stroke="var(--grid)"/></svg><div class="donut-center"><strong></strong><span></span></div>';
  const svg=donut.querySelector('svg');
@@ -97,14 +98,14 @@ function renderBreakdowns(s){
    for(const [name,value] of Object.entries({cx:80,cy:80,r:63}))circle.setAttribute(name,value);
    svg.append(circle);
   }
-  const fraction=total?source.total/total:0,dash=Math.max(0,circumference*fraction-3);
+   const fraction=total?value(source)/total:0,dash=Math.max(0,circumference*fraction-3);
   circle.setAttribute('stroke',source.color);
   circle.style.strokeDasharray=`${dash} ${circumference-dash}`;
   circle.style.strokeDashoffset=String(-offset);
   offset+=circumference*fraction;circles.delete(source.id);
  }
  circles.forEach(circle=>circle.remove());
- $('share-legend').innerHTML=s.sources.length?s.sources.map(x=>`<div class="share-item"><i class="source-dot" style="background:${x.color}"></i><span class="label" title="${esc(x.name)}">${esc(x.name)}</span><strong>${total?(100*x.total/total).toLocaleString('ru-RU',{maximumFractionDigits:1}):'0'}%</strong></div>`).join(''):'<p class="muted help">В этом периоде пока нет записей.</p>';
+  $('share-legend').innerHTML=s.sources.length?s.sources.map(x=>`<div class="share-item"><i class="source-dot" style="background:${x.color}"></i><span class="label" title="${esc(x.name)}">${esc(x.name)}</span><strong>${total?(100*value(x)/total).toLocaleString('ru-RU',{maximumFractionDigits:1}):'0'}%</strong></div>`).join(''):'<p class="muted help">В этом периоде пока нет записей.</p>';
  renderComparison(s);
  scheduleShareLayout();
 }
@@ -195,8 +196,8 @@ function renderComparison(s){
 $('comparison-mode').addEventListener('click',e=>{
  const button=e.target.closest('[data-comparison]');if(!button||!data)return;
  const mode=button.dataset.comparison;if(!['total','average'].includes(mode)||mode===comparisonMode)return;
- comparisonMode=mode;try{localStorage.setItem('potok-comparison-mode',mode);}catch{}
- renderComparison(summarize(data,...periodBounds(),sourceFilter));
+  comparisonMode=mode;try{localStorage.setItem('travert-comparison-mode',mode);}catch{}
+  renderBreakdowns(summarize(data,...periodBounds(),sourceFilter));
 });
 
 let chartModel=null;

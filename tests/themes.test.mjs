@@ -22,7 +22,7 @@ test('custom accent and glow settings are validated and persisted locally',()=>{
  assert.equal(THEME_ACCENTS.length,12);
  assert.equal(new Set(THEME_ACCENTS).size,12);
  assert.equal(THEME_ACCENTS[0],'#fb7185');
- assert.equal(THEME_SETTINGS_KEY,'potok-theme-customization');
+  assert.equal(THEME_SETTINGS_KEY,'travert-theme-settings');
  assert.deepEqual(normalizeThemeSettings({obsidian:{accent:'#38bdf8',glow:0},quartz:{accent:'bad',glow:11}}),{
   obsidian:{accent:'#38bdf8',glow:0},quartz:CUSTOM_THEME_DEFAULTS.quartz
  });
@@ -42,7 +42,7 @@ test('head branding synchronizes theme color, favicon, Apple icon, and manifest'
  assert.match(head,/data:image\/svg\+xml/);
  assert.match(head,/manifests\/\$\{key\}\.webmanifest\?v=1/);
  assert.match(head,/icons\/themes\/\$\{key\}-apple\.png\?v=1/);
- assert.match(theme,/potok-theme-change/);
+  assert.match(theme,/travert-theme-change/);
 });
 
 test('every selectable theme and accent has stable install assets',async()=>{

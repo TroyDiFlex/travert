@@ -1,8 +1,8 @@
 {
   "id": "./",
-  "name": "Поток",
-  "short_name": "Поток",
-  "description": "Личная аналитика доходов",
+  "name": "Travert",
+  "short_name": "Travert",
+  "description": "Личные финансы: доходы и расходы",
   "lang": "ru",
   "start_url": "./",
   "scope": "./",

@@ -3,9 +3,9 @@
 <head>
   <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#080808"><meta name="robots" content="noindex,nofollow">
-  <meta name="description" content="Поток — личная аналитика доходов.">
+  <meta name="description" content="Travert — личные финансы: доходы и расходы.">
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; manifest-src 'self'; connect-src 'self' https://script.google.com https://*.googleusercontent.com; object-src 'none'; base-uri 'self'; form-action 'self'">
-  <meta name="referrer" content="no-referrer"><title>Поток · Доходы</title>
+  <meta name="referrer" content="no-referrer"><title>Travert · Доходы и расходы</title>
   <link id="site-icon" rel="icon" href="icon.svg?v=4" type="image/svg+xml" sizes="any">
   <link id="app-manifest" rel="manifest" href="manifest.webmanifest">
   <link id="apple-touch-icon" rel="apple-touch-icon" href="icons/apple-touch-icon.png" sizes="180x180">
@@ -35,7 +35,7 @@
 <symbol id="i-settings" viewBox="0 0 24 24"><path d="M12.22 2h-.44a2 2 0 00-2 2v.18a2 2 0 01-1 1.73l-.43.25a2 2 0 01-2 0l-.15-.08a2 2 0 00-2.73.73l-.22.38a2 2 0 00.73 2.73l.15.09a2 2 0 011 1.74v.5a2 2 0 01-1 1.74l-.15.09a2 2 0 00-.73 2.73l.22.38a2 2 0 002.73.73l.15-.08a2 2 0 012 0l.43.25a2 2 0 011 1.73V20a2 2 0 002 2h.44a2 2 0 002-2v-.18a2 2 0 011-1.73l.43-.25a2 2 0 012 0l.15.08a2 2 0 002.73-.73l.22-.38a2 2 0 00-.73-2.73l-.15-.09a2 2 0 01-1-1.74v-.5a2 2 0 011-1.74l.15-.09a2 2 0 00.73-2.73l-.22-.38a2 2 0 00-2.73-.73l-.15.08a2 2 0 01-2 0l-.43-.25a2 2 0 01-1-1.73V4a2 2 0 00-2-2Z"/><circle cx="12" cy="12" r="3"/></symbol>
 </defs></svg>
 <div id="lock-screen" class="lock-screen">
-  <div class="lock-brand"><span class="brand-mark">п</span><span>поток<span class="brand-dot">.</span></span></div>
+  <div class="lock-brand"><span class="brand-mark">t</span><span>travert<span class="brand-dot">.</span></span></div>
   <main class="login-card glass">
     <span class="lock-badge"><svg class="icon"><use href="#i-lock"/></svg> Личное пространство</span>
     <h1>Ваши доходы.<br><span>Вся картина.</span></h1>
@@ -58,7 +58,7 @@
 </div>
 <div id="workspace" class="workspace" hidden>
   <aside class="sidebar">
-    <a class="brand" href="#overview"><span class="brand-mark">п</span><span>поток<span class="brand-dot">.</span></span></a>
+    <a class="brand" href="#overview"><span class="brand-mark">t</span><span>travert<span class="brand-dot">.</span></span></a>
     <div class="nav-label">ЛИЧНЫЕ ФИНАНСЫ</div>
     <nav aria-label="Основная навигация"><a href="#overview" class="nav-item active" data-route="overview"><svg class="icon"><use href="#i-chart"/></svg><span>Обзор доходов</span></a><a href="expenses.html" class="nav-item"><svg class="icon"><use href="#i-wallet"/></svg><span>Расходы</span></a><a href="#entries" class="nav-item" data-route="entries"><svg class="icon"><use href="#i-grid"/></svg><span>Ввод данных</span></a></nav>
     <div class="sidebar-bottom">
@@ -71,7 +71,7 @@
     <header class="page-header"><div><div class="eyebrow" id="page-eyebrow">ВАШ ФИНАНСОВЫЙ ПУЛЬС</div><h1 id="page-title">Обзор доходов<span class="title-dot">.</span></h1><p id="page-description">От отдельных поступлений — к полной картине.</p></div><div class="header-actions"><button class="button subtle" id="refresh"><svg class="icon"><use href="#i-refresh"/></svg><span>Обновить</span></button><button class="button primary" id="quick-add"><svg class="icon"><use href="#i-plus"/></svg>Добавить доход</button></div></header>
     <div id="connection-banner" class="notice" hidden role="status"></div>
     <section id="overview-view">
-      <div class="filters"><div class="segmented period-tabs" id="period-tabs" aria-label="Период"><button data-period="12">12 мес.</button><button class="selected" data-period="24">24 мес.</button><button data-period="36">36 мес.</button><button data-period="all">Всё время</button><button data-period="year">Год</button><button data-period="custom">Период</button></div><div id="period-controls" class="period-controls"></div>
+      <div class="filters"><div class="segmented period-tabs" id="period-tabs" aria-label="Период"><button class="selected" data-period="all">Всё время</button><button data-period="year">Год</button><button data-period="custom">Период</button></div><div id="period-controls" class="period-controls"></div>
         <div class="source-filter" id="source-filter">
           <button type="button" class="source-filter-trigger" id="source-filter-trigger" aria-expanded="false" aria-controls="source-filter-panel"><span id="source-filter-label">Общий доход</span><svg class="icon source-chevron" aria-hidden="true"><use href="#i-chevron"/></svg></button>
           <div class="source-filter-panel" id="source-filter-panel" hidden>
@@ -90,7 +90,7 @@
       <div class="glass entry-card"><div id="table-container" class="table-container"></div><form id="month-form" class="month-form" hidden><div class="month-heading"><label>Месяц<input type="month" id="entry-month" required></label><span class="muted">Пустое поле — нет записи.<br>0 — дохода не было.</span></div><div id="month-fields"></div><div class="form-footer"><span id="month-total"></span><button type="submit" class="button primary">Сохранить месяц <svg class="icon"><use href="#i-check"/></svg></button></div><p class="error" id="month-error" role="alert"></p></form></div>
       <div class="bottom-note"><span>Активные источники сверху, неактивные снизу. Нажмите сумму, чтобы изменить её.</span><div class="bottom-actions"><button class="text-button" id="data-tools" type="button"><svg class="icon" aria-hidden="true"><use href="#i-download"/></svg>Данные</button><button class="text-button" id="open-trash" type="button"><svg class="icon" aria-hidden="true"><use href="#i-trash"/></svg>Корзина<span id="trash-count" class="trash-count" hidden></span></button></div></div>
     </section>
-    <footer class="app-footer"><span>ПОТОК <span class="accent-text">/</span> Личная аналитика</span><button class="text-button install-button" type="button" data-install hidden><svg class="icon" aria-hidden="true"><use href="#i-download"/></svg>Установить приложение</button><span class="footer-tagline">Всё начинается с ясности.</span></footer>
+    <footer class="app-footer"><span>TRAVERT <span class="accent-text">/</span> Личные финансы</span><button class="text-button install-button" type="button" data-install hidden><svg class="icon" aria-hidden="true"><use href="#i-download"/></svg>Установить приложение</button><span class="footer-tagline">Всё начинается с ясности.</span></footer>
   </main>
 </div>
 <dialog id="edit-dialog"><form id="edit-form"><div class="dialog-heading"><div><div class="card-kicker">НОВАЯ ЗАПИСЬ</div><h2 id="edit-title">Добавить доход</h2></div><button type="button" class="icon-button close-dialog" aria-label="Закрыть"><svg class="icon"><use href="#i-close"/></svg></button></div><label>Месяц<input id="edit-month" type="month" required></label><label>Источник<select id="edit-source" required></select></label><label>Сумма, ₽<input id="edit-amount" type="text" inputmode="decimal" placeholder="0" autocomplete="off"></label><p class="muted help">Сумма заменяет запись этого источника за месяц. Пустое поле удаляет запись, 0 сохраняется как нулевой доход.</p><p class="error" id="edit-error" role="alert"></p><div class="form-footer"><button type="button" class="button subtle close-dialog">Отмена</button><button type="submit" class="button primary">Сохранить</button></div></form></dialog>
@@ -129,12 +129,12 @@
   <div class="theme-card"><button class="theme-select" data-theme="light"><span class="theme-swatch light"></span><b>Жемчуг</b><small>Светлый · лиловый</small></button></div>
 </div></dialog>
 <dialog id="install-dialog" aria-labelledby="install-title">
-  <div class="dialog-heading"><h2 id="install-title">Установить «Поток»</h2><button class="icon-button" type="button" data-install-close aria-label="Закрыть"><svg class="icon" aria-hidden="true"><use href="#i-close"/></svg></button></div>
+  <div class="dialog-heading"><h2 id="install-title">Установить «Travert»</h2><button class="icon-button" type="button" data-install-close aria-label="Закрыть"><svg class="icon" aria-hidden="true"><use href="#i-close"/></svg></button></div>
   <div class="install-instructions">
     <section><h3>iPhone и iPad</h3><p>Откройте сайт в Safari. Нажмите «Поделиться» → «На экран Домой» → «Добавить». Если есть переключатель «Открывать как веб-приложение», включите его.</p></section>
     <section><h3>Android</h3><p>Откройте сайт в Chrome. В меню ⋮ выберите «Добавить на главный экран» или «Установить приложение» и подтвердите установку.</p></section>
     <section><h3>Компьютер</h3><p>В Chrome или Edge нажмите значок установки в адресной строке либо найдите установку приложения в меню браузера.</p></section>
-    <p class="muted">«Поток» будет открываться с отдельной иконки. Для работы нужен интернет.</p>
+    <p class="muted">«Travert» будет открываться с отдельной иконки. Для работы нужен интернет.</p>
   </div>
 </dialog>
 <div id="toast" class="toast" role="status" hidden></div>
