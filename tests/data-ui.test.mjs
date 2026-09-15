@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
 import {MAX_IMPORT_BYTES,importSummary} from '../data-tools.js';
 
-const html=await readFile(new URL('../income.html',import.meta.url),'utf8');
+const html=await readFile(new URL('../index.html',import.meta.url),'utf8');
 const app=await readFile(new URL('../app.js',import.meta.url),'utf8');
 const tools=await readFile(new URL('../data-tools.js',import.meta.url),'utf8');
 const api=await readFile(new URL('../api.js',import.meta.url),'utf8');
@@ -31,4 +31,3 @@ test('API keeps backup operations behind the authenticated request client',()=>{
  assert.match(api,/createBackup\(\)\{return this\.request\('createBackup'\);\}/);
  assert.match(api,/backupMaintenance\(\)\{return this\.request\('backupMaintenance'\);\}/);
 });
-

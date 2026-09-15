@@ -4,7 +4,7 @@ import {readFile} from 'node:fs/promises';
 import {COLORS,validateData} from '../model.js';
 import {harness} from './server-harness.mjs';
 
-const html=await readFile(new URL('../income.html',import.meta.url),'utf8');
+const html=await readFile(new URL('../index.html',import.meta.url),'utf8');
 
 test('chart controls start with the selected linear chart, then bars and smooth',async()=>{
  const buttons=[...html.matchAll(/<button\b([^>]*\bdata-chart="([^"]+)"[^>]*)>/g)];
@@ -95,4 +95,3 @@ test('favicon is cache-versioned and matches the narrower interface mark proport
  assert.doesNotMatch(icon,/\bstroke[=-]/);
  assert.equal((icon.match(/<path\b/g)||[]).length,1);
 });
-

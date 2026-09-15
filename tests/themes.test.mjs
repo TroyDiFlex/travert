@@ -4,7 +4,7 @@ import {access,readFile,readdir} from 'node:fs/promises';
 import {CUSTOM_THEME_DEFAULTS,THEME_ACCENTS,THEME_SETTINGS_KEY,normalizeThemeSettings} from '../theme.js';
 
 const root=new URL('../',import.meta.url);
-const [html,app,css,head,theme]=await Promise.all(['income.html','app.js','style.css','theme-head.js','theme.js'].map(file=>readFile(new URL(file,root),'utf8')));
+const [html,app,css,head,theme]=await Promise.all(['index.html','app.js','style.css','theme-head.js','theme.js'].map(file=>readFile(new URL(file,root),'utf8')));
 
 test('Obsidian is the default and both configurable themes are exposed symmetrically',()=>{
  assert.match(html,/<html lang="ru" data-theme="obsidian">/);
@@ -57,4 +57,3 @@ test('every selectable theme and accent has stable install assets',async()=>{
   await access(new URL(`icons/themes/${file.replace('.webmanifest','')}-apple.png`,root));
  }
 });
-
