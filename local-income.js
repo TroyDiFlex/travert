@@ -159,3 +159,20 @@ export class LocalIncomeApi{
     return this.publicData(model);
   }
 }
+
+// Заполняет пустое хранилище демо-данными (income-demo-seed.json).
+// Непустое хранилище не трогает. Возвращает 'seeded' или 'skipped'.
+export function seedLocalIncome(api, seed) {
+  if (!seed || !Array.isArray(seed.sources) || !Array.isArray(seed.entries)) {
+    throw new Error('Некорректный сид доходов.');
+  }
+  const current = api.load();
+  if (current.sources.length || current.entries.length) return 'skipped';
+  const model = {
+    sources: seed.sources.map((s) => ({...s})),
+    entries: seed.entries.map((e) => ({...e})),
+  };
+  validateData({sources: model.sources, entries: model.entries});
+  api.save(model);
+  return 'seeded';
+}

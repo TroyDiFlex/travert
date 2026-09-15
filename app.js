@@ -1,6 +1,6 @@
 import {CONFIG} from './config.js';
 import {Api,SESSION_KEY} from './api.js';
-import {LOCAL_INCOME_KEY,LocalIncomeApi} from './local-income.js';
+import {LOCAL_INCOME_KEY,LocalIncomeApi,seedLocalIncome} from './local-income.js';
 import {incomeChart,incomeSourceSeries,chartGeometry,lineRevealStarts} from './chart.js';
 import {COLORS,currentMonth,monthLabel,shiftMonth,parseAmount,money,number,summarize,incomeInsights,validateData,validMonth} from './model.js';
 import {setupDataTools} from './data-tools.js';
@@ -327,7 +327,13 @@ $('source-confirm-form').addEventListener('submit',async e=>{
 setupDataTools({api,getData:()=>data,isBusy:()=>busy,canOpen:()=>discardAllowed(view==='entries'&&entryMode==='month'?$('month-form'):null),mutate,toast,errorMessage});
 async function openLocalWorkspace(){
   $('lock-screen').hidden=true;$('logout').hidden=true;
-  try{openWorkspace(await api.read());banner('Локальный режим: доходы хранятся в этом браузере. Вход не нужен.');}
+  try{
+    try {
+      const response = await fetch('income-demo-seed.json');
+      if (response.ok) seedLocalIncome(api, await response.json());
+    } catch { /* без сида откроется пустая книга — это нормально */ }
+    openWorkspace(await api.read());banner('Локальный режим: доходы хранятся в этом браузере. Вход не нужен.');
+  }
   catch(error){$('login-form').hidden=true;$('session-status').hidden=false;$('session-message').textContent='Локальное хранилище недоступно: '+error.message;$('session-retry').hidden=true;$('lock-screen').hidden=false;}
 }
 window.addEventListener('beforeunload',e=>{if(busy||dirtyForms.size){e.preventDefault();e.returnValue='';}});

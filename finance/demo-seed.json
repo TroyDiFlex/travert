@@ -3,41 +3,3031 @@
   "version": 1,
   "note": "Демо-данные для локальной разработки. Загружаются в IndexedDB через finance/local/seed.js. Сервер не нужен; боевые данные сюда не писать.",
   "accounts": [
-    { "id": "account_card_main", "name": "Основная карта", "kind": "bank", "currency": "RUB" },
-    { "id": "account_cash", "name": "Наличные", "kind": "cash", "currency": "RUB" },
-    { "id": "account_usd", "name": "Долларовая карта", "kind": "bank", "currency": "USD" },
-    { "id": "account_eur", "name": "Евро-карта", "kind": "bank", "currency": "EUR" }
+    {
+      "id": "account_card_main",
+      "name": "Основная карта",
+      "kind": "bank",
+      "currency": "RUB"
+    },
+    {
+      "id": "account_cash",
+      "name": "Наличные",
+      "kind": "cash",
+      "currency": "RUB"
+    },
+    {
+      "id": "account_usd",
+      "name": "Долларовая карта",
+      "kind": "bank",
+      "currency": "USD"
+    },
+    {
+      "id": "account_eur",
+      "name": "Евро-карта",
+      "kind": "bank",
+      "currency": "EUR"
+    }
   ],
   "categories": [
-    { "id": "category_food", "name": "Продукты", "iconId": "local:basket", "color": "#22c55e", "sortOrder": 10 },
-    { "id": "category_cafe", "name": "Кафе", "iconId": "local:cafe", "color": "#f59e0b", "sortOrder": 20 },
-    { "id": "category_transport", "name": "Транспорт", "iconId": "local:transport", "color": "#38bdf8", "sortOrder": 30 },
-    { "id": "category_home", "name": "Дом", "iconId": "local:home", "color": "#a78bfa", "sortOrder": 40 },
-    { "id": "category_health", "name": "Здоровье", "iconId": "local:health", "color": "#f472b6", "sortOrder": 50 },
-    { "id": "category_travel", "name": "Путешествия", "iconId": "local:travel", "color": "#34d399", "sortOrder": 60 },
-    { "id": "category_fun", "name": "Развлечения", "iconId": "local:film", "color": "#fb7185", "sortOrder": 70 },
-    { "id": "category_uncategorized", "name": "Без категории", "iconId": "local:circle", "color": "#818cf8", "sortOrder": 1000, "system": true }
+    {
+      "id": "category_food",
+      "name": "Продукты",
+      "iconId": "local:basket",
+      "color": "#22c55e",
+      "sortOrder": 10
+    },
+    {
+      "id": "category_cafe",
+      "name": "Кафе",
+      "iconId": "local:cafe",
+      "color": "#f59e0b",
+      "sortOrder": 20
+    },
+    {
+      "id": "category_transport",
+      "name": "Транспорт",
+      "iconId": "local:transport",
+      "color": "#38bdf8",
+      "sortOrder": 30
+    },
+    {
+      "id": "category_home",
+      "name": "Дом",
+      "iconId": "local:home",
+      "color": "#a78bfa",
+      "sortOrder": 40
+    },
+    {
+      "id": "category_health",
+      "name": "Здоровье",
+      "iconId": "local:health",
+      "color": "#f472b6",
+      "sortOrder": 50
+    },
+    {
+      "id": "category_travel",
+      "name": "Путешествия",
+      "iconId": "local:travel",
+      "color": "#34d399",
+      "sortOrder": 60
+    },
+    {
+      "id": "category_fun",
+      "name": "Развлечения",
+      "iconId": "local:film",
+      "color": "#fb7185",
+      "sortOrder": 70
+    },
+    {
+      "id": "category_uncategorized",
+      "name": "Без категории",
+      "iconId": "local:circle",
+      "color": "#818cf8",
+      "sortOrder": 1000,
+      "system": true
+    }
   ],
   "expenses": [
-    { "id": "txn_seed_01", "date": "2026-07-04", "accountId": "account_card_main", "categoryId": "category_food", "amountMinor": 184320, "currency": "RUB", "note": "Супермаркет" },
-    { "id": "txn_seed_02", "date": "2026-07-11", "accountId": "account_card_main", "categoryId": "category_cafe", "amountMinor": 129000, "currency": "RUB", "note": "Обед" },
-    { "id": "txn_seed_03", "date": "2026-07-18", "accountId": "account_cash", "categoryId": "category_transport", "amountMinor": 6000, "currency": "RUB", "note": "Проездной" },
-    { "id": "txn_seed_04", "date": "2026-07-25", "accountId": "account_card_main", "categoryId": "category_home", "amountMinor": 450000, "currency": "RUB", "note": "Коммуналка" },
-    { "id": "txn_seed_05", "date": "2026-08-02", "accountId": "account_card_main", "categoryId": "category_food", "amountMinor": 211575, "currency": "RUB", "note": "Супермаркет" },
-    { "id": "txn_seed_06", "date": "2026-08-09", "accountId": "account_card_main", "categoryId": "category_fun", "amountMinor": 180000, "currency": "RUB", "note": "Кино" },
-    { "id": "txn_seed_07", "date": "2026-08-14", "accountId": "account_usd", "categoryId": "category_fun", "amountMinor": 1599, "currency": "USD", "note": "Подписка" },
-    { "id": "txn_seed_08", "date": "2026-08-16", "accountId": "account_cash", "categoryId": "category_health", "amountMinor": 234000, "currency": "RUB", "note": "Аптека" },
-    { "id": "txn_seed_09", "date": "2026-08-23", "accountId": "account_card_main", "categoryId": "category_cafe", "amountMinor": 215000, "currency": "RUB", "note": "Ужин с друзьями" },
-    { "id": "txn_seed_10", "date": "2026-09-01", "accountId": "account_card_main", "categoryId": "category_food", "amountMinor": 198740, "currency": "RUB", "note": "Супермаркет" },
-    { "id": "txn_seed_11", "date": "2026-09-05", "accountId": "account_eur", "categoryId": "category_travel", "amountMinor": 8500, "currency": "EUR", "note": "Бронь отеля" },
-    { "id": "txn_seed_12", "date": "2026-09-06", "accountId": "account_card_main", "categoryId": "category_transport", "amountMinor": 75000, "currency": "RUB", "note": "Такси" },
-    { "id": "txn_seed_13", "date": "2026-09-08", "accountId": "account_cash", "categoryId": "category_uncategorized", "amountMinor": 50000, "currency": "RUB", "note": "Пока не разобрано" },
-    { "id": "txn_seed_14", "date": "2026-09-10", "accountId": "account_card_main", "categoryId": "category_health", "amountMinor": 320000, "currency": "RUB", "note": "Стоматолог" },
-    { "id": "txn_seed_15", "date": "2026-09-12", "accountId": "account_card_main", "categoryId": "category_food", "amountMinor": 125050, "currency": "RUB", "note": "Магазин у дома" },
-    { "id": "txn_seed_16", "date": "2026-09-14", "accountId": "account_usd", "categoryId": "category_fun", "amountMinor": 999, "currency": "USD", "note": "Игра" }
+    {
+      "id": "txn_bk_202410_tp_7",
+      "date": "2024-10-02",
+      "accountId": "account_card_main",
+      "categoryId": "category_transport",
+      "amountMinor": 97100,
+      "currency": "RUB",
+      "note": "Каршеринг"
+    },
+    {
+      "id": "txn_bk_202410_food_3",
+      "date": "2024-10-03",
+      "accountId": "account_card_main",
+      "categoryId": "category_food",
+      "amountMinor": 162700,
+      "currency": "RUB",
+      "note": "Продукты на неделю"
+    },
+    {
+      "id": "txn_bk_202410_fun_11",
+      "date": "2024-10-03",
+      "accountId": "account_card_main",
+      "categoryId": "category_fun",
+      "amountMinor": 444600,
+      "currency": "RUB",
+      "note": "Кино"
+    },
+    {
+      "id": "txn_bk_202410_cafe_4",
+      "date": "2024-10-05",
+      "accountId": "account_card_main",
+      "categoryId": "category_cafe",
+      "amountMinor": 282000,
+      "currency": "RUB",
+      "note": "Ужин с друзьями"
+    },
+    {
+      "id": "txn_bk_202410_fun_12",
+      "date": "2024-10-08",
+      "accountId": "account_card_main",
+      "categoryId": "category_fun",
+      "amountMinor": 432200,
+      "currency": "RUB",
+      "note": "Кино"
+    },
+    {
+      "id": "txn_bk_202410_tp_9",
+      "date": "2024-10-09",
+      "accountId": "account_card_main",
+      "categoryId": "category_transport",
+      "amountMinor": 64600,
+      "currency": "RUB",
+      "note": "Проездной"
+    },
+    {
+      "id": "txn_bk_202410_home_10",
+      "date": "2024-10-10",
+      "accountId": "account_card_main",
+      "categoryId": "category_home",
+      "amountMinor": 594800,
+      "currency": "RUB",
+      "note": "Хозтовары"
+    },
+    {
+      "id": "txn_bk_202410_med_14",
+      "date": "2024-10-11",
+      "accountId": "account_cash",
+      "categoryId": "category_health",
+      "amountMinor": 733000,
+      "currency": "RUB",
+      "note": "Стоматолог"
+    },
+    {
+      "id": "txn_bk_202410_cafe_5",
+      "date": "2024-10-13",
+      "accountId": "account_card_main",
+      "categoryId": "category_cafe",
+      "amountMinor": 92100,
+      "currency": "RUB",
+      "note": "Ужин с друзьями"
+    },
+    {
+      "id": "txn_bk_202410_food_1",
+      "date": "2024-10-14",
+      "accountId": "account_card_main",
+      "categoryId": "category_food",
+      "amountMinor": 154100,
+      "currency": "RUB",
+      "note": "Продукты на неделю"
+    },
+    {
+      "id": "txn_bk_202410_sub_13",
+      "date": "2024-10-14",
+      "accountId": "account_usd",
+      "categoryId": "category_fun",
+      "amountMinor": 1599,
+      "currency": "USD",
+      "note": "Подписка"
+    },
+    {
+      "id": "txn_bk_202410_food_0",
+      "date": "2024-10-15",
+      "accountId": "account_card_main",
+      "categoryId": "category_food",
+      "amountMinor": 287800,
+      "currency": "RUB",
+      "note": "Магазин у дома"
+    },
+    {
+      "id": "txn_bk_202410_food_2",
+      "date": "2024-10-20",
+      "accountId": "account_card_main",
+      "categoryId": "category_food",
+      "amountMinor": 331000,
+      "currency": "RUB",
+      "note": "Магазин у дома"
+    },
+    {
+      "id": "txn_bk_202410_tp_8",
+      "date": "2024-10-21",
+      "accountId": "account_cash",
+      "categoryId": "category_transport",
+      "amountMinor": 63500,
+      "currency": "RUB",
+      "note": "Каршеринг"
+    },
+    {
+      "id": "txn_bk_202410_cafe_6",
+      "date": "2024-10-25",
+      "accountId": "account_card_main",
+      "categoryId": "category_cafe",
+      "amountMinor": 149800,
+      "currency": "RUB",
+      "note": "Бизнес-ланч"
+    },
+    {
+      "id": "txn_bk_202411_food_2",
+      "date": "2024-11-03",
+      "accountId": "account_card_main",
+      "categoryId": "category_food",
+      "amountMinor": 242200,
+      "currency": "RUB",
+      "note": "Рынок"
+    },
+    {
+      "id": "txn_bk_202411_tp_8",
+      "date": "2024-11-05",
+      "accountId": "account_cash",
+      "categoryId": "category_transport",
+      "amountMinor": 109800,
+      "currency": "RUB",
+      "note": "Каршеринг"
+    },
+    {
+      "id": "txn_bk_202411_food_1",
+      "date": "2024-11-06",
+      "accountId": "account_card_main",
+      "categoryId": "category_food",
+      "amountMinor": 219700,
+      "currency": "RUB",
+      "note": "Рынок"
+    },
+    {
+      "id": "txn_bk_202411_tp_7",
+      "date": "2024-11-07",
+      "accountId": "account_card_main",
+      "categoryId": "category_transport",
+      "amountMinor": 85700,
+      "currency": "RUB",
+      "note": "Каршеринг"
+    },
+    {
+      "id": "txn_bk_202411_home_9",
+      "date": "2024-11-10",
+      "accountId": "account_card_main",
+      "categoryId": "category_home",
+      "amountMinor": 542000,
+      "currency": "RUB",
+      "note": "Хозтовары"
+    },
+    {
+      "id": "txn_bk_202411_food_0",
+      "date": "2024-11-12",
+      "accountId": "account_card_main",
+      "categoryId": "category_food",
+      "amountMinor": 350000,
+      "currency": "RUB",
+      "note": "Магазин у дома"
+    },
+    {
+      "id": "txn_bk_202411_cafe_5",
+      "date": "2024-11-13",
+      "accountId": "account_card_main",
+      "categoryId": "category_cafe",
+      "amountMinor": 290200,
+      "currency": "RUB",
+      "note": "Кофе с собой"
+    },
+    {
+      "id": "txn_bk_202411_sub_12",
+      "date": "2024-11-14",
+      "accountId": "account_usd",
+      "categoryId": "category_fun",
+      "amountMinor": 1599,
+      "currency": "USD",
+      "note": "Подписка"
+    },
+    {
+      "id": "txn_bk_202411_cafe_3",
+      "date": "2024-11-17",
+      "accountId": "account_card_main",
+      "categoryId": "category_cafe",
+      "amountMinor": 208700,
+      "currency": "RUB",
+      "note": "Кофе с собой"
+    },
+    {
+      "id": "txn_bk_202411_tp_6",
+      "date": "2024-11-22",
+      "accountId": "account_card_main",
+      "categoryId": "category_transport",
+      "amountMinor": 110400,
+      "currency": "RUB",
+      "note": "Электричка"
+    },
+    {
+      "id": "txn_bk_202411_fun_11",
+      "date": "2024-11-23",
+      "accountId": "account_card_main",
+      "categoryId": "category_fun",
+      "amountMinor": 321000,
+      "currency": "RUB",
+      "note": "Концерт"
+    },
+    {
+      "id": "txn_bk_202411_cafe_4",
+      "date": "2024-11-26",
+      "accountId": "account_card_main",
+      "categoryId": "category_cafe",
+      "amountMinor": 276500,
+      "currency": "RUB",
+      "note": "Кофе с собой"
+    },
+    {
+      "id": "txn_bk_202411_fun_10",
+      "date": "2024-11-27",
+      "accountId": "account_card_main",
+      "categoryId": "category_fun",
+      "amountMinor": 408700,
+      "currency": "RUB",
+      "note": "Кино"
+    },
+    {
+      "id": "txn_bk_202412_food_1",
+      "date": "2024-12-03",
+      "accountId": "account_card_main",
+      "categoryId": "category_food",
+      "amountMinor": 207700,
+      "currency": "RUB",
+      "note": "Супермаркет"
+    },
+    {
+      "id": "txn_bk_202412_fun_10",
+      "date": "2024-12-06",
+      "accountId": "account_card_main",
+      "categoryId": "category_fun",
+      "amountMinor": 123600,
+      "currency": "RUB",
+      "note": "Игра"
+    },
+    {
+      "id": "txn_bk_202412_tp_5",
+      "date": "2024-12-06",
+      "accountId": "account_cash",
+      "categoryId": "category_transport",
+      "amountMinor": 106000,
+      "currency": "RUB",
+      "note": "Каршеринг"
+    },
+    {
+      "id": "txn_bk_202412_tp_7",
+      "date": "2024-12-06",
+      "accountId": "account_card_main",
+      "categoryId": "category_transport",
+      "amountMinor": 55000,
+      "currency": "RUB",
+      "note": "Проездной"
+    },
+    {
+      "id": "txn_bk_202412_trv_13",
+      "date": "2024-12-07",
+      "accountId": "account_eur",
+      "categoryId": "category_travel",
+      "amountMinor": 24199,
+      "currency": "EUR",
+      "note": "Отель"
+    },
+    {
+      "id": "txn_bk_202412_cafe_4",
+      "date": "2024-12-10",
+      "accountId": "account_card_main",
+      "categoryId": "category_cafe",
+      "amountMinor": 94100,
+      "currency": "RUB",
+      "note": "Ужин с друзьями"
+    },
+    {
+      "id": "txn_bk_202412_home_9",
+      "date": "2024-12-10",
+      "accountId": "account_card_main",
+      "categoryId": "category_home",
+      "amountMinor": 440200,
+      "currency": "RUB",
+      "note": "Хозтовары"
+    },
+    {
+      "id": "txn_bk_202412_food_2",
+      "date": "2024-12-11",
+      "accountId": "account_card_main",
+      "categoryId": "category_food",
+      "amountMinor": 206900,
+      "currency": "RUB",
+      "note": "Продукты на неделю"
+    },
+    {
+      "id": "txn_bk_202412_tp_6",
+      "date": "2024-12-11",
+      "accountId": "account_card_main",
+      "categoryId": "category_transport",
+      "amountMinor": 100900,
+      "currency": "RUB",
+      "note": "Проездной"
+    },
+    {
+      "id": "txn_bk_202412_food_3",
+      "date": "2024-12-14",
+      "accountId": "account_card_main",
+      "categoryId": "category_food",
+      "amountMinor": 419200,
+      "currency": "RUB",
+      "note": "Супермаркет"
+    },
+    {
+      "id": "txn_bk_202412_sub_12",
+      "date": "2024-12-14",
+      "accountId": "account_usd",
+      "categoryId": "category_fun",
+      "amountMinor": 1599,
+      "currency": "USD",
+      "note": "Подписка"
+    },
+    {
+      "id": "txn_bk_202412_food_0",
+      "date": "2024-12-18",
+      "accountId": "account_card_main",
+      "categoryId": "category_food",
+      "amountMinor": 421800,
+      "currency": "RUB",
+      "note": "Продукты на неделю"
+    },
+    {
+      "id": "txn_bk_202412_fun_11",
+      "date": "2024-12-24",
+      "accountId": "account_card_main",
+      "categoryId": "category_fun",
+      "amountMinor": 495300,
+      "currency": "RUB",
+      "note": "Концерт"
+    },
+    {
+      "id": "txn_bk_202412_tp_8",
+      "date": "2024-12-26",
+      "accountId": "account_card_main",
+      "categoryId": "category_transport",
+      "amountMinor": 106800,
+      "currency": "RUB",
+      "note": "Проездной"
+    },
+    {
+      "id": "txn_bk_202501_food_2",
+      "date": "2025-01-09",
+      "accountId": "account_card_main",
+      "categoryId": "category_food",
+      "amountMinor": 199000,
+      "currency": "RUB",
+      "note": "Супермаркет"
+    },
+    {
+      "id": "txn_bk_202501_tp_5",
+      "date": "2025-01-09",
+      "accountId": "account_cash",
+      "categoryId": "category_transport",
+      "amountMinor": 72400,
+      "currency": "RUB",
+      "note": "Такси"
+    },
+    {
+      "id": "txn_bk_202501_home_8",
+      "date": "2025-01-10",
+      "accountId": "account_card_main",
+      "categoryId": "category_home",
+      "amountMinor": 481200,
+      "currency": "RUB",
+      "note": "Интернет"
+    },
+    {
+      "id": "txn_bk_202501_sub_10",
+      "date": "2025-01-14",
+      "accountId": "account_usd",
+      "categoryId": "category_fun",
+      "amountMinor": 1599,
+      "currency": "USD",
+      "note": "Подписка"
+    },
+    {
+      "id": "txn_bk_202501_food_1",
+      "date": "2025-01-15",
+      "accountId": "account_card_main",
+      "categoryId": "category_food",
+      "amountMinor": 172800,
+      "currency": "RUB",
+      "note": "Супермаркет"
+    },
+    {
+      "id": "txn_bk_202501_cafe_4",
+      "date": "2025-01-16",
+      "accountId": "account_card_main",
+      "categoryId": "category_cafe",
+      "amountMinor": 220800,
+      "currency": "RUB",
+      "note": "Ужин с друзьями"
+    },
+    {
+      "id": "txn_bk_202501_cafe_3",
+      "date": "2025-01-18",
+      "accountId": "account_card_main",
+      "categoryId": "category_cafe",
+      "amountMinor": 344000,
+      "currency": "RUB",
+      "note": "Ужин с друзьями"
+    },
+    {
+      "id": "txn_bk_202501_tp_6",
+      "date": "2025-01-19",
+      "accountId": "account_cash",
+      "categoryId": "category_transport",
+      "amountMinor": 67600,
+      "currency": "RUB",
+      "note": "Проездной"
+    },
+    {
+      "id": "txn_bk_202501_food_0",
+      "date": "2025-01-24",
+      "accountId": "account_card_main",
+      "categoryId": "category_food",
+      "amountMinor": 318700,
+      "currency": "RUB",
+      "note": "Супермаркет"
+    },
+    {
+      "id": "txn_bk_202501_tp_7",
+      "date": "2025-01-26",
+      "accountId": "account_card_main",
+      "categoryId": "category_transport",
+      "amountMinor": 133300,
+      "currency": "RUB",
+      "note": "Проездной"
+    },
+    {
+      "id": "txn_bk_202501_fun_9",
+      "date": "2025-01-27",
+      "accountId": "account_card_main",
+      "categoryId": "category_fun",
+      "amountMinor": 167200,
+      "currency": "RUB",
+      "note": "Концерт"
+    },
+    {
+      "id": "txn_bk_202502_food_2",
+      "date": "2025-02-02",
+      "accountId": "account_card_main",
+      "categoryId": "category_food",
+      "amountMinor": 240300,
+      "currency": "RUB",
+      "note": "Магазин у дома"
+    },
+    {
+      "id": "txn_bk_202502_tp_4",
+      "date": "2025-02-02",
+      "accountId": "account_card_main",
+      "categoryId": "category_transport",
+      "amountMinor": 94900,
+      "currency": "RUB",
+      "note": "Каршеринг"
+    },
+    {
+      "id": "txn_bk_202502_tp_5",
+      "date": "2025-02-02",
+      "accountId": "account_card_main",
+      "categoryId": "category_transport",
+      "amountMinor": 61000,
+      "currency": "RUB",
+      "note": "Электричка"
+    },
+    {
+      "id": "txn_bk_202502_home_6",
+      "date": "2025-02-10",
+      "accountId": "account_card_main",
+      "categoryId": "category_home",
+      "amountMinor": 481900,
+      "currency": "RUB",
+      "note": "Мелкий ремонт"
+    },
+    {
+      "id": "txn_bk_202502_med_9",
+      "date": "2025-02-11",
+      "accountId": "account_cash",
+      "categoryId": "category_health",
+      "amountMinor": 294000,
+      "currency": "RUB",
+      "note": "Анализы"
+    },
+    {
+      "id": "txn_bk_202502_sub_8",
+      "date": "2025-02-14",
+      "accountId": "account_usd",
+      "categoryId": "category_fun",
+      "amountMinor": 1599,
+      "currency": "USD",
+      "note": "Подписка"
+    },
+    {
+      "id": "txn_bk_202502_cafe_3",
+      "date": "2025-02-18",
+      "accountId": "account_card_main",
+      "categoryId": "category_cafe",
+      "amountMinor": 216600,
+      "currency": "RUB",
+      "note": "Кофе с собой"
+    },
+    {
+      "id": "txn_bk_202502_food_1",
+      "date": "2025-02-18",
+      "accountId": "account_card_main",
+      "categoryId": "category_food",
+      "amountMinor": 327200,
+      "currency": "RUB",
+      "note": "Продукты на неделю"
+    },
+    {
+      "id": "txn_bk_202502_food_0",
+      "date": "2025-02-22",
+      "accountId": "account_card_main",
+      "categoryId": "category_food",
+      "amountMinor": 400100,
+      "currency": "RUB",
+      "note": "Супермаркет"
+    },
+    {
+      "id": "txn_bk_202502_fun_7",
+      "date": "2025-02-28",
+      "accountId": "account_card_main",
+      "categoryId": "category_fun",
+      "amountMinor": 102800,
+      "currency": "RUB",
+      "note": "Кино"
+    },
+    {
+      "id": "txn_bk_202503_food_0",
+      "date": "2025-03-01",
+      "accountId": "account_card_main",
+      "categoryId": "category_food",
+      "amountMinor": 450000,
+      "currency": "RUB",
+      "note": "Рынок"
+    },
+    {
+      "id": "txn_bk_202503_food_1",
+      "date": "2025-03-06",
+      "accountId": "account_card_main",
+      "categoryId": "category_food",
+      "amountMinor": 324800,
+      "currency": "RUB",
+      "note": "Супермаркет"
+    },
+    {
+      "id": "txn_bk_202503_cafe_6",
+      "date": "2025-03-07",
+      "accountId": "account_card_main",
+      "categoryId": "category_cafe",
+      "amountMinor": 179300,
+      "currency": "RUB",
+      "note": "Обед"
+    },
+    {
+      "id": "txn_bk_202503_home_11",
+      "date": "2025-03-10",
+      "accountId": "account_card_main",
+      "categoryId": "category_home",
+      "amountMinor": 522800,
+      "currency": "RUB",
+      "note": "Мелкий ремонт"
+    },
+    {
+      "id": "txn_bk_202503_med_15",
+      "date": "2025-03-12",
+      "accountId": "account_cash",
+      "categoryId": "category_health",
+      "amountMinor": 207400,
+      "currency": "RUB",
+      "note": "Стоматолог"
+    },
+    {
+      "id": "txn_bk_202503_sub_14",
+      "date": "2025-03-14",
+      "accountId": "account_usd",
+      "categoryId": "category_fun",
+      "amountMinor": 1599,
+      "currency": "USD",
+      "note": "Подписка"
+    },
+    {
+      "id": "txn_bk_202503_cafe_5",
+      "date": "2025-03-15",
+      "accountId": "account_card_main",
+      "categoryId": "category_cafe",
+      "amountMinor": 285100,
+      "currency": "RUB",
+      "note": "Ужин с друзьями"
+    },
+    {
+      "id": "txn_bk_202503_fun_12",
+      "date": "2025-03-16",
+      "accountId": "account_card_main",
+      "categoryId": "category_fun",
+      "amountMinor": 379600,
+      "currency": "RUB",
+      "note": "Концерт"
+    },
+    {
+      "id": "txn_bk_202503_food_3",
+      "date": "2025-03-18",
+      "accountId": "account_card_main",
+      "categoryId": "category_food",
+      "amountMinor": 179800,
+      "currency": "RUB",
+      "note": "Продукты на неделю"
+    },
+    {
+      "id": "txn_bk_202503_tp_9",
+      "date": "2025-03-19",
+      "accountId": "account_card_main",
+      "categoryId": "category_transport",
+      "amountMinor": 62100,
+      "currency": "RUB",
+      "note": "Электричка"
+    },
+    {
+      "id": "txn_bk_202503_cafe_4",
+      "date": "2025-03-20",
+      "accountId": "account_card_main",
+      "categoryId": "category_cafe",
+      "amountMinor": 107700,
+      "currency": "RUB",
+      "note": "Ужин с друзьями"
+    },
+    {
+      "id": "txn_bk_202503_tp_7",
+      "date": "2025-03-25",
+      "accountId": "account_card_main",
+      "categoryId": "category_transport",
+      "amountMinor": 134800,
+      "currency": "RUB",
+      "note": "Такси"
+    },
+    {
+      "id": "txn_bk_202503_tp_8",
+      "date": "2025-03-25",
+      "accountId": "account_cash",
+      "categoryId": "category_transport",
+      "amountMinor": 70600,
+      "currency": "RUB",
+      "note": "Электричка"
+    },
+    {
+      "id": "txn_bk_202503_food_2",
+      "date": "2025-03-26",
+      "accountId": "account_card_main",
+      "categoryId": "category_food",
+      "amountMinor": 439800,
+      "currency": "RUB",
+      "note": "Продукты на неделю"
+    },
+    {
+      "id": "txn_bk_202503_fun_13",
+      "date": "2025-03-27",
+      "accountId": "account_card_main",
+      "categoryId": "category_fun",
+      "amountMinor": 109200,
+      "currency": "RUB",
+      "note": "Игра"
+    },
+    {
+      "id": "txn_bk_202503_tp_10",
+      "date": "2025-03-28",
+      "accountId": "account_card_main",
+      "categoryId": "category_transport",
+      "amountMinor": 114700,
+      "currency": "RUB",
+      "note": "Такси"
+    },
+    {
+      "id": "txn_bk_202504_food_2",
+      "date": "2025-04-04",
+      "accountId": "account_card_main",
+      "categoryId": "category_food",
+      "amountMinor": 152100,
+      "currency": "RUB",
+      "note": "Рынок"
+    },
+    {
+      "id": "txn_bk_202504_home_10",
+      "date": "2025-04-10",
+      "accountId": "account_card_main",
+      "categoryId": "category_home",
+      "amountMinor": 504700,
+      "currency": "RUB",
+      "note": "Интернет"
+    },
+    {
+      "id": "txn_bk_202504_tp_9",
+      "date": "2025-04-10",
+      "accountId": "account_card_main",
+      "categoryId": "category_transport",
+      "amountMinor": 63300,
+      "currency": "RUB",
+      "note": "Каршеринг"
+    },
+    {
+      "id": "txn_bk_202504_food_4",
+      "date": "2025-04-12",
+      "accountId": "account_card_main",
+      "categoryId": "category_food",
+      "amountMinor": 197100,
+      "currency": "RUB",
+      "note": "Супермаркет"
+    },
+    {
+      "id": "txn_bk_202504_tp_7",
+      "date": "2025-04-12",
+      "accountId": "account_card_main",
+      "categoryId": "category_transport",
+      "amountMinor": 99700,
+      "currency": "RUB",
+      "note": "Каршеринг"
+    },
+    {
+      "id": "txn_bk_202504_med_14",
+      "date": "2025-04-13",
+      "accountId": "account_cash",
+      "categoryId": "category_health",
+      "amountMinor": 493900,
+      "currency": "RUB",
+      "note": "Анализы"
+    },
+    {
+      "id": "txn_bk_202504_cafe_5",
+      "date": "2025-04-14",
+      "accountId": "account_card_main",
+      "categoryId": "category_cafe",
+      "amountMinor": 177900,
+      "currency": "RUB",
+      "note": "Ужин с друзьями"
+    },
+    {
+      "id": "txn_bk_202504_food_1",
+      "date": "2025-04-14",
+      "accountId": "account_card_main",
+      "categoryId": "category_food",
+      "amountMinor": 415500,
+      "currency": "RUB",
+      "note": "Продукты на неделю"
+    },
+    {
+      "id": "txn_bk_202504_sub_13",
+      "date": "2025-04-14",
+      "accountId": "account_usd",
+      "categoryId": "category_fun",
+      "amountMinor": 1599,
+      "currency": "USD",
+      "note": "Подписка"
+    },
+    {
+      "id": "txn_bk_202504_fun_11",
+      "date": "2025-04-16",
+      "accountId": "account_card_main",
+      "categoryId": "category_fun",
+      "amountMinor": 322400,
+      "currency": "RUB",
+      "note": "Подписка"
+    },
+    {
+      "id": "txn_bk_202504_fun_12",
+      "date": "2025-04-16",
+      "accountId": "account_card_main",
+      "categoryId": "category_fun",
+      "amountMinor": 168000,
+      "currency": "RUB",
+      "note": "Кино"
+    },
+    {
+      "id": "txn_bk_202504_food_3",
+      "date": "2025-04-17",
+      "accountId": "account_card_main",
+      "categoryId": "category_food",
+      "amountMinor": 446600,
+      "currency": "RUB",
+      "note": "Магазин у дома"
+    },
+    {
+      "id": "txn_bk_202504_tp_6",
+      "date": "2025-04-26",
+      "accountId": "account_card_main",
+      "categoryId": "category_transport",
+      "amountMinor": 49500,
+      "currency": "RUB",
+      "note": "Каршеринг"
+    },
+    {
+      "id": "txn_bk_202504_trv_15",
+      "date": "2025-04-26",
+      "accountId": "account_eur",
+      "categoryId": "category_travel",
+      "amountMinor": 34589,
+      "currency": "EUR",
+      "note": "Билеты"
+    },
+    {
+      "id": "txn_bk_202504_food_0",
+      "date": "2025-04-27",
+      "accountId": "account_card_main",
+      "categoryId": "category_food",
+      "amountMinor": 367100,
+      "currency": "RUB",
+      "note": "Продукты на неделю"
+    },
+    {
+      "id": "txn_bk_202504_tp_8",
+      "date": "2025-04-28",
+      "accountId": "account_card_main",
+      "categoryId": "category_transport",
+      "amountMinor": 73800,
+      "currency": "RUB",
+      "note": "Такси"
+    },
+    {
+      "id": "txn_bk_202505_cafe_3",
+      "date": "2025-05-01",
+      "accountId": "account_card_main",
+      "categoryId": "category_cafe",
+      "amountMinor": 148900,
+      "currency": "RUB",
+      "note": "Обед"
+    },
+    {
+      "id": "txn_bk_202505_food_0",
+      "date": "2025-05-03",
+      "accountId": "account_card_main",
+      "categoryId": "category_food",
+      "amountMinor": 174500,
+      "currency": "RUB",
+      "note": "Магазин у дома"
+    },
+    {
+      "id": "txn_bk_202505_tp_6",
+      "date": "2025-05-03",
+      "accountId": "account_card_main",
+      "categoryId": "category_transport",
+      "amountMinor": 46200,
+      "currency": "RUB",
+      "note": "Проездной"
+    },
+    {
+      "id": "txn_bk_202505_cafe_5",
+      "date": "2025-05-07",
+      "accountId": "account_card_main",
+      "categoryId": "category_cafe",
+      "amountMinor": 126700,
+      "currency": "RUB",
+      "note": "Кофе с собой"
+    },
+    {
+      "id": "txn_bk_202505_fun_9",
+      "date": "2025-05-08",
+      "accountId": "account_card_main",
+      "categoryId": "category_fun",
+      "amountMinor": 168400,
+      "currency": "RUB",
+      "note": "Подписка"
+    },
+    {
+      "id": "txn_bk_202505_med_11",
+      "date": "2025-05-08",
+      "accountId": "account_cash",
+      "categoryId": "category_health",
+      "amountMinor": 306900,
+      "currency": "RUB",
+      "note": "Анализы"
+    },
+    {
+      "id": "txn_bk_202505_home_8",
+      "date": "2025-05-10",
+      "accountId": "account_card_main",
+      "categoryId": "category_home",
+      "amountMinor": 573300,
+      "currency": "RUB",
+      "note": "Хозтовары"
+    },
+    {
+      "id": "txn_bk_202505_food_1",
+      "date": "2025-05-13",
+      "accountId": "account_card_main",
+      "categoryId": "category_food",
+      "amountMinor": 230900,
+      "currency": "RUB",
+      "note": "Продукты на неделю"
+    },
+    {
+      "id": "txn_bk_202505_sub_10",
+      "date": "2025-05-14",
+      "accountId": "account_usd",
+      "categoryId": "category_fun",
+      "amountMinor": 1599,
+      "currency": "USD",
+      "note": "Подписка"
+    },
+    {
+      "id": "txn_bk_202505_food_2",
+      "date": "2025-05-16",
+      "accountId": "account_card_main",
+      "categoryId": "category_food",
+      "amountMinor": 441300,
+      "currency": "RUB",
+      "note": "Рынок"
+    },
+    {
+      "id": "txn_bk_202505_cafe_4",
+      "date": "2025-05-24",
+      "accountId": "account_card_main",
+      "categoryId": "category_cafe",
+      "amountMinor": 149800,
+      "currency": "RUB",
+      "note": "Обед"
+    },
+    {
+      "id": "txn_bk_202505_tp_7",
+      "date": "2025-05-27",
+      "accountId": "account_card_main",
+      "categoryId": "category_transport",
+      "amountMinor": 87000,
+      "currency": "RUB",
+      "note": "Электричка"
+    },
+    {
+      "id": "txn_bk_202505_unc_12",
+      "date": "2025-05-27",
+      "accountId": "account_cash",
+      "categoryId": "category_uncategorized",
+      "amountMinor": 209200,
+      "currency": "RUB",
+      "note": "Пока не разобрано"
+    },
+    {
+      "id": "txn_bk_202506_cafe_6",
+      "date": "2025-06-02",
+      "accountId": "account_card_main",
+      "categoryId": "category_cafe",
+      "amountMinor": 155700,
+      "currency": "RUB",
+      "note": "Кофе с собой"
+    },
+    {
+      "id": "txn_bk_202506_fun_10",
+      "date": "2025-06-02",
+      "accountId": "account_card_main",
+      "categoryId": "category_fun",
+      "amountMinor": 453400,
+      "currency": "RUB",
+      "note": "Кино"
+    },
+    {
+      "id": "txn_bk_202506_food_3",
+      "date": "2025-06-03",
+      "accountId": "account_card_main",
+      "categoryId": "category_food",
+      "amountMinor": 171600,
+      "currency": "RUB",
+      "note": "Продукты на неделю"
+    },
+    {
+      "id": "txn_bk_202506_food_0",
+      "date": "2025-06-06",
+      "accountId": "account_card_main",
+      "categoryId": "category_food",
+      "amountMinor": 335900,
+      "currency": "RUB",
+      "note": "Продукты на неделю"
+    },
+    {
+      "id": "txn_bk_202506_home_9",
+      "date": "2025-06-10",
+      "accountId": "account_card_main",
+      "categoryId": "category_home",
+      "amountMinor": 589800,
+      "currency": "RUB",
+      "note": "Интернет"
+    },
+    {
+      "id": "txn_bk_202506_fun_11",
+      "date": "2025-06-12",
+      "accountId": "account_card_main",
+      "categoryId": "category_fun",
+      "amountMinor": 163700,
+      "currency": "RUB",
+      "note": "Кино"
+    },
+    {
+      "id": "txn_bk_202506_sub_12",
+      "date": "2025-06-14",
+      "accountId": "account_usd",
+      "categoryId": "category_fun",
+      "amountMinor": 1599,
+      "currency": "USD",
+      "note": "Подписка"
+    },
+    {
+      "id": "txn_bk_202506_food_1",
+      "date": "2025-06-21",
+      "accountId": "account_card_main",
+      "categoryId": "category_food",
+      "amountMinor": 418500,
+      "currency": "RUB",
+      "note": "Рынок"
+    },
+    {
+      "id": "txn_bk_202506_tp_7",
+      "date": "2025-06-21",
+      "accountId": "account_card_main",
+      "categoryId": "category_transport",
+      "amountMinor": 58800,
+      "currency": "RUB",
+      "note": "Электричка"
+    },
+    {
+      "id": "txn_bk_202506_cafe_5",
+      "date": "2025-06-25",
+      "accountId": "account_card_main",
+      "categoryId": "category_cafe",
+      "amountMinor": 99000,
+      "currency": "RUB",
+      "note": "Ужин с друзьями"
+    },
+    {
+      "id": "txn_bk_202506_food_4",
+      "date": "2025-06-26",
+      "accountId": "account_card_main",
+      "categoryId": "category_food",
+      "amountMinor": 168200,
+      "currency": "RUB",
+      "note": "Магазин у дома"
+    },
+    {
+      "id": "txn_bk_202506_unc_13",
+      "date": "2025-06-26",
+      "accountId": "account_cash",
+      "categoryId": "category_uncategorized",
+      "amountMinor": 227700,
+      "currency": "RUB",
+      "note": "Пока не разобрано"
+    },
+    {
+      "id": "txn_bk_202506_food_2",
+      "date": "2025-06-28",
+      "accountId": "account_card_main",
+      "categoryId": "category_food",
+      "amountMinor": 239200,
+      "currency": "RUB",
+      "note": "Супермаркет"
+    },
+    {
+      "id": "txn_bk_202506_tp_8",
+      "date": "2025-06-28",
+      "accountId": "account_card_main",
+      "categoryId": "category_transport",
+      "amountMinor": 107500,
+      "currency": "RUB",
+      "note": "Электричка"
+    },
+    {
+      "id": "txn_bk_202507_food_3",
+      "date": "2025-07-01",
+      "accountId": "account_card_main",
+      "categoryId": "category_food",
+      "amountMinor": 262300,
+      "currency": "RUB",
+      "note": "Рынок"
+    },
+    {
+      "id": "txn_bk_202507_tp_6",
+      "date": "2025-07-02",
+      "accountId": "account_card_main",
+      "categoryId": "category_transport",
+      "amountMinor": 61700,
+      "currency": "RUB",
+      "note": "Каршеринг"
+    },
+    {
+      "id": "txn_bk_202507_home_9",
+      "date": "2025-07-10",
+      "accountId": "account_card_main",
+      "categoryId": "category_home",
+      "amountMinor": 529000,
+      "currency": "RUB",
+      "note": "Коммуналка"
+    },
+    {
+      "id": "txn_bk_202507_cafe_5",
+      "date": "2025-07-13",
+      "accountId": "account_card_main",
+      "categoryId": "category_cafe",
+      "amountMinor": 238500,
+      "currency": "RUB",
+      "note": "Ужин с друзьями"
+    },
+    {
+      "id": "txn_bk_202507_sub_11",
+      "date": "2025-07-14",
+      "accountId": "account_usd",
+      "categoryId": "category_fun",
+      "amountMinor": 1599,
+      "currency": "USD",
+      "note": "Подписка"
+    },
+    {
+      "id": "txn_bk_202507_food_4",
+      "date": "2025-07-16",
+      "accountId": "account_card_main",
+      "categoryId": "category_food",
+      "amountMinor": 280000,
+      "currency": "RUB",
+      "note": "Супермаркет"
+    },
+    {
+      "id": "txn_bk_202507_food_1",
+      "date": "2025-07-18",
+      "accountId": "account_card_main",
+      "categoryId": "category_food",
+      "amountMinor": 377400,
+      "currency": "RUB",
+      "note": "Магазин у дома"
+    },
+    {
+      "id": "txn_bk_202507_tp_8",
+      "date": "2025-07-18",
+      "accountId": "account_card_main",
+      "categoryId": "category_transport",
+      "amountMinor": 34900,
+      "currency": "RUB",
+      "note": "Такси"
+    },
+    {
+      "id": "txn_bk_202507_fun_10",
+      "date": "2025-07-19",
+      "accountId": "account_card_main",
+      "categoryId": "category_fun",
+      "amountMinor": 203900,
+      "currency": "RUB",
+      "note": "Подписка"
+    },
+    {
+      "id": "txn_bk_202507_food_0",
+      "date": "2025-07-20",
+      "accountId": "account_card_main",
+      "categoryId": "category_food",
+      "amountMinor": 426700,
+      "currency": "RUB",
+      "note": "Рынок"
+    },
+    {
+      "id": "txn_bk_202507_tp_7",
+      "date": "2025-07-23",
+      "accountId": "account_card_main",
+      "categoryId": "category_transport",
+      "amountMinor": 148500,
+      "currency": "RUB",
+      "note": "Такси"
+    },
+    {
+      "id": "txn_bk_202507_food_2",
+      "date": "2025-07-26",
+      "accountId": "account_card_main",
+      "categoryId": "category_food",
+      "amountMinor": 239700,
+      "currency": "RUB",
+      "note": "Супермаркет"
+    },
+    {
+      "id": "txn_bk_202508_food_3",
+      "date": "2025-08-02",
+      "accountId": "account_card_main",
+      "categoryId": "category_food",
+      "amountMinor": 250500,
+      "currency": "RUB",
+      "note": "Рынок"
+    },
+    {
+      "id": "txn_bk_202508_tp_5",
+      "date": "2025-08-04",
+      "accountId": "account_card_main",
+      "categoryId": "category_transport",
+      "amountMinor": 117900,
+      "currency": "RUB",
+      "note": "Каршеринг"
+    },
+    {
+      "id": "txn_bk_202508_food_0",
+      "date": "2025-08-06",
+      "accountId": "account_card_main",
+      "categoryId": "category_food",
+      "amountMinor": 440400,
+      "currency": "RUB",
+      "note": "Супермаркет"
+    },
+    {
+      "id": "txn_bk_202508_food_2",
+      "date": "2025-08-06",
+      "accountId": "account_card_main",
+      "categoryId": "category_food",
+      "amountMinor": 359300,
+      "currency": "RUB",
+      "note": "Рынок"
+    },
+    {
+      "id": "txn_bk_202508_cafe_4",
+      "date": "2025-08-09",
+      "accountId": "account_card_main",
+      "categoryId": "category_cafe",
+      "amountMinor": 238000,
+      "currency": "RUB",
+      "note": "Обед"
+    },
+    {
+      "id": "txn_bk_202508_fun_9",
+      "date": "2025-08-09",
+      "accountId": "account_card_main",
+      "categoryId": "category_fun",
+      "amountMinor": 393700,
+      "currency": "RUB",
+      "note": "Концерт"
+    },
+    {
+      "id": "txn_bk_202508_food_1",
+      "date": "2025-08-10",
+      "accountId": "account_card_main",
+      "categoryId": "category_food",
+      "amountMinor": 183000,
+      "currency": "RUB",
+      "note": "Магазин у дома"
+    },
+    {
+      "id": "txn_bk_202508_home_8",
+      "date": "2025-08-10",
+      "accountId": "account_card_main",
+      "categoryId": "category_home",
+      "amountMinor": 416000,
+      "currency": "RUB",
+      "note": "Интернет"
+    },
+    {
+      "id": "txn_bk_202508_sub_11",
+      "date": "2025-08-14",
+      "accountId": "account_usd",
+      "categoryId": "category_fun",
+      "amountMinor": 1599,
+      "currency": "USD",
+      "note": "Подписка"
+    },
+    {
+      "id": "txn_bk_202508_tp_6",
+      "date": "2025-08-17",
+      "accountId": "account_card_main",
+      "categoryId": "category_transport",
+      "amountMinor": 36000,
+      "currency": "RUB",
+      "note": "Такси"
+    },
+    {
+      "id": "txn_bk_202508_tp_7",
+      "date": "2025-08-17",
+      "accountId": "account_card_main",
+      "categoryId": "category_transport",
+      "amountMinor": 82400,
+      "currency": "RUB",
+      "note": "Электричка"
+    },
+    {
+      "id": "txn_bk_202508_unc_13",
+      "date": "2025-08-18",
+      "accountId": "account_cash",
+      "categoryId": "category_uncategorized",
+      "amountMinor": 291200,
+      "currency": "RUB",
+      "note": "Пока не разобрано"
+    },
+    {
+      "id": "txn_bk_202508_fun_10",
+      "date": "2025-08-23",
+      "accountId": "account_card_main",
+      "categoryId": "category_fun",
+      "amountMinor": 377400,
+      "currency": "RUB",
+      "note": "Игра"
+    },
+    {
+      "id": "txn_bk_202508_trv_12",
+      "date": "2025-08-27",
+      "accountId": "account_eur",
+      "categoryId": "category_travel",
+      "amountMinor": 39828,
+      "currency": "EUR",
+      "note": "Страховка"
+    },
+    {
+      "id": "txn_bk_202509_cafe_6",
+      "date": "2025-09-01",
+      "accountId": "account_card_main",
+      "categoryId": "category_cafe",
+      "amountMinor": 223900,
+      "currency": "RUB",
+      "note": "Кофе с собой"
+    },
+    {
+      "id": "txn_bk_202509_tp_9",
+      "date": "2025-09-01",
+      "accountId": "account_card_main",
+      "categoryId": "category_transport",
+      "amountMinor": 113200,
+      "currency": "RUB",
+      "note": "Такси"
+    },
+    {
+      "id": "txn_bk_202509_cafe_5",
+      "date": "2025-09-04",
+      "accountId": "account_card_main",
+      "categoryId": "category_cafe",
+      "amountMinor": 86100,
+      "currency": "RUB",
+      "note": "Бизнес-ланч"
+    },
+    {
+      "id": "txn_bk_202509_food_2",
+      "date": "2025-09-06",
+      "accountId": "account_card_main",
+      "categoryId": "category_food",
+      "amountMinor": 389900,
+      "currency": "RUB",
+      "note": "Продукты на неделю"
+    },
+    {
+      "id": "txn_bk_202509_food_1",
+      "date": "2025-09-07",
+      "accountId": "account_card_main",
+      "categoryId": "category_food",
+      "amountMinor": 331500,
+      "currency": "RUB",
+      "note": "Супермаркет"
+    },
+    {
+      "id": "txn_bk_202509_fun_13",
+      "date": "2025-09-07",
+      "accountId": "account_card_main",
+      "categoryId": "category_fun",
+      "amountMinor": 465700,
+      "currency": "RUB",
+      "note": "Игра"
+    },
+    {
+      "id": "txn_bk_202509_home_11",
+      "date": "2025-09-10",
+      "accountId": "account_card_main",
+      "categoryId": "category_home",
+      "amountMinor": 524900,
+      "currency": "RUB",
+      "note": "Хозтовары"
+    },
+    {
+      "id": "txn_bk_202509_tp_7",
+      "date": "2025-09-10",
+      "accountId": "account_cash",
+      "categoryId": "category_transport",
+      "amountMinor": 83200,
+      "currency": "RUB",
+      "note": "Электричка"
+    },
+    {
+      "id": "txn_bk_202509_tp_8",
+      "date": "2025-09-11",
+      "accountId": "account_card_main",
+      "categoryId": "category_transport",
+      "amountMinor": 104500,
+      "currency": "RUB",
+      "note": "Каршеринг"
+    },
+    {
+      "id": "txn_bk_202509_food_0",
+      "date": "2025-09-12",
+      "accountId": "account_card_main",
+      "categoryId": "category_food",
+      "amountMinor": 362000,
+      "currency": "RUB",
+      "note": "Магазин у дома"
+    },
+    {
+      "id": "txn_bk_202509_food_3",
+      "date": "2025-09-13",
+      "accountId": "account_card_main",
+      "categoryId": "category_food",
+      "amountMinor": 337000,
+      "currency": "RUB",
+      "note": "Супермаркет"
+    },
+    {
+      "id": "txn_bk_202509_sub_14",
+      "date": "2025-09-14",
+      "accountId": "account_usd",
+      "categoryId": "category_fun",
+      "amountMinor": 1599,
+      "currency": "USD",
+      "note": "Подписка"
+    },
+    {
+      "id": "txn_bk_202509_food_4",
+      "date": "2025-09-15",
+      "accountId": "account_card_main",
+      "categoryId": "category_food",
+      "amountMinor": 243000,
+      "currency": "RUB",
+      "note": "Продукты на неделю"
+    },
+    {
+      "id": "txn_bk_202509_fun_12",
+      "date": "2025-09-22",
+      "accountId": "account_card_main",
+      "categoryId": "category_fun",
+      "amountMinor": 411900,
+      "currency": "RUB",
+      "note": "Кино"
+    },
+    {
+      "id": "txn_bk_202509_tp_10",
+      "date": "2025-09-26",
+      "accountId": "account_card_main",
+      "categoryId": "category_transport",
+      "amountMinor": 124600,
+      "currency": "RUB",
+      "note": "Проездной"
+    },
+    {
+      "id": "txn_bk_202510_food_2",
+      "date": "2025-10-08",
+      "accountId": "account_card_main",
+      "categoryId": "category_food",
+      "amountMinor": 351600,
+      "currency": "RUB",
+      "note": "Продукты на неделю"
+    },
+    {
+      "id": "txn_bk_202510_home_11",
+      "date": "2025-10-10",
+      "accountId": "account_card_main",
+      "categoryId": "category_home",
+      "amountMinor": 512200,
+      "currency": "RUB",
+      "note": "Хозтовары"
+    },
+    {
+      "id": "txn_bk_202510_tp_8",
+      "date": "2025-10-10",
+      "accountId": "account_card_main",
+      "categoryId": "category_transport",
+      "amountMinor": 43900,
+      "currency": "RUB",
+      "note": "Проездной"
+    },
+    {
+      "id": "txn_bk_202510_food_0",
+      "date": "2025-10-11",
+      "accountId": "account_card_main",
+      "categoryId": "category_food",
+      "amountMinor": 440200,
+      "currency": "RUB",
+      "note": "Супермаркет"
+    },
+    {
+      "id": "txn_bk_202510_food_4",
+      "date": "2025-10-11",
+      "accountId": "account_card_main",
+      "categoryId": "category_food",
+      "amountMinor": 379700,
+      "currency": "RUB",
+      "note": "Магазин у дома"
+    },
+    {
+      "id": "txn_bk_202510_fun_13",
+      "date": "2025-10-13",
+      "accountId": "account_card_main",
+      "categoryId": "category_fun",
+      "amountMinor": 455200,
+      "currency": "RUB",
+      "note": "Концерт"
+    },
+    {
+      "id": "txn_bk_202510_fun_12",
+      "date": "2025-10-14",
+      "accountId": "account_card_main",
+      "categoryId": "category_fun",
+      "amountMinor": 359800,
+      "currency": "RUB",
+      "note": "Игра"
+    },
+    {
+      "id": "txn_bk_202510_sub_14",
+      "date": "2025-10-14",
+      "accountId": "account_usd",
+      "categoryId": "category_fun",
+      "amountMinor": 1599,
+      "currency": "USD",
+      "note": "Подписка"
+    },
+    {
+      "id": "txn_bk_202510_tp_10",
+      "date": "2025-10-14",
+      "accountId": "account_card_main",
+      "categoryId": "category_transport",
+      "amountMinor": 111700,
+      "currency": "RUB",
+      "note": "Проездной"
+    },
+    {
+      "id": "txn_bk_202510_food_3",
+      "date": "2025-10-15",
+      "accountId": "account_card_main",
+      "categoryId": "category_food",
+      "amountMinor": 351800,
+      "currency": "RUB",
+      "note": "Магазин у дома"
+    },
+    {
+      "id": "txn_bk_202510_tp_9",
+      "date": "2025-10-16",
+      "accountId": "account_card_main",
+      "categoryId": "category_transport",
+      "amountMinor": 47900,
+      "currency": "RUB",
+      "note": "Каршеринг"
+    },
+    {
+      "id": "txn_bk_202510_cafe_7",
+      "date": "2025-10-17",
+      "accountId": "account_card_main",
+      "categoryId": "category_cafe",
+      "amountMinor": 120000,
+      "currency": "RUB",
+      "note": "Обед"
+    },
+    {
+      "id": "txn_bk_202510_cafe_5",
+      "date": "2025-10-22",
+      "accountId": "account_card_main",
+      "categoryId": "category_cafe",
+      "amountMinor": 158100,
+      "currency": "RUB",
+      "note": "Кофе с собой"
+    },
+    {
+      "id": "txn_bk_202510_food_1",
+      "date": "2025-10-24",
+      "accountId": "account_card_main",
+      "categoryId": "category_food",
+      "amountMinor": 176800,
+      "currency": "RUB",
+      "note": "Супермаркет"
+    },
+    {
+      "id": "txn_bk_202510_cafe_6",
+      "date": "2025-10-27",
+      "accountId": "account_card_main",
+      "categoryId": "category_cafe",
+      "amountMinor": 246700,
+      "currency": "RUB",
+      "note": "Ужин с друзьями"
+    },
+    {
+      "id": "txn_bk_202511_food_0",
+      "date": "2025-11-01",
+      "accountId": "account_card_main",
+      "categoryId": "category_food",
+      "amountMinor": 215600,
+      "currency": "RUB",
+      "note": "Магазин у дома"
+    },
+    {
+      "id": "txn_bk_202511_fun_7",
+      "date": "2025-11-07",
+      "accountId": "account_card_main",
+      "categoryId": "category_fun",
+      "amountMinor": 487500,
+      "currency": "RUB",
+      "note": "Кино"
+    },
+    {
+      "id": "txn_bk_202511_tp_4",
+      "date": "2025-11-08",
+      "accountId": "account_cash",
+      "categoryId": "category_transport",
+      "amountMinor": 103500,
+      "currency": "RUB",
+      "note": "Каршеринг"
+    },
+    {
+      "id": "txn_bk_202511_food_1",
+      "date": "2025-11-09",
+      "accountId": "account_card_main",
+      "categoryId": "category_food",
+      "amountMinor": 210900,
+      "currency": "RUB",
+      "note": "Магазин у дома"
+    },
+    {
+      "id": "txn_bk_202511_home_6",
+      "date": "2025-11-10",
+      "accountId": "account_card_main",
+      "categoryId": "category_home",
+      "amountMinor": 438500,
+      "currency": "RUB",
+      "note": "Хозтовары"
+    },
+    {
+      "id": "txn_bk_202511_sub_8",
+      "date": "2025-11-14",
+      "accountId": "account_usd",
+      "categoryId": "category_fun",
+      "amountMinor": 1599,
+      "currency": "USD",
+      "note": "Подписка"
+    },
+    {
+      "id": "txn_bk_202511_trv_9",
+      "date": "2025-11-14",
+      "accountId": "account_eur",
+      "categoryId": "category_travel",
+      "amountMinor": 33331,
+      "currency": "EUR",
+      "note": "Билеты"
+    },
+    {
+      "id": "txn_bk_202511_cafe_3",
+      "date": "2025-11-17",
+      "accountId": "account_card_main",
+      "categoryId": "category_cafe",
+      "amountMinor": 276900,
+      "currency": "RUB",
+      "note": "Бизнес-ланч"
+    },
+    {
+      "id": "txn_bk_202511_tp_5",
+      "date": "2025-11-22",
+      "accountId": "account_card_main",
+      "categoryId": "category_transport",
+      "amountMinor": 73000,
+      "currency": "RUB",
+      "note": "Проездной"
+    },
+    {
+      "id": "txn_bk_202511_food_2",
+      "date": "2025-11-27",
+      "accountId": "account_card_main",
+      "categoryId": "category_food",
+      "amountMinor": 371000,
+      "currency": "RUB",
+      "note": "Магазин у дома"
+    },
+    {
+      "id": "txn_bk_202511_unc_10",
+      "date": "2025-11-28",
+      "accountId": "account_cash",
+      "categoryId": "category_uncategorized",
+      "amountMinor": 205600,
+      "currency": "RUB",
+      "note": "Пока не разобрано"
+    },
+    {
+      "id": "txn_bk_202512_food_1",
+      "date": "2025-12-07",
+      "accountId": "account_card_main",
+      "categoryId": "category_food",
+      "amountMinor": 384800,
+      "currency": "RUB",
+      "note": "Продукты на неделю"
+    },
+    {
+      "id": "txn_bk_202512_tp_4",
+      "date": "2025-12-08",
+      "accountId": "account_cash",
+      "categoryId": "category_transport",
+      "amountMinor": 51700,
+      "currency": "RUB",
+      "note": "Электричка"
+    },
+    {
+      "id": "txn_bk_202512_fun_8",
+      "date": "2025-12-10",
+      "accountId": "account_card_main",
+      "categoryId": "category_fun",
+      "amountMinor": 388900,
+      "currency": "RUB",
+      "note": "Концерт"
+    },
+    {
+      "id": "txn_bk_202512_home_7",
+      "date": "2025-12-10",
+      "accountId": "account_card_main",
+      "categoryId": "category_home",
+      "amountMinor": 597000,
+      "currency": "RUB",
+      "note": "Хозтовары"
+    },
+    {
+      "id": "txn_bk_202512_sub_10",
+      "date": "2025-12-14",
+      "accountId": "account_usd",
+      "categoryId": "category_fun",
+      "amountMinor": 1599,
+      "currency": "USD",
+      "note": "Подписка"
+    },
+    {
+      "id": "txn_bk_202512_cafe_3",
+      "date": "2025-12-15",
+      "accountId": "account_card_main",
+      "categoryId": "category_cafe",
+      "amountMinor": 163000,
+      "currency": "RUB",
+      "note": "Бизнес-ланч"
+    },
+    {
+      "id": "txn_bk_202512_fun_9",
+      "date": "2025-12-16",
+      "accountId": "account_card_main",
+      "categoryId": "category_fun",
+      "amountMinor": 463600,
+      "currency": "RUB",
+      "note": "Концерт"
+    },
+    {
+      "id": "txn_bk_202512_tp_6",
+      "date": "2025-12-20",
+      "accountId": "account_card_main",
+      "categoryId": "category_transport",
+      "amountMinor": 96300,
+      "currency": "RUB",
+      "note": "Проездной"
+    },
+    {
+      "id": "txn_bk_202512_food_2",
+      "date": "2025-12-21",
+      "accountId": "account_card_main",
+      "categoryId": "category_food",
+      "amountMinor": 419500,
+      "currency": "RUB",
+      "note": "Магазин у дома"
+    },
+    {
+      "id": "txn_bk_202512_med_11",
+      "date": "2025-12-23",
+      "accountId": "account_cash",
+      "categoryId": "category_health",
+      "amountMinor": 244600,
+      "currency": "RUB",
+      "note": "Анализы"
+    },
+    {
+      "id": "txn_bk_202512_tp_5",
+      "date": "2025-12-24",
+      "accountId": "account_card_main",
+      "categoryId": "category_transport",
+      "amountMinor": 93800,
+      "currency": "RUB",
+      "note": "Электричка"
+    },
+    {
+      "id": "txn_bk_202512_food_0",
+      "date": "2025-12-28",
+      "accountId": "account_card_main",
+      "categoryId": "category_food",
+      "amountMinor": 266000,
+      "currency": "RUB",
+      "note": "Супермаркет"
+    },
+    {
+      "id": "txn_bk_202601_food_4",
+      "date": "2026-01-03",
+      "accountId": "account_card_main",
+      "categoryId": "category_food",
+      "amountMinor": 180400,
+      "currency": "RUB",
+      "note": "Продукты на неделю"
+    },
+    {
+      "id": "txn_bk_202601_tp_9",
+      "date": "2026-01-04",
+      "accountId": "account_card_main",
+      "categoryId": "category_transport",
+      "amountMinor": 52900,
+      "currency": "RUB",
+      "note": "Электричка"
+    },
+    {
+      "id": "txn_bk_202601_fun_13",
+      "date": "2026-01-05",
+      "accountId": "account_card_main",
+      "categoryId": "category_fun",
+      "amountMinor": 489300,
+      "currency": "RUB",
+      "note": "Концерт"
+    },
+    {
+      "id": "txn_bk_202601_food_2",
+      "date": "2026-01-10",
+      "accountId": "account_card_main",
+      "categoryId": "category_food",
+      "amountMinor": 397600,
+      "currency": "RUB",
+      "note": "Продукты на неделю"
+    },
+    {
+      "id": "txn_bk_202601_home_12",
+      "date": "2026-01-10",
+      "accountId": "account_card_main",
+      "categoryId": "category_home",
+      "amountMinor": 406900,
+      "currency": "RUB",
+      "note": "Коммуналка"
+    },
+    {
+      "id": "txn_bk_202601_cafe_7",
+      "date": "2026-01-12",
+      "accountId": "account_card_main",
+      "categoryId": "category_cafe",
+      "amountMinor": 214800,
+      "currency": "RUB",
+      "note": "Бизнес-ланч"
+    },
+    {
+      "id": "txn_bk_202601_food_3",
+      "date": "2026-01-12",
+      "accountId": "account_card_main",
+      "categoryId": "category_food",
+      "amountMinor": 164700,
+      "currency": "RUB",
+      "note": "Рынок"
+    },
+    {
+      "id": "txn_bk_202601_cafe_5",
+      "date": "2026-01-14",
+      "accountId": "account_card_main",
+      "categoryId": "category_cafe",
+      "amountMinor": 86600,
+      "currency": "RUB",
+      "note": "Обед"
+    },
+    {
+      "id": "txn_bk_202601_sub_14",
+      "date": "2026-01-14",
+      "accountId": "account_usd",
+      "categoryId": "category_fun",
+      "amountMinor": 1599,
+      "currency": "USD",
+      "note": "Подписка"
+    },
+    {
+      "id": "txn_bk_202601_cafe_6",
+      "date": "2026-01-18",
+      "accountId": "account_card_main",
+      "categoryId": "category_cafe",
+      "amountMinor": 167200,
+      "currency": "RUB",
+      "note": "Ужин с друзьями"
+    },
+    {
+      "id": "txn_bk_202601_food_0",
+      "date": "2026-01-18",
+      "accountId": "account_card_main",
+      "categoryId": "category_food",
+      "amountMinor": 195200,
+      "currency": "RUB",
+      "note": "Продукты на неделю"
+    },
+    {
+      "id": "txn_bk_202601_tp_8",
+      "date": "2026-01-18",
+      "accountId": "account_cash",
+      "categoryId": "category_transport",
+      "amountMinor": 113000,
+      "currency": "RUB",
+      "note": "Такси"
+    },
+    {
+      "id": "txn_bk_202601_tp_11",
+      "date": "2026-01-23",
+      "accountId": "account_card_main",
+      "categoryId": "category_transport",
+      "amountMinor": 143800,
+      "currency": "RUB",
+      "note": "Проездной"
+    },
+    {
+      "id": "txn_bk_202601_food_1",
+      "date": "2026-01-24",
+      "accountId": "account_card_main",
+      "categoryId": "category_food",
+      "amountMinor": 436900,
+      "currency": "RUB",
+      "note": "Магазин у дома"
+    },
+    {
+      "id": "txn_bk_202601_tp_10",
+      "date": "2026-01-26",
+      "accountId": "account_cash",
+      "categoryId": "category_transport",
+      "amountMinor": 108100,
+      "currency": "RUB",
+      "note": "Такси"
+    },
+    {
+      "id": "txn_bk_202602_food_2",
+      "date": "2026-02-01",
+      "accountId": "account_card_main",
+      "categoryId": "category_food",
+      "amountMinor": 231700,
+      "currency": "RUB",
+      "note": "Супермаркет"
+    },
+    {
+      "id": "txn_bk_202602_food_0",
+      "date": "2026-02-05",
+      "accountId": "account_card_main",
+      "categoryId": "category_food",
+      "amountMinor": 301300,
+      "currency": "RUB",
+      "note": "Супермаркет"
+    },
+    {
+      "id": "txn_bk_202602_food_3",
+      "date": "2026-02-05",
+      "accountId": "account_card_main",
+      "categoryId": "category_food",
+      "amountMinor": 207700,
+      "currency": "RUB",
+      "note": "Супермаркет"
+    },
+    {
+      "id": "txn_bk_202602_food_1",
+      "date": "2026-02-07",
+      "accountId": "account_card_main",
+      "categoryId": "category_food",
+      "amountMinor": 353500,
+      "currency": "RUB",
+      "note": "Супермаркет"
+    },
+    {
+      "id": "txn_bk_202602_home_8",
+      "date": "2026-02-10",
+      "accountId": "account_card_main",
+      "categoryId": "category_home",
+      "amountMinor": 511000,
+      "currency": "RUB",
+      "note": "Мелкий ремонт"
+    },
+    {
+      "id": "txn_bk_202602_tp_5",
+      "date": "2026-02-12",
+      "accountId": "account_card_main",
+      "categoryId": "category_transport",
+      "amountMinor": 51700,
+      "currency": "RUB",
+      "note": "Такси"
+    },
+    {
+      "id": "txn_bk_202602_sub_11",
+      "date": "2026-02-14",
+      "accountId": "account_usd",
+      "categoryId": "category_fun",
+      "amountMinor": 1599,
+      "currency": "USD",
+      "note": "Подписка"
+    },
+    {
+      "id": "txn_bk_202602_tp_6",
+      "date": "2026-02-14",
+      "accountId": "account_cash",
+      "categoryId": "category_transport",
+      "amountMinor": 126400,
+      "currency": "RUB",
+      "note": "Электричка"
+    },
+    {
+      "id": "txn_bk_202602_cafe_4",
+      "date": "2026-02-15",
+      "accountId": "account_card_main",
+      "categoryId": "category_cafe",
+      "amountMinor": 296200,
+      "currency": "RUB",
+      "note": "Ужин с друзьями"
+    },
+    {
+      "id": "txn_bk_202602_fun_10",
+      "date": "2026-02-15",
+      "accountId": "account_card_main",
+      "categoryId": "category_fun",
+      "amountMinor": 207700,
+      "currency": "RUB",
+      "note": "Концерт"
+    },
+    {
+      "id": "txn_bk_202602_tp_7",
+      "date": "2026-02-15",
+      "accountId": "account_card_main",
+      "categoryId": "category_transport",
+      "amountMinor": 100700,
+      "currency": "RUB",
+      "note": "Электричка"
+    },
+    {
+      "id": "txn_bk_202602_med_12",
+      "date": "2026-02-17",
+      "accountId": "account_cash",
+      "categoryId": "category_health",
+      "amountMinor": 786000,
+      "currency": "RUB",
+      "note": "Аптека"
+    },
+    {
+      "id": "txn_bk_202602_trv_13",
+      "date": "2026-02-17",
+      "accountId": "account_eur",
+      "categoryId": "category_travel",
+      "amountMinor": 20099,
+      "currency": "EUR",
+      "note": "Экскурсия"
+    },
+    {
+      "id": "txn_bk_202602_fun_9",
+      "date": "2026-02-20",
+      "accountId": "account_card_main",
+      "categoryId": "category_fun",
+      "amountMinor": 197700,
+      "currency": "RUB",
+      "note": "Концерт"
+    },
+    {
+      "id": "txn_bk_202603_food_1",
+      "date": "2026-03-01",
+      "accountId": "account_card_main",
+      "categoryId": "category_food",
+      "amountMinor": 410800,
+      "currency": "RUB",
+      "note": "Продукты на неделю"
+    },
+    {
+      "id": "txn_bk_202603_food_0",
+      "date": "2026-03-10",
+      "accountId": "account_card_main",
+      "categoryId": "category_food",
+      "amountMinor": 364200,
+      "currency": "RUB",
+      "note": "Рынок"
+    },
+    {
+      "id": "txn_bk_202603_home_8",
+      "date": "2026-03-10",
+      "accountId": "account_card_main",
+      "categoryId": "category_home",
+      "amountMinor": 512700,
+      "currency": "RUB",
+      "note": "Интернет"
+    },
+    {
+      "id": "txn_bk_202603_cafe_3",
+      "date": "2026-03-12",
+      "accountId": "account_card_main",
+      "categoryId": "category_cafe",
+      "amountMinor": 186300,
+      "currency": "RUB",
+      "note": "Обед"
+    },
+    {
+      "id": "txn_bk_202603_food_2",
+      "date": "2026-03-13",
+      "accountId": "account_card_main",
+      "categoryId": "category_food",
+      "amountMinor": 234200,
+      "currency": "RUB",
+      "note": "Супермаркет"
+    },
+    {
+      "id": "txn_bk_202603_sub_11",
+      "date": "2026-03-14",
+      "accountId": "account_usd",
+      "categoryId": "category_fun",
+      "amountMinor": 1599,
+      "currency": "USD",
+      "note": "Подписка"
+    },
+    {
+      "id": "txn_bk_202603_cafe_4",
+      "date": "2026-03-15",
+      "accountId": "account_card_main",
+      "categoryId": "category_cafe",
+      "amountMinor": 229000,
+      "currency": "RUB",
+      "note": "Кофе с собой"
+    },
+    {
+      "id": "txn_bk_202603_fun_9",
+      "date": "2026-03-17",
+      "accountId": "account_card_main",
+      "categoryId": "category_fun",
+      "amountMinor": 263900,
+      "currency": "RUB",
+      "note": "Кино"
+    },
+    {
+      "id": "txn_bk_202603_fun_10",
+      "date": "2026-03-18",
+      "accountId": "account_card_main",
+      "categoryId": "category_fun",
+      "amountMinor": 445500,
+      "currency": "RUB",
+      "note": "Кино"
+    },
+    {
+      "id": "txn_bk_202603_tp_5",
+      "date": "2026-03-19",
+      "accountId": "account_card_main",
+      "categoryId": "category_transport",
+      "amountMinor": 101100,
+      "currency": "RUB",
+      "note": "Электричка"
+    },
+    {
+      "id": "txn_bk_202603_trv_12",
+      "date": "2026-03-20",
+      "accountId": "account_eur",
+      "categoryId": "category_travel",
+      "amountMinor": 34814,
+      "currency": "EUR",
+      "note": "Экскурсия"
+    },
+    {
+      "id": "txn_bk_202603_tp_6",
+      "date": "2026-03-23",
+      "accountId": "account_card_main",
+      "categoryId": "category_transport",
+      "amountMinor": 43400,
+      "currency": "RUB",
+      "note": "Каршеринг"
+    },
+    {
+      "id": "txn_bk_202603_tp_7",
+      "date": "2026-03-27",
+      "accountId": "account_card_main",
+      "categoryId": "category_transport",
+      "amountMinor": 33200,
+      "currency": "RUB",
+      "note": "Такси"
+    },
+    {
+      "id": "txn_bk_202604_tp_8",
+      "date": "2026-04-07",
+      "accountId": "account_card_main",
+      "categoryId": "category_transport",
+      "amountMinor": 95600,
+      "currency": "RUB",
+      "note": "Такси"
+    },
+    {
+      "id": "txn_bk_202604_home_9",
+      "date": "2026-04-10",
+      "accountId": "account_card_main",
+      "categoryId": "category_home",
+      "amountMinor": 498800,
+      "currency": "RUB",
+      "note": "Мелкий ремонт"
+    },
+    {
+      "id": "txn_bk_202604_med_12",
+      "date": "2026-04-12",
+      "accountId": "account_cash",
+      "categoryId": "category_health",
+      "amountMinor": 782400,
+      "currency": "RUB",
+      "note": "Анализы"
+    },
+    {
+      "id": "txn_bk_202604_tp_7",
+      "date": "2026-04-12",
+      "accountId": "account_card_main",
+      "categoryId": "category_transport",
+      "amountMinor": 52300,
+      "currency": "RUB",
+      "note": "Каршеринг"
+    },
+    {
+      "id": "txn_bk_202604_cafe_5",
+      "date": "2026-04-14",
+      "accountId": "account_card_main",
+      "categoryId": "category_cafe",
+      "amountMinor": 183700,
+      "currency": "RUB",
+      "note": "Бизнес-ланч"
+    },
+    {
+      "id": "txn_bk_202604_sub_11",
+      "date": "2026-04-14",
+      "accountId": "account_usd",
+      "categoryId": "category_fun",
+      "amountMinor": 1599,
+      "currency": "USD",
+      "note": "Подписка"
+    },
+    {
+      "id": "txn_bk_202604_food_1",
+      "date": "2026-04-15",
+      "accountId": "account_card_main",
+      "categoryId": "category_food",
+      "amountMinor": 302900,
+      "currency": "RUB",
+      "note": "Магазин у дома"
+    },
+    {
+      "id": "txn_bk_202604_food_4",
+      "date": "2026-04-18",
+      "accountId": "account_card_main",
+      "categoryId": "category_food",
+      "amountMinor": 150900,
+      "currency": "RUB",
+      "note": "Супермаркет"
+    },
+    {
+      "id": "txn_bk_202604_food_3",
+      "date": "2026-04-22",
+      "accountId": "account_card_main",
+      "categoryId": "category_food",
+      "amountMinor": 295100,
+      "currency": "RUB",
+      "note": "Продукты на неделю"
+    },
+    {
+      "id": "txn_bk_202604_food_0",
+      "date": "2026-04-23",
+      "accountId": "account_card_main",
+      "categoryId": "category_food",
+      "amountMinor": 396400,
+      "currency": "RUB",
+      "note": "Рынок"
+    },
+    {
+      "id": "txn_bk_202604_food_2",
+      "date": "2026-04-24",
+      "accountId": "account_card_main",
+      "categoryId": "category_food",
+      "amountMinor": 260800,
+      "currency": "RUB",
+      "note": "Продукты на неделю"
+    },
+    {
+      "id": "txn_bk_202604_cafe_6",
+      "date": "2026-04-25",
+      "accountId": "account_card_main",
+      "categoryId": "category_cafe",
+      "amountMinor": 290600,
+      "currency": "RUB",
+      "note": "Ужин с друзьями"
+    },
+    {
+      "id": "txn_bk_202604_fun_10",
+      "date": "2026-04-27",
+      "accountId": "account_card_main",
+      "categoryId": "category_fun",
+      "amountMinor": 173500,
+      "currency": "RUB",
+      "note": "Игра"
+    },
+    {
+      "id": "txn_bk_202605_tp_7",
+      "date": "2026-05-05",
+      "accountId": "account_card_main",
+      "categoryId": "category_transport",
+      "amountMinor": 141200,
+      "currency": "RUB",
+      "note": "Каршеринг"
+    },
+    {
+      "id": "txn_bk_202605_cafe_3",
+      "date": "2026-05-06",
+      "accountId": "account_card_main",
+      "categoryId": "category_cafe",
+      "amountMinor": 110800,
+      "currency": "RUB",
+      "note": "Кофе с собой"
+    },
+    {
+      "id": "txn_bk_202605_cafe_4",
+      "date": "2026-05-08",
+      "accountId": "account_card_main",
+      "categoryId": "category_cafe",
+      "amountMinor": 236900,
+      "currency": "RUB",
+      "note": "Кофе с собой"
+    },
+    {
+      "id": "txn_bk_202605_food_0",
+      "date": "2026-05-10",
+      "accountId": "account_card_main",
+      "categoryId": "category_food",
+      "amountMinor": 213200,
+      "currency": "RUB",
+      "note": "Супермаркет"
+    },
+    {
+      "id": "txn_bk_202605_home_9",
+      "date": "2026-05-10",
+      "accountId": "account_card_main",
+      "categoryId": "category_home",
+      "amountMinor": 595900,
+      "currency": "RUB",
+      "note": "Хозтовары"
+    },
+    {
+      "id": "txn_bk_202605_food_2",
+      "date": "2026-05-13",
+      "accountId": "account_card_main",
+      "categoryId": "category_food",
+      "amountMinor": 365500,
+      "currency": "RUB",
+      "note": "Рынок"
+    },
+    {
+      "id": "txn_bk_202605_sub_12",
+      "date": "2026-05-14",
+      "accountId": "account_usd",
+      "categoryId": "category_fun",
+      "amountMinor": 1599,
+      "currency": "USD",
+      "note": "Подписка"
+    },
+    {
+      "id": "txn_bk_202605_fun_11",
+      "date": "2026-05-17",
+      "accountId": "account_card_main",
+      "categoryId": "category_fun",
+      "amountMinor": 246000,
+      "currency": "RUB",
+      "note": "Концерт"
+    },
+    {
+      "id": "txn_bk_202605_trv_13",
+      "date": "2026-05-18",
+      "accountId": "account_eur",
+      "categoryId": "category_travel",
+      "amountMinor": 25608,
+      "currency": "EUR",
+      "note": "Билеты"
+    },
+    {
+      "id": "txn_bk_202605_tp_6",
+      "date": "2026-05-21",
+      "accountId": "account_card_main",
+      "categoryId": "category_transport",
+      "amountMinor": 57100,
+      "currency": "RUB",
+      "note": "Каршеринг"
+    },
+    {
+      "id": "txn_bk_202605_tp_5",
+      "date": "2026-05-22",
+      "accountId": "account_card_main",
+      "categoryId": "category_transport",
+      "amountMinor": 116400,
+      "currency": "RUB",
+      "note": "Проездной"
+    },
+    {
+      "id": "txn_bk_202605_food_1",
+      "date": "2026-05-23",
+      "accountId": "account_card_main",
+      "categoryId": "category_food",
+      "amountMinor": 446900,
+      "currency": "RUB",
+      "note": "Продукты на неделю"
+    },
+    {
+      "id": "txn_bk_202605_fun_10",
+      "date": "2026-05-24",
+      "accountId": "account_card_main",
+      "categoryId": "category_fun",
+      "amountMinor": 399500,
+      "currency": "RUB",
+      "note": "Кино"
+    },
+    {
+      "id": "txn_bk_202605_tp_8",
+      "date": "2026-05-24",
+      "accountId": "account_card_main",
+      "categoryId": "category_transport",
+      "amountMinor": 45600,
+      "currency": "RUB",
+      "note": "Электричка"
+    },
+    {
+      "id": "txn_bk_202606_tp_6",
+      "date": "2026-06-09",
+      "accountId": "account_card_main",
+      "categoryId": "category_transport",
+      "amountMinor": 98600,
+      "currency": "RUB",
+      "note": "Электричка"
+    },
+    {
+      "id": "txn_bk_202606_home_10",
+      "date": "2026-06-10",
+      "accountId": "account_card_main",
+      "categoryId": "category_home",
+      "amountMinor": 586800,
+      "currency": "RUB",
+      "note": "Коммуналка"
+    },
+    {
+      "id": "txn_bk_202606_food_1",
+      "date": "2026-06-12",
+      "accountId": "account_card_main",
+      "categoryId": "category_food",
+      "amountMinor": 352600,
+      "currency": "RUB",
+      "note": "Супермаркет"
+    },
+    {
+      "id": "txn_bk_202606_med_14",
+      "date": "2026-06-12",
+      "accountId": "account_cash",
+      "categoryId": "category_health",
+      "amountMinor": 719200,
+      "currency": "RUB",
+      "note": "Оптика"
+    },
+    {
+      "id": "txn_bk_202606_tp_7",
+      "date": "2026-06-13",
+      "accountId": "account_card_main",
+      "categoryId": "category_transport",
+      "amountMinor": 36100,
+      "currency": "RUB",
+      "note": "Проездной"
+    },
+    {
+      "id": "txn_bk_202606_tp_9",
+      "date": "2026-06-13",
+      "accountId": "account_card_main",
+      "categoryId": "category_transport",
+      "amountMinor": 39600,
+      "currency": "RUB",
+      "note": "Проездной"
+    },
+    {
+      "id": "txn_bk_202606_sub_13",
+      "date": "2026-06-14",
+      "accountId": "account_usd",
+      "categoryId": "category_fun",
+      "amountMinor": 1599,
+      "currency": "USD",
+      "note": "Подписка"
+    },
+    {
+      "id": "txn_bk_202606_cafe_4",
+      "date": "2026-06-15",
+      "accountId": "account_card_main",
+      "categoryId": "category_cafe",
+      "amountMinor": 119300,
+      "currency": "RUB",
+      "note": "Ужин с друзьями"
+    },
+    {
+      "id": "txn_bk_202606_cafe_5",
+      "date": "2026-06-16",
+      "accountId": "account_card_main",
+      "categoryId": "category_cafe",
+      "amountMinor": 262800,
+      "currency": "RUB",
+      "note": "Бизнес-ланч"
+    },
+    {
+      "id": "txn_bk_202606_fun_12",
+      "date": "2026-06-18",
+      "accountId": "account_card_main",
+      "categoryId": "category_fun",
+      "amountMinor": 231300,
+      "currency": "RUB",
+      "note": "Кино"
+    },
+    {
+      "id": "txn_bk_202606_food_2",
+      "date": "2026-06-20",
+      "accountId": "account_card_main",
+      "categoryId": "category_food",
+      "amountMinor": 322500,
+      "currency": "RUB",
+      "note": "Супермаркет"
+    },
+    {
+      "id": "txn_bk_202606_food_0",
+      "date": "2026-06-21",
+      "accountId": "account_card_main",
+      "categoryId": "category_food",
+      "amountMinor": 178400,
+      "currency": "RUB",
+      "note": "Супермаркет"
+    },
+    {
+      "id": "txn_bk_202606_fun_11",
+      "date": "2026-06-24",
+      "accountId": "account_card_main",
+      "categoryId": "category_fun",
+      "amountMinor": 274000,
+      "currency": "RUB",
+      "note": "Игра"
+    },
+    {
+      "id": "txn_bk_202606_cafe_3",
+      "date": "2026-06-28",
+      "accountId": "account_card_main",
+      "categoryId": "category_cafe",
+      "amountMinor": 184100,
+      "currency": "RUB",
+      "note": "Ужин с друзьями"
+    },
+    {
+      "id": "txn_bk_202606_tp_8",
+      "date": "2026-06-28",
+      "accountId": "account_card_main",
+      "categoryId": "category_transport",
+      "amountMinor": 54800,
+      "currency": "RUB",
+      "note": "Проездной"
+    },
+    {
+      "id": "txn_seed_01",
+      "date": "2026-07-04",
+      "accountId": "account_card_main",
+      "categoryId": "category_food",
+      "amountMinor": 184320,
+      "currency": "RUB",
+      "note": "Супермаркет"
+    },
+    {
+      "id": "txn_seed_02",
+      "date": "2026-07-11",
+      "accountId": "account_card_main",
+      "categoryId": "category_cafe",
+      "amountMinor": 129000,
+      "currency": "RUB",
+      "note": "Обед"
+    },
+    {
+      "id": "txn_seed_03",
+      "date": "2026-07-18",
+      "accountId": "account_cash",
+      "categoryId": "category_transport",
+      "amountMinor": 6000,
+      "currency": "RUB",
+      "note": "Проездной"
+    },
+    {
+      "id": "txn_seed_04",
+      "date": "2026-07-25",
+      "accountId": "account_card_main",
+      "categoryId": "category_home",
+      "amountMinor": 450000,
+      "currency": "RUB",
+      "note": "Коммуналка"
+    },
+    {
+      "id": "txn_seed_05",
+      "date": "2026-08-02",
+      "accountId": "account_card_main",
+      "categoryId": "category_food",
+      "amountMinor": 211575,
+      "currency": "RUB",
+      "note": "Супермаркет"
+    },
+    {
+      "id": "txn_seed_06",
+      "date": "2026-08-09",
+      "accountId": "account_card_main",
+      "categoryId": "category_fun",
+      "amountMinor": 180000,
+      "currency": "RUB",
+      "note": "Кино"
+    },
+    {
+      "id": "txn_seed_07",
+      "date": "2026-08-14",
+      "accountId": "account_usd",
+      "categoryId": "category_fun",
+      "amountMinor": 1599,
+      "currency": "USD",
+      "note": "Подписка"
+    },
+    {
+      "id": "txn_seed_08",
+      "date": "2026-08-16",
+      "accountId": "account_cash",
+      "categoryId": "category_health",
+      "amountMinor": 234000,
+      "currency": "RUB",
+      "note": "Аптека"
+    },
+    {
+      "id": "txn_seed_09",
+      "date": "2026-08-23",
+      "accountId": "account_card_main",
+      "categoryId": "category_cafe",
+      "amountMinor": 215000,
+      "currency": "RUB",
+      "note": "Ужин с друзьями"
+    },
+    {
+      "id": "txn_seed_10",
+      "date": "2026-09-01",
+      "accountId": "account_card_main",
+      "categoryId": "category_food",
+      "amountMinor": 198740,
+      "currency": "RUB",
+      "note": "Супермаркет"
+    },
+    {
+      "id": "txn_seed_11",
+      "date": "2026-09-05",
+      "accountId": "account_eur",
+      "categoryId": "category_travel",
+      "amountMinor": 8500,
+      "currency": "EUR",
+      "note": "Бронь отеля"
+    },
+    {
+      "id": "txn_seed_12",
+      "date": "2026-09-06",
+      "accountId": "account_card_main",
+      "categoryId": "category_transport",
+      "amountMinor": 75000,
+      "currency": "RUB",
+      "note": "Такси"
+    },
+    {
+      "id": "txn_seed_13",
+      "date": "2026-09-08",
+      "accountId": "account_cash",
+      "categoryId": "category_uncategorized",
+      "amountMinor": 50000,
+      "currency": "RUB",
+      "note": "Пока не разобрано"
+    },
+    {
+      "id": "txn_seed_14",
+      "date": "2026-09-10",
+      "accountId": "account_card_main",
+      "categoryId": "category_health",
+      "amountMinor": 320000,
+      "currency": "RUB",
+      "note": "Стоматолог"
+    },
+    {
+      "id": "txn_seed_15",
+      "date": "2026-09-12",
+      "accountId": "account_card_main",
+      "categoryId": "category_food",
+      "amountMinor": 125050,
+      "currency": "RUB",
+      "note": "Магазин у дома"
+    },
+    {
+      "id": "txn_seed_16",
+      "date": "2026-09-14",
+      "accountId": "account_usd",
+      "categoryId": "category_fun",
+      "amountMinor": 999,
+      "currency": "USD",
+      "note": "Игра"
+    }
   ],
   "transfers": [
-    { "id": "txn_seed_t1", "date": "2026-08-05", "fromAccountId": "account_card_main", "toAccountId": "account_cash", "fromAmountMinor": 2000000, "toAmountMinor": 2000000, "currency": "RUB", "note": "Снятие наличных" },
-    { "id": "txn_seed_t2", "date": "2026-09-07", "fromAccountId": "account_card_main", "toAccountId": "account_cash", "fromAmountMinor": 1000000, "toAmountMinor": 990000, "currency": "RUB", "note": "Банкомат с комиссией" }
+    {
+      "id": "txn_bk_t_202410",
+      "date": "2024-10-05",
+      "fromAccountId": "account_card_main",
+      "toAccountId": "account_cash",
+      "fromAmountMinor": 2100000,
+      "toAmountMinor": 2100000,
+      "currency": "RUB",
+      "note": "На наличные расходы"
+    },
+    {
+      "id": "txn_bk_t_202411",
+      "date": "2024-11-05",
+      "fromAccountId": "account_card_main",
+      "toAccountId": "account_cash",
+      "fromAmountMinor": 1800000,
+      "toAmountMinor": 1800000,
+      "currency": "RUB",
+      "note": "На наличные расходы"
+    },
+    {
+      "id": "txn_bk_t_202412",
+      "date": "2024-12-05",
+      "fromAccountId": "account_card_main",
+      "toAccountId": "account_cash",
+      "fromAmountMinor": 2500000,
+      "toAmountMinor": 2500000,
+      "currency": "RUB",
+      "note": "На наличные расходы"
+    },
+    {
+      "id": "txn_bk_t_202501",
+      "date": "2025-01-05",
+      "fromAccountId": "account_card_main",
+      "toAccountId": "account_cash",
+      "fromAmountMinor": 2000000,
+      "toAmountMinor": 2000000,
+      "currency": "RUB",
+      "note": "На наличные расходы"
+    },
+    {
+      "id": "txn_bk_t_202502",
+      "date": "2025-02-05",
+      "fromAccountId": "account_card_main",
+      "toAccountId": "account_cash",
+      "fromAmountMinor": 2200000,
+      "toAmountMinor": 2200000,
+      "currency": "RUB",
+      "note": "На наличные расходы"
+    },
+    {
+      "id": "txn_bk_t_202503",
+      "date": "2025-03-05",
+      "fromAccountId": "account_card_main",
+      "toAccountId": "account_cash",
+      "fromAmountMinor": 1800000,
+      "toAmountMinor": 1800000,
+      "currency": "RUB",
+      "note": "На наличные расходы"
+    },
+    {
+      "id": "txn_bk_t_202504",
+      "date": "2025-04-05",
+      "fromAccountId": "account_card_main",
+      "toAccountId": "account_cash",
+      "fromAmountMinor": 1700000,
+      "toAmountMinor": 1700000,
+      "currency": "RUB",
+      "note": "На наличные расходы"
+    },
+    {
+      "id": "txn_bk_t_202505",
+      "date": "2025-05-05",
+      "fromAccountId": "account_card_main",
+      "toAccountId": "account_cash",
+      "fromAmountMinor": 1900000,
+      "toAmountMinor": 1900000,
+      "currency": "RUB",
+      "note": "На наличные расходы"
+    },
+    {
+      "id": "txn_bk_t_202506",
+      "date": "2025-06-05",
+      "fromAccountId": "account_card_main",
+      "toAccountId": "account_cash",
+      "fromAmountMinor": 1800000,
+      "toAmountMinor": 1800000,
+      "currency": "RUB",
+      "note": "На наличные расходы"
+    },
+    {
+      "id": "txn_bk_t_202507",
+      "date": "2025-07-05",
+      "fromAccountId": "account_card_main",
+      "toAccountId": "account_cash",
+      "fromAmountMinor": 2100000,
+      "toAmountMinor": 2100000,
+      "currency": "RUB",
+      "note": "На наличные расходы"
+    },
+    {
+      "id": "txn_bk_t_202508",
+      "date": "2025-08-05",
+      "fromAccountId": "account_card_main",
+      "toAccountId": "account_cash",
+      "fromAmountMinor": 2300000,
+      "toAmountMinor": 2300000,
+      "currency": "RUB",
+      "note": "На наличные расходы"
+    },
+    {
+      "id": "txn_bk_t_202509",
+      "date": "2025-09-05",
+      "fromAccountId": "account_card_main",
+      "toAccountId": "account_cash",
+      "fromAmountMinor": 2300000,
+      "toAmountMinor": 2300000,
+      "currency": "RUB",
+      "note": "На наличные расходы"
+    },
+    {
+      "id": "txn_bk_t_202510",
+      "date": "2025-10-05",
+      "fromAccountId": "account_card_main",
+      "toAccountId": "account_cash",
+      "fromAmountMinor": 2100000,
+      "toAmountMinor": 2100000,
+      "currency": "RUB",
+      "note": "На наличные расходы"
+    },
+    {
+      "id": "txn_bk_t_202511",
+      "date": "2025-11-05",
+      "fromAccountId": "account_card_main",
+      "toAccountId": "account_cash",
+      "fromAmountMinor": 2500000,
+      "toAmountMinor": 2500000,
+      "currency": "RUB",
+      "note": "На наличные расходы"
+    },
+    {
+      "id": "txn_bk_t_202512",
+      "date": "2025-12-05",
+      "fromAccountId": "account_card_main",
+      "toAccountId": "account_cash",
+      "fromAmountMinor": 1800000,
+      "toAmountMinor": 1800000,
+      "currency": "RUB",
+      "note": "На наличные расходы"
+    },
+    {
+      "id": "txn_bk_t_202601",
+      "date": "2026-01-05",
+      "fromAccountId": "account_card_main",
+      "toAccountId": "account_cash",
+      "fromAmountMinor": 2300000,
+      "toAmountMinor": 2300000,
+      "currency": "RUB",
+      "note": "На наличные расходы"
+    },
+    {
+      "id": "txn_bk_t_202602",
+      "date": "2026-02-05",
+      "fromAccountId": "account_card_main",
+      "toAccountId": "account_cash",
+      "fromAmountMinor": 2400000,
+      "toAmountMinor": 2400000,
+      "currency": "RUB",
+      "note": "На наличные расходы"
+    },
+    {
+      "id": "txn_bk_t_202603",
+      "date": "2026-03-05",
+      "fromAccountId": "account_card_main",
+      "toAccountId": "account_cash",
+      "fromAmountMinor": 1700000,
+      "toAmountMinor": 1700000,
+      "currency": "RUB",
+      "note": "На наличные расходы"
+    },
+    {
+      "id": "txn_bk_t_202604",
+      "date": "2026-04-05",
+      "fromAccountId": "account_card_main",
+      "toAccountId": "account_cash",
+      "fromAmountMinor": 2200000,
+      "toAmountMinor": 2200000,
+      "currency": "RUB",
+      "note": "На наличные расходы"
+    },
+    {
+      "id": "txn_bk_t_202605",
+      "date": "2026-05-05",
+      "fromAccountId": "account_card_main",
+      "toAccountId": "account_cash",
+      "fromAmountMinor": 1600000,
+      "toAmountMinor": 1600000,
+      "currency": "RUB",
+      "note": "На наличные расходы"
+    },
+    {
+      "id": "txn_bk_t_202606",
+      "date": "2026-06-05",
+      "fromAccountId": "account_card_main",
+      "toAccountId": "account_cash",
+      "fromAmountMinor": 1700000,
+      "toAmountMinor": 1700000,
+      "currency": "RUB",
+      "note": "На наличные расходы"
+    },
+    {
+      "id": "txn_seed_t1",
+      "date": "2026-08-05",
+      "fromAccountId": "account_card_main",
+      "toAccountId": "account_cash",
+      "fromAmountMinor": 2000000,
+      "toAmountMinor": 2000000,
+      "currency": "RUB",
+      "note": "Снятие наличных"
+    },
+    {
+      "id": "txn_seed_t2",
+      "date": "2026-09-07",
+      "fromAccountId": "account_card_main",
+      "toAccountId": "account_cash",
+      "fromAmountMinor": 1000000,
+      "toAmountMinor": 990000,
+      "currency": "RUB",
+      "note": "Банкомат с комиссией"
+    }
   ]
 }

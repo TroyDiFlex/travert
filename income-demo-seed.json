@@ -1,0 +1,538 @@
+{
+  "sources": [
+    {
+      "id": "demo_salary",
+      "name": "Основная работа",
+      "active": true,
+      "color": "#5ed9bc",
+      "order": 0
+    },
+    {
+      "id": "demo_freelance",
+      "name": "Фриланс",
+      "active": true,
+      "color": "#a78bfa",
+      "order": 1
+    },
+    {
+      "id": "demo_consult",
+      "name": "Консультации",
+      "active": true,
+      "color": "#f5bd72",
+      "order": 2
+    },
+    {
+      "id": "demo_digital",
+      "name": "Цифровые продукты",
+      "active": true,
+      "color": "#ec88bf",
+      "order": 3
+    },
+    {
+      "id": "demo_rent",
+      "name": "Аренда",
+      "active": true,
+      "color": "#79b8ff",
+      "order": 4
+    },
+    {
+      "id": "demo_other",
+      "name": "Прочее",
+      "active": false,
+      "color": "#d3d96c",
+      "order": 5
+    }
+  ],
+  "entries": [
+    {
+      "sourceId": "demo_consult",
+      "month": "2024-10",
+      "amount": 1460800
+    },
+    {
+      "sourceId": "demo_freelance",
+      "month": "2024-10",
+      "amount": 1532200
+    },
+    {
+      "sourceId": "demo_salary",
+      "month": "2024-10",
+      "amount": 12016300
+    },
+    {
+      "sourceId": "demo_consult",
+      "month": "2024-11",
+      "amount": 3637900
+    },
+    {
+      "sourceId": "demo_freelance",
+      "month": "2024-11",
+      "amount": 5683800
+    },
+    {
+      "sourceId": "demo_salary",
+      "month": "2024-11",
+      "amount": 11873500
+    },
+    {
+      "sourceId": "demo_freelance",
+      "month": "2024-12",
+      "amount": 1825800
+    },
+    {
+      "sourceId": "demo_salary",
+      "month": "2024-12",
+      "amount": 11832000
+    },
+    {
+      "sourceId": "demo_consult",
+      "month": "2025-01",
+      "amount": 2083700
+    },
+    {
+      "sourceId": "demo_freelance",
+      "month": "2025-01",
+      "amount": 4595200
+    },
+    {
+      "sourceId": "demo_other",
+      "month": "2025-01",
+      "amount": 800700
+    },
+    {
+      "sourceId": "demo_rent",
+      "month": "2025-01",
+      "amount": 3500000
+    },
+    {
+      "sourceId": "demo_salary",
+      "month": "2025-01",
+      "amount": 12166200
+    },
+    {
+      "sourceId": "demo_freelance",
+      "month": "2025-02",
+      "amount": 2635400
+    },
+    {
+      "sourceId": "demo_rent",
+      "month": "2025-02",
+      "amount": 3500000
+    },
+    {
+      "sourceId": "demo_salary",
+      "month": "2025-02",
+      "amount": 11948700
+    },
+    {
+      "sourceId": "demo_freelance",
+      "month": "2025-03",
+      "amount": 3609600
+    },
+    {
+      "sourceId": "demo_rent",
+      "month": "2025-03",
+      "amount": 3500000
+    },
+    {
+      "sourceId": "demo_salary",
+      "month": "2025-03",
+      "amount": 12064300
+    },
+    {
+      "sourceId": "demo_digital",
+      "month": "2025-04",
+      "amount": 901300
+    },
+    {
+      "sourceId": "demo_other",
+      "month": "2025-04",
+      "amount": 845000
+    },
+    {
+      "sourceId": "demo_rent",
+      "month": "2025-04",
+      "amount": 3500000
+    },
+    {
+      "sourceId": "demo_salary",
+      "month": "2025-04",
+      "amount": 12095700
+    },
+    {
+      "sourceId": "demo_digital",
+      "month": "2025-05",
+      "amount": 920500
+    },
+    {
+      "sourceId": "demo_freelance",
+      "month": "2025-05",
+      "amount": 3667300
+    },
+    {
+      "sourceId": "demo_rent",
+      "month": "2025-05",
+      "amount": 3500000
+    },
+    {
+      "sourceId": "demo_salary",
+      "month": "2025-05",
+      "amount": 11959900
+    },
+    {
+      "sourceId": "demo_digital",
+      "month": "2025-06",
+      "amount": 1137400
+    },
+    {
+      "sourceId": "demo_freelance",
+      "month": "2025-06",
+      "amount": 4927900
+    },
+    {
+      "sourceId": "demo_rent",
+      "month": "2025-06",
+      "amount": 3500000
+    },
+    {
+      "sourceId": "demo_salary",
+      "month": "2025-06",
+      "amount": 13684500
+    },
+    {
+      "sourceId": "demo_consult",
+      "month": "2025-07",
+      "amount": 1088600
+    },
+    {
+      "sourceId": "demo_freelance",
+      "month": "2025-07",
+      "amount": 3366900
+    },
+    {
+      "sourceId": "demo_rent",
+      "month": "2025-07",
+      "amount": 3500000
+    },
+    {
+      "sourceId": "demo_salary",
+      "month": "2025-07",
+      "amount": 13490500
+    },
+    {
+      "sourceId": "demo_digital",
+      "month": "2025-08",
+      "amount": 1275100
+    },
+    {
+      "sourceId": "demo_freelance",
+      "month": "2025-08",
+      "amount": 2915000
+    },
+    {
+      "sourceId": "demo_other",
+      "month": "2025-08",
+      "amount": 415600
+    },
+    {
+      "sourceId": "demo_rent",
+      "month": "2025-08",
+      "amount": 3500000
+    },
+    {
+      "sourceId": "demo_salary",
+      "month": "2025-08",
+      "amount": 13493400
+    },
+    {
+      "sourceId": "demo_consult",
+      "month": "2025-09",
+      "amount": 3972800
+    },
+    {
+      "sourceId": "demo_digital",
+      "month": "2025-09",
+      "amount": 1769200
+    },
+    {
+      "sourceId": "demo_freelance",
+      "month": "2025-09",
+      "amount": 5094100
+    },
+    {
+      "sourceId": "demo_rent",
+      "month": "2025-09",
+      "amount": 3500000
+    },
+    {
+      "sourceId": "demo_salary",
+      "month": "2025-09",
+      "amount": 13578300
+    },
+    {
+      "sourceId": "demo_consult",
+      "month": "2025-10",
+      "amount": 3850700
+    },
+    {
+      "sourceId": "demo_digital",
+      "month": "2025-10",
+      "amount": 1554800
+    },
+    {
+      "sourceId": "demo_rent",
+      "month": "2025-10",
+      "amount": 3500000
+    },
+    {
+      "sourceId": "demo_salary",
+      "month": "2025-10",
+      "amount": 13326300
+    },
+    {
+      "sourceId": "demo_consult",
+      "month": "2025-11",
+      "amount": 2763800
+    },
+    {
+      "sourceId": "demo_digital",
+      "month": "2025-11",
+      "amount": 1891700
+    },
+    {
+      "sourceId": "demo_freelance",
+      "month": "2025-11",
+      "amount": 4426100
+    },
+    {
+      "sourceId": "demo_rent",
+      "month": "2025-11",
+      "amount": 3500000
+    },
+    {
+      "sourceId": "demo_salary",
+      "month": "2025-11",
+      "amount": 13360000
+    },
+    {
+      "sourceId": "demo_digital",
+      "month": "2025-12",
+      "amount": 1982600
+    },
+    {
+      "sourceId": "demo_freelance",
+      "month": "2025-12",
+      "amount": 4938900
+    },
+    {
+      "sourceId": "demo_rent",
+      "month": "2025-12",
+      "amount": 3500000
+    },
+    {
+      "sourceId": "demo_salary",
+      "month": "2025-12",
+      "amount": 13501900
+    },
+    {
+      "sourceId": "demo_consult",
+      "month": "2026-01",
+      "amount": 1776000
+    },
+    {
+      "sourceId": "demo_digital",
+      "month": "2026-01",
+      "amount": 2252000
+    },
+    {
+      "sourceId": "demo_freelance",
+      "month": "2026-01",
+      "amount": 2322900
+    },
+    {
+      "sourceId": "demo_rent",
+      "month": "2026-01",
+      "amount": 3500000
+    },
+    {
+      "sourceId": "demo_salary",
+      "month": "2026-01",
+      "amount": 15005900
+    },
+    {
+      "sourceId": "demo_consult",
+      "month": "2026-02",
+      "amount": 1546400
+    },
+    {
+      "sourceId": "demo_digital",
+      "month": "2026-02",
+      "amount": 2364200
+    },
+    {
+      "sourceId": "demo_freelance",
+      "month": "2026-02",
+      "amount": 2811100
+    },
+    {
+      "sourceId": "demo_rent",
+      "month": "2026-02",
+      "amount": 0
+    },
+    {
+      "sourceId": "demo_salary",
+      "month": "2026-02",
+      "amount": 15023000
+    },
+    {
+      "sourceId": "demo_consult",
+      "month": "2026-03",
+      "amount": 2920700
+    },
+    {
+      "sourceId": "demo_digital",
+      "month": "2026-03",
+      "amount": 2390400
+    },
+    {
+      "sourceId": "demo_freelance",
+      "month": "2026-03",
+      "amount": 4221600
+    },
+    {
+      "sourceId": "demo_other",
+      "month": "2026-03",
+      "amount": 1180200
+    },
+    {
+      "sourceId": "demo_rent",
+      "month": "2026-03",
+      "amount": 3500000
+    },
+    {
+      "sourceId": "demo_salary",
+      "month": "2026-03",
+      "amount": 14856000
+    },
+    {
+      "sourceId": "demo_digital",
+      "month": "2026-04",
+      "amount": 2564200
+    },
+    {
+      "sourceId": "demo_freelance",
+      "month": "2026-04",
+      "amount": 3263000
+    },
+    {
+      "sourceId": "demo_rent",
+      "month": "2026-04",
+      "amount": 3500000
+    },
+    {
+      "sourceId": "demo_salary",
+      "month": "2026-04",
+      "amount": 14991100
+    },
+    {
+      "sourceId": "demo_digital",
+      "month": "2026-05",
+      "amount": 2766600
+    },
+    {
+      "sourceId": "demo_rent",
+      "month": "2026-05",
+      "amount": 3500000
+    },
+    {
+      "sourceId": "demo_salary",
+      "month": "2026-05",
+      "amount": 15111100
+    },
+    {
+      "sourceId": "demo_digital",
+      "month": "2026-06",
+      "amount": 2987800
+    },
+    {
+      "sourceId": "demo_other",
+      "month": "2026-06",
+      "amount": 1059700
+    },
+    {
+      "sourceId": "demo_rent",
+      "month": "2026-06",
+      "amount": 3500000
+    },
+    {
+      "sourceId": "demo_salary",
+      "month": "2026-06",
+      "amount": 15130500
+    },
+    {
+      "sourceId": "demo_digital",
+      "month": "2026-07",
+      "amount": 3091300
+    },
+    {
+      "sourceId": "demo_freelance",
+      "month": "2026-07",
+      "amount": 3537400
+    },
+    {
+      "sourceId": "demo_rent",
+      "month": "2026-07",
+      "amount": 3500000
+    },
+    {
+      "sourceId": "demo_salary",
+      "month": "2026-07",
+      "amount": 14939300
+    },
+    {
+      "sourceId": "demo_consult",
+      "month": "2026-08",
+      "amount": 1095000
+    },
+    {
+      "sourceId": "demo_digital",
+      "month": "2026-08",
+      "amount": 3304100
+    },
+    {
+      "sourceId": "demo_other",
+      "month": "2026-08",
+      "amount": 866900
+    },
+    {
+      "sourceId": "demo_rent",
+      "month": "2026-08",
+      "amount": 3500000
+    },
+    {
+      "sourceId": "demo_salary",
+      "month": "2026-08",
+      "amount": 14890400
+    },
+    {
+      "sourceId": "demo_digital",
+      "month": "2026-09",
+      "amount": 3243000
+    },
+    {
+      "sourceId": "demo_freelance",
+      "month": "2026-09",
+      "amount": 1842400
+    },
+    {
+      "sourceId": "demo_rent",
+      "month": "2026-09",
+      "amount": 3500000
+    },
+    {
+      "sourceId": "demo_salary",
+      "month": "2026-09",
+      "amount": 15166700
+    }
+  ]
+}
