@@ -76,10 +76,13 @@ test('expense entry is compact, title-first, category-aware and guarded against 
   const css=await readFile(new URL('../expenses.css',import.meta.url),'utf8');
   assert.match(html,/<input id="expense-name"[^>]*maxlength="120"/);
   assert.doesNotMatch(html,/<input id="expense-name"[^>]*required/);
+  assert.match(html,/<input id="expense-amount"[^>]*autofocus/);
   assert.ok(html.indexOf('id="expense-amount"') < html.indexOf('id="expense-category"'));
-  assert.ok(html.indexOf('id="expense-category"') < html.indexOf('id="expense-date"'));
+  assert.ok(html.indexOf('id="expense-category"') < html.indexOf('id="expense-name"'));
+  assert.ok(html.indexOf('id="expense-name"') < html.indexOf('id="expense-date"'));
   assert.ok(html.indexOf('id="expense-date"') < html.indexOf('id="expense-account"'));
-  assert.ok(html.indexOf('id="expense-account"') < html.indexOf('id="expense-name"'));
+  assert.match(html,/<link rel="stylesheet" href="expenses\.css\?v=2">/);
+  assert.match(html,/<script type="module" src="expenses-app\.js\?v=4"><\/script>/);
   assert.match(html,/id="expense-add-category"/);
   assert.match(html,/id="expense-edit-category"/);
   assert.match(html,/id="category-delete"/);

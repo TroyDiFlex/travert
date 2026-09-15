@@ -56,9 +56,11 @@
 .expense-category-field select { width: 100%; margin-top: 6px; }
 .expense-field-heading { display: flex; align-items: center; justify-content: space-between; gap: 10px; min-height: 18px; }
 .expense-field-heading > label { margin: 0; }
+.expense-label { display: flex; align-items: center; min-height: 28px; }
 .expense-category-actions { display: flex; align-items: center; gap: 3px; }
 .expense-category-actions .text-button { min-height: 28px; padding: 3px 6px; font-size: 11px; }
 .expense-category-field .expense-field-heading { min-height: 28px; }
+#expense-fields > label input, #expense-fields .expense-category-field select { margin-top: 6px; }
 .transfer-route { position: relative; display: grid; grid-template-columns: minmax(0, 1fr) 36px minmax(0, 1fr); gap: 10px; margin: 0; padding: 15px; border: 1px solid var(--line); border-radius: 14px; background: transparent; }
 .transfer-endpoint { min-width: 0; }
 .transfer-endpoint h3 { margin-bottom: 9px; color: var(--text); font-size: 12px; font-weight: 600; }
