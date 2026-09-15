@@ -55,6 +55,7 @@ function createMemoryFactory() {
 }
 
 test('demo seed file is internally consistent', () => {
+  assert.ok(CATEGORY_ICONS.length >= 150, 'каталог должен содержать минимум 150 локальных иконок');
   const iconIds = new Set(CATEGORY_ICONS.map((icon) => icon.id));
   const accounts = new Map(seed.accounts.map((account) => [account.id, account]));
   const categories = new Set(seed.categories.map((category) => category.id));

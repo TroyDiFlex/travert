@@ -32,6 +32,7 @@
 .icon-pick { display: grid; place-items: center; min-height: 46px; border: 1px solid var(--line); background: var(--bg); border-radius: 10px; }
 .icon-pick.selected { border-color: var(--accent); background: var(--accent-soft); color: var(--accent); }
 .icon-pick .icon { width: 20px; height: 20px; }
+.icon-picker-status { grid-column: 1 / -1; padding: 7px 2px 2px; color: var(--dim); font-size: 10px; }
 .reassign-list { display: grid; gap: 8px; margin-top: 12px; max-height: 260px; overflow-y: auto; }
 .reassign-row { display: flex; align-items: center; gap: 10px; font-size: 12px; }
 .reassign-row span:first-child { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
@@ -41,6 +42,22 @@
 .radio-card small { display: block; color: var(--muted); font-size: 11px; margin-top: 3px; }
 .exp-chart-bar { display: flex; align-items: center; justify-content: flex-end; gap: 12px; margin: 14px 0 2px; }
 #expense-type { width: fit-content; max-width: 100%; margin: 18px 0 4px; }
+.expense-dialog { max-width: 680px; padding: 23px 25px; overflow: auto; }
+.expense-dialog .dialog-heading { margin-bottom: 14px; }
+.expense-dialog #expense-type { margin: 10px 0 16px; }
+.expense-form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 13px 16px; }
+.expense-form-grid > label, .expense-category-field { min-width: 0; margin: 0; }
+.expense-form-grid > label input, .expense-form-grid > label select { margin-top: 6px; }
+.optional-label { color: var(--dim); font-size: 10px; }
+.expense-field-wide { grid-column: 1 / -1; }
+.expense-category-field select { width: 100%; margin-top: 6px; }
+.expense-field-heading { display: flex; align-items: center; justify-content: space-between; gap: 10px; min-height: 18px; }
+.expense-field-heading > label { margin: 0; }
+.expense-category-actions { display: flex; align-items: center; gap: 3px; }
+.expense-category-actions .text-button { min-height: 28px; padding: 3px 6px; font-size: 11px; }
+.expense-dialog .form-footer { margin-top: 18px; }
+.expense-dialog .help { margin: 0; }
+.category-form-actions { display: flex; gap: 10px; margin-left: auto; }
 .exp-breakdowns { margin-top: 18px; }
 .exp-breakdowns .glass { border-radius: 15px; }
 .expenses-empty { text-align: center; padding: 34px 16px; color: var(--muted); }
@@ -49,6 +66,11 @@
   .expenses-body { padding: 0 0 60px; }
   .expenses-card { padding: 18px 15px; }
   .expense-amount { font-size: 13px; }
+  .expense-dialog { padding: 20px 18px; }
+  .expense-form-grid { grid-template-columns: 1fr; gap: 12px; }
+  .expense-field-wide { grid-column: auto; }
+  .expense-category-field { grid-column: auto; }
+  .expense-dialog .form-footer { margin-top: 16px; }
   .reassign-row { flex-wrap: wrap; }
   .reassign-row select { max-width: none; width: 100%; }
 }

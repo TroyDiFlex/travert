@@ -52,7 +52,7 @@ test('entry view splits into expenses and income sections with deep links',async
   assert.match(html,/<div id="entries-pane-expenses"/);
   assert.match(html,/<div id="entries-pane-income" hidden>/);
   assert.match(html,/<section id="expenses-overview-view" hidden>/);
-  assert.match(html,/<dialog id="expense-dialog">/);
+  assert.match(html,/<dialog id="expense-dialog"[^>]*>/);
   const app=await readFile(new URL('../app.js',import.meta.url),'utf8');
   assert.match(app,/#entries\(\?:-\(expenses\|income\)\)\?\$/);
   assert.match(app,/setEntrySection\(entriesMatch\[1\]\|\|'expenses'\)/);
@@ -69,6 +69,19 @@ test('expense overview uses expense-specific metrics and stable donut order',asy
   assert.match(app,/idPrefix: 'expense-'/);
   const css=await readFile(new URL('../expenses.css',import.meta.url),'utf8');
   assert.match(css,/#exp-entry-tabs \{ justify-self: start; width: max-content;/);
+});
+
+test('expense entry is compact, title-first, category-aware and guarded against double submit',async()=>{
+  const app=await readFile(new URL('../expenses-app.js',import.meta.url),'utf8');
+  const css=await readFile(new URL('../expenses.css',import.meta.url),'utf8');
+  assert.match(html,/<input id="expense-name"[^>]*maxlength="120"/);
+  assert.doesNotMatch(html,/<input id="expense-name"[^>]*required/);
+  assert.match(html,/id="expense-add-category"/);
+  assert.match(html,/id="expense-edit-category"/);
+  assert.match(html,/id="category-delete"/);
+  assert.match(app,/const title = e\.note \|\| c\?\.name \|\| 'Расход'/);
+  assert.match(app,/if \(expenseSaving\) return;/);
+  assert.match(css,/\.expense-form-grid \{ display: grid; grid-template-columns: 1fr 1fr;/);
 });
 
 test('chart exposes the selected monthly values as an accessible table',async()=>{

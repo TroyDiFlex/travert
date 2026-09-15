@@ -15,8 +15,9 @@ import {
   updateTransferCommand,
 } from './finance/core/commands.js';
 import { formatMoney, parseMoney } from './finance/core/money.js';
-import { incomeChart, incomeSourceSeries, chartGeometry, lineRevealStarts } from './chart.js';
-import { monthLabel, summarize, incomeInsights, validMonth, currentMonth } from './model.js';
+import { chartGeometry, lineRevealStarts } from './chart.js';
+import { monthLabel, validMonth, currentMonth } from './model.js';
+import { expenseChart, expenseInsights, expenseSourceSeries } from './finance/expenses-overview.js';
 import { categoryIconSvg, getCategoryIcon, searchCategoryIcons } from './finance/icons.js';
 import { COLORS } from './model.js';
 
@@ -33,7 +34,8 @@ const repo = new FinanceRepository();
 let accounts = [], categories = [], expenses = [], transfers = [];
 let filters = { month: '', accountId: 'all', categoryId: 'all' };
 let categoryColor = COLORS[0], categoryIcon = 'local:circle';
-let removeTask = null, toastTimer = 0;
+let removeTask = null, toastTimer = 0, categoryReturnToExpense = false;
+let expenseInitialState = null;
 
 function toast(message) {
   $('toast').textContent = message;
@@ -44,8 +46,25 @@ function toast(message) {
 function fail(error) {
   return error?.field ? `${error.message}` : (error?.message || 'Не удалось сохранить.');
 }
-function closeDialog(dialog) { dialog.close(); }
+function expenseDraftState() {
+  const form = $('expense-form');
+  if (!form) return '';
+  return JSON.stringify([entryKind(), ...[...form.elements]
+    .filter((field) => field.id && field.type !== 'hidden' && field.type !== 'submit' && field.type !== 'button')
+    .map((field) => [field.id, field.value])]);
+}
+function expenseDraftDirty() {
+  return Boolean($('expense-dialog')?.open && expenseInitialState !== null && expenseDraftState() !== expenseInitialState);
+}
+function closeDialog(dialog) {
+  if (dialog === $('expense-dialog') && expenseDraftDirty() && !window.confirm('Есть несохранённые изменения. Закрыть без сохранения?')) return;
+  dialog.close();
+}
 document.querySelectorAll('.close-dialog').forEach((b) => b.addEventListener('click', () => closeDialog(b.closest('dialog'))));
+$('expense-dialog')?.addEventListener('cancel', (event) => {
+  if (expenseDraftDirty() && !window.confirm('Есть несохранённые изменения. Закрыть без сохранения?')) event.preventDefault();
+});
+window.addEventListener('beforeunload', (event) => { if (expenseDraftDirty() || expenseSaving) event.preventDefault(); });
 
 async function refresh() {
   const [a, c, e, t, pending] = await Promise.all([
@@ -196,12 +215,13 @@ function renderExpCategoryFilter() {
   if (!panel) return;
   const valid = new Set(['all', ...categories.map((c) => c.id)]);
   expCategoryFilter = expCategoryFilter.filter((id) => valid.has(id));
+  if (expCategoryFilter.includes('all') && expCategoryFilter.length > 1) expCategoryFilter = ['all'];
   if (!expCategoryFilter.length) expCategoryFilter = ['all'];
   const choices = [
     { id: 'all', name: 'Общий расход', color: 'var(--accent)', active: true },
     ...[...categories].sort((a, b) => a.sortOrder - b.sortOrder || a.name.localeCompare(b.name, 'ru')),
   ];
-  panel.innerHTML = choices.map((c) => `<label class="source-filter-option" style="--source-color:${esc(c.color)}"><input type="checkbox" data-exp-filter-category value="${esc(c.id)}"><span class="source-checkbox" aria-hidden="true"></span><span class="source-option-name">${esc(c.name)}${c.active ? '' : '<small>Неактивная</small>'}</span><i class="source-dot" style="background:${esc(c.color)}" aria-hidden="true"></i></label>`).join('');
+  panel.innerHTML = choices.map((c) => `<label class="source-filter-option" style="--source-color:${esc(c.color)}"><input type="checkbox" data-exp-filter-category value="${esc(c.id)}"><span class="source-checkbox" aria-hidden="true"></span><span class="source-option-name">${esc(c.name)}</span><i class="source-dot" style="background:${esc(c.color)}" aria-hidden="true"></i></label>`).join('');
   updateExpCategoryFilter();
 }
 
@@ -212,9 +232,9 @@ function updateExpCategoryFilter() {
   document.querySelectorAll('[data-exp-filter-category]').forEach((input) => { input.checked = expCategoryFilter.includes(input.value); });
   const all = $('exp-source-toggle-all');
   if (all) {
-    const complete = expCategoryFilter.length === categories.length + 1;
+    const complete = categories.length > 0 && expCategoryFilter.length === categories.length && !expCategoryFilter.includes('all');
     all.checked = complete;
-    all.indeterminate = expCategoryFilter.length > 0 && !complete;
+    all.indeterminate = !expCategoryFilter.includes('all') && expCategoryFilter.length > 0 && !complete;
   }
 }
 
@@ -259,7 +279,7 @@ function renderExpOverview(chartOptions) {
     b.classList.toggle('selected', selected);
     b.setAttribute('aria-pressed', String(selected));
   });
-  if ($('exp-overview-comparison-kicker')) $('exp-overview-comparison-kicker').textContent = expComparison === 'average' ? 'РАСХОД ЗА МЕСЯЦ С ЗАПИСЬЮ' : 'ВКЛАД В ОБЩИЙ РАСХОД';
+  if ($('exp-overview-comparison-kicker')) $('exp-overview-comparison-kicker').textContent = expComparison === 'average' ? 'СРЕДНИЙ РАСХОД ЗА МЕСЯЦ' : 'ВКЛАД В ОБЩИЙ РАСХОД';
 
   const data = expenseChartData(expCurrency);
   const [from, to] = expPeriodBounds();
@@ -275,9 +295,9 @@ function renderExpOverview(chartOptions) {
     }
     return model;
   };
-  const model = withNames(incomeChart(data, from, to, expCategoryFilter));
+  const model = withNames(expenseChart(data, from, to, expCategoryFilter));
   const s = model.summary;
-  const insights = incomeInsights(data, from, to, expCategoryFilter);
+  const insights = expenseInsights(data, s, expCategoryFilter);
 
   if ($('exp-hero-total')) {
     $('exp-hero-total').innerHTML = expCategoryFilter.length && s.observed.length
@@ -286,7 +306,7 @@ function renderExpOverview(chartOptions) {
   }
   if ($('exp-hero-caption')) {
     $('exp-hero-caption').textContent = s.observed.length
-      ? `${s.observed.length} мес. с записями · ${expCategoryLabel()}`
+      ? `${s.observed.length} мес. · ${expCategoryLabel()}`
       : 'Добавьте первый расход';
   }
 
@@ -455,7 +475,7 @@ function renderExpChart(data, model, { animate = true, newSourcesOnly = false } 
   const lineReveals = animate && expChartType !== 'bars' ? lineRevealStarts(model, previous, now) : new Map();
   const geometry = chartGeometry(model, expChartType, container.clientWidth, container.clientHeight, { animate, lineReveals, now, idPrefix: 'expense-' });
   const tooltipRows = expCategoryFilter.length === 1 && expCategoryFilter[0] === 'all'
-    ? incomeSourceSeries(data, from, to)
+    ? expenseSourceSeries(data, from, to)
     : expChartType === 'bars' ? model.bars : model.lines.filter((ser) => ser.id !== 'all');
   container.innerHTML = `${geometry.svg}<div id="exp-overview-tooltip" class="tooltip" hidden></div>`;
   expChart = { ...geometry, s, model, type: expChartType, lineReveals, tooltipRows };
@@ -543,8 +563,9 @@ function renderExpenses() {
     }
     const e = row.item;
     const a = accountById(e.accountId), c = categoryById(e.categoryId);
+    const title = e.note || c?.name || 'Расход';
     return `<div class="expense-row"><span class="cat-icon category-chip" style="padding:0;border:0;background:none"><span class="cat-icon" style="background:${esc(c?.color || '#666')}">${categoryIconSvg(c?.iconId || 'local:circle')}</span></span>`
-      + `<div class="expense-info"><b>${esc(c?.name || 'Удалённая категория')}</b><small>${esc(prettyDate(e.date))} · ${esc(a?.name || 'Удалённый счёт')}${e.note ? ' · ' + esc(e.note) : ''}</small></div>`
+      + `<div class="expense-info"><b>${esc(title)}</b><small>${esc(prettyDate(e.date))} · ${esc(a?.name || 'Удалённый счёт')} · ${esc(c?.name || 'Удалённая категория')}</small></div>`
       + `<span class="expense-amount">${esc(formatMoney(e.amountMinor, e.currency))}</span>`
       + `<div class="row-actions"><button class="icon-button" type="button" data-edit-expense="${esc(e.id)}" aria-label="Изменить">${ico('dots')}</button>`
       + `<button class="icon-button" type="button" data-del-expense="${esc(e.id)}" aria-label="Удалить">${ico('trash')}</button></div></div>`;
@@ -594,13 +615,19 @@ function renderColorOptions() {
 function renderIconPicker() {
   const q = $('icon-search').value;
   const found = searchCategoryIcons(q);
-  $('icon-picker').innerHTML = found.length
-    ? found.map((icon) => `<button type="button" class="icon-pick ${icon.id === categoryIcon ? 'selected' : ''}" data-icon="${esc(icon.id)}" title="${esc(icon.name)}" aria-label="${esc(icon.name)}" aria-pressed="${icon.id === categoryIcon}">${categoryIconSvg(icon.id)}</button>`).join('')
+  const selected = found.find((icon) => icon.id === categoryIcon);
+  const visible = q.trim()
+    ? found.slice(0, 72)
+    : [selected, ...found].filter((icon, index, all) => icon && all.findIndex((item) => item?.id === icon.id) === index).slice(0, 48);
+  $('icon-picker').innerHTML = visible.length
+    ? visible.map((icon) => `<button type="button" class="icon-pick ${icon.id === categoryIcon ? 'selected' : ''}" data-icon="${esc(icon.id)}" title="${esc(icon.name)}" aria-label="${esc(icon.name)}" aria-pressed="${icon.id === categoryIcon}">${categoryIconSvg(icon.id)}</button>`).join('')
+      + `<span class="icon-picker-status">${q.trim() ? `Найдено: ${found.length}` : `Популярные · всего ${found.length}`}</span>`
     : `<span class="muted">Ничего не найдено.</span>`;
   $('icon-picker').querySelectorAll('[data-icon]').forEach((b) => b.addEventListener('click', () => { categoryIcon = b.dataset.icon; renderIconPicker(); }));
 }
-function openCategory(id) {
+function openCategory(id, { returnToExpense = false } = {}) {
   const c = id ? categoryById(id) : null;
+  categoryReturnToExpense = returnToExpense;
   $('category-title').textContent = c ? 'Настроить категорию' : 'Новая категория';
   $('category-id').value = c?.id || '';
   $('category-name').value = c?.name || '';
@@ -608,12 +635,22 @@ function openCategory(id) {
   categoryIcon = c?.iconId || 'local:circle';
   $('icon-search').value = '';
   $('category-error').textContent = '';
+  $('category-delete').hidden = !c || c.system;
   renderColorOptions();
   renderIconPicker();
   $('category-dialog').showModal();
   setTimeout(() => $('category-name').focus(), 0);
 }
 $('add-category').addEventListener('click', () => openCategory());
+$('category-dialog').addEventListener('close', () => { categoryReturnToExpense = false; });
+$('category-delete').addEventListener('click', () => {
+  const id = $('category-id').value;
+  if (!id) return;
+  const returnToExpense = categoryReturnToExpense;
+  $('category-dialog').close();
+  categoryReturnToExpense = returnToExpense;
+  askRemoveCategory(id);
+});
 $('category-colors').addEventListener('click', (e) => {
   const b = e.target.closest('[data-color]');
   if (b) { categoryColor = b.dataset.color; renderColorOptions(); }
@@ -633,8 +670,14 @@ $('category-form').addEventListener('submit', async (e) => {
       const maxOrder = categories.reduce((m, c) => Math.max(m, c.sortOrder || 0), 0);
       await repo.dispatch(createCategoryCommand({ name, color: categoryColor, iconId: icon.id, sortOrder: maxOrder + 10 }, { entityId: id }));
     }
+    const returnToExpense = categoryReturnToExpense;
     $('category-dialog').close();
     await refresh();
+    if (returnToExpense && $('expense-dialog').open) {
+      expenseSelects($('expense-account').value, id);
+      $('expense-category').value = id;
+      updateExpenseCategoryActions();
+    }
     toast('Категория сохранена');
   } catch (err) { $('category-error').textContent = fail(err); }
 });
@@ -646,10 +689,15 @@ function expenseSelects(selectedAccount, selectedCategory) {
   if (selectedAccount) $('expense-account').value = selectedAccount;
   if (selectedCategory) $('expense-category').value = selectedCategory;
   updateCurrencyHint();
+  updateExpenseCategoryActions();
 }
 function updateCurrencyHint() {
   const a = accountById($('expense-account').value);
-  $('expense-currency-hint').textContent = a ? `Сумма в валюте счёта: ${a.currency}.` : '';
+  $('expense-currency-label').textContent = a ? `· ${a.currency}` : '';
+}
+function updateExpenseCategoryActions() {
+  const category = categoryById($('expense-category').value);
+  $('expense-edit-category').disabled = !category;
 }
 function openExpense(id) {
   if (!accounts.length || !categories.length) { toast('Сначала создайте счёт и категорию.'); return; }
@@ -662,11 +710,13 @@ function openExpense(id) {
   $('expense-date').value = e?.date || todayIso();
   const current = e ? accountById(e.accountId) : accountById($('expense-account').value);
   $('expense-amount').value = e && current ? (e.amountMinor / 100).toString().replace('.', ',') : '';
-  $('expense-note').value = e?.note || '';
+  $('expense-name').value = e?.note || '';
   $('expense-error').textContent = '';
   updateCurrencyHint();
+  updateExpenseCategoryActions();
+  expenseInitialState = expenseDraftState();
   $('expense-dialog').showModal();
-  setTimeout(() => $('expense-amount').focus(), 0);
+  setTimeout(() => $('expense-name').focus(), 0);
 }
 function setEntryKind(kind) {
   document.querySelectorAll('#expense-type [data-expense-type]').forEach((b) => {
@@ -744,45 +794,63 @@ function openTransfer(id) {
   $('expense-title').textContent = t ? 'Изменить перевод' : 'Новый перевод';
   $('expense-id').value = t?.id || '';
   fillTransferForm(t);
+  expenseInitialState = expenseDraftState();
   $('expense-dialog').showModal();
   setTimeout(() => $('transfer-from-amount').focus(), 0);
 }
 $('add-expense').addEventListener('click', () => openExpense());
 $('expense-account').addEventListener('change', updateCurrencyHint);
+$('expense-category').addEventListener('change', updateExpenseCategoryActions);
+$('expense-add-category').addEventListener('click', () => openCategory(null, { returnToExpense: true }));
+$('expense-edit-category').addEventListener('click', () => {
+  const id = $('expense-category').value;
+  if (id) openCategory(id, { returnToExpense: true });
+});
+let expenseSaving = false;
 $('expense-form').addEventListener('submit', async (e) => {
   e.preventDefault();
-  if (entryKind() === 'transfer') { await submitTransfer(e); return; }
-  $('expense-error').textContent = '';
-  const account = accountById($('expense-account').value);
-  const category = categoryById($('expense-category').value);
-  const date = $('expense-date').value;
-  if (!account || !category) { $('expense-error').textContent = 'Выберите счёт и категорию.'; return; }
-  let amountMinor;
+  if (expenseSaving) return;
+  expenseSaving = true;
+  const submit = $('expense-form').querySelector('[type="submit"]');
+  submit.disabled = true;
   try {
-    amountMinor = parseMoney($('expense-amount').value, account.currency);
-  } catch (err) { $('expense-error').textContent = fail(err); return; }
-  if (amountMinor <= 0) { $('expense-error').textContent = 'Сумма должна быть больше нуля.'; return; }
-  const id = $('expense-id').value || `txn_${crypto.randomUUID()}`;
-  const note = $('expense-note').value.trim();
-  try {
-    if ($('expense-id').value) {
-      const current = expenses.find((x) => x.id === id);
-      const patch = {};
-      if (date !== current.date) patch.date = date;
-      if (account.id !== current.accountId) { patch.accountId = account.id; patch.currency = account.currency; }
-      if (category.id !== current.categoryId) patch.categoryId = category.id;
-      if (amountMinor !== current.amountMinor) patch.amountMinor = amountMinor;
-      if (account.currency !== current.currency && !patch.currency) patch.currency = account.currency;
-      if (note !== current.note) patch.note = note;
-      if (!Object.keys(patch).length) { $('expense-dialog').close(); return; }
-      await repo.dispatch(updateExpenseCommand(id, patch));
-    } else {
-      await repo.dispatch(recordExpenseCommand({ date, accountId: account.id, categoryId: category.id, amountMinor, currency: account.currency, note }, { entityId: id }));
-    }
-    $('expense-dialog').close();
-    await refresh();
-    toast('Расход сохранён');
-  } catch (err) { $('expense-error').textContent = fail(err); }
+    if (entryKind() === 'transfer') { await submitTransfer(); return; }
+    $('expense-error').textContent = '';
+    const account = accountById($('expense-account').value);
+    const category = categoryById($('expense-category').value);
+    const date = $('expense-date').value;
+    const note = $('expense-name').value.trim();
+    if (!account || !category) { $('expense-error').textContent = 'Выберите счёт и категорию.'; return; }
+    let amountMinor;
+    try {
+      amountMinor = parseMoney($('expense-amount').value, account.currency);
+    } catch (err) { $('expense-error').textContent = fail(err); return; }
+    if (amountMinor <= 0) { $('expense-error').textContent = 'Сумма должна быть больше нуля.'; return; }
+    const id = $('expense-id').value || `txn_${crypto.randomUUID()}`;
+    try {
+      if ($('expense-id').value) {
+        const current = expenses.find((x) => x.id === id);
+        const patch = {};
+        if (date !== current.date) patch.date = date;
+        if (account.id !== current.accountId) { patch.accountId = account.id; patch.currency = account.currency; }
+        if (category.id !== current.categoryId) patch.categoryId = category.id;
+        if (amountMinor !== current.amountMinor) patch.amountMinor = amountMinor;
+        if (account.currency !== current.currency && !patch.currency) patch.currency = account.currency;
+        if (note !== current.note) patch.note = note;
+        if (!Object.keys(patch).length) { expenseInitialState = null; $('expense-dialog').close(); return; }
+        await repo.dispatch(updateExpenseCommand(id, patch));
+      } else {
+        await repo.dispatch(recordExpenseCommand({ date, accountId: account.id, categoryId: category.id, amountMinor, currency: account.currency, note }, { entityId: id }));
+      }
+      expenseInitialState = null;
+      $('expense-dialog').close();
+      await refresh();
+      toast('Расход сохранён');
+    } catch (err) { $('expense-error').textContent = fail(err); }
+  } finally {
+    expenseSaving = false;
+    submit.disabled = false;
+  }
 });
 
 $('transfer-from').addEventListener('change', updateTransferHints);
@@ -816,11 +884,12 @@ async function submitTransfer() {
       if (toAmountMinor !== current.toAmountMinor) patch.toAmountMinor = toAmountMinor;
       if (from.currency !== current.currency) patch.currency = from.currency;
       if (note !== current.note) patch.note = note;
-      if (!Object.keys(patch).length) { $('expense-dialog').close(); return; }
+      if (!Object.keys(patch).length) { expenseInitialState = null; $('expense-dialog').close(); return; }
       await repo.dispatch(updateTransferCommand(id, patch));
     } else {
       await repo.dispatch(recordTransferCommand({ date, fromAccountId: from.id, toAccountId: to.id, fromAmountMinor, toAmountMinor, currency: from.currency, note }, { entityId: id }));
     }
+    expenseInitialState = null;
     $('expense-dialog').close();
     await refresh();
     toast('Перевод сохранён');
@@ -905,6 +974,7 @@ $('remove-form').addEventListener('submit', async (e) => {
   $('remove-error').textContent = '';
   $('remove-submit').disabled = true;
   try {
+    const removedKind = removeTask.kind;
     if (removeTask.kind === 'expense' || removeTask.kind === 'transfer') {
       await repo.dispatch(deleteTransactionCommand(removeTask.id));
     } else {
@@ -937,6 +1007,9 @@ $('remove-form').addEventListener('submit', async (e) => {
     $('remove-dialog').close();
     removeTask = null;
     await refresh();
+    if (removedKind === 'category' && $('expense-dialog').open) {
+      expenseSelects($('expense-account').value, categories[0]?.id);
+    }
     toast('Удалено');
   } catch (err) { $('remove-error').textContent = fail(err); }
   finally { $('remove-submit').disabled = false; }
@@ -1001,13 +1074,19 @@ document.addEventListener('pointerdown', (e) => { if ($('exp-source-filter') && 
 $('exp-source-filter-options')?.addEventListener('change', (e) => {
   const input = e.target.closest('[data-exp-filter-category]');
   if (!input) return;
-  expCategoryFilter = input.checked ? [...new Set([...expCategoryFilter, input.value])] : expCategoryFilter.filter((id) => id !== input.value);
+  if (input.value === 'all') {
+    expCategoryFilter = input.checked ? ['all'] : [];
+  } else {
+    const categorySelection = expCategoryFilter.filter((id) => id !== 'all' && id !== input.value);
+    expCategoryFilter = input.checked ? [...categorySelection, input.value] : categorySelection;
+  }
+  if (!expCategoryFilter.length) expCategoryFilter = ['all'];
   try { localStorage.setItem('travert-exp-category-filter', JSON.stringify(expCategoryFilter)); } catch {}
   updateExpCategoryFilter();
   renderExpOverview({ newSourcesOnly: true });
 });
 $('exp-source-toggle-all')?.addEventListener('change', () => {
-  expCategoryFilter = $('exp-source-toggle-all').checked ? ['all', ...categories.map((c) => c.id)] : [];
+  expCategoryFilter = $('exp-source-toggle-all').checked ? categories.map((c) => c.id) : ['all'];
   try { localStorage.setItem('travert-exp-category-filter', JSON.stringify(expCategoryFilter)); } catch {}
   updateExpCategoryFilter();
   renderExpOverview({ newSourcesOnly: true });
