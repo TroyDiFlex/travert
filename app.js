@@ -1,5 +1,6 @@
 import {CONFIG} from './config.js';
 import {Api,SESSION_KEY} from './api.js';
+import {LOCAL_INCOME_KEY,LocalIncomeApi} from './local-income.js';
 import {incomeChart,incomeSourceSeries,chartGeometry,lineRevealStarts} from './chart.js';
 import {COLORS,currentMonth,monthLabel,shiftMonth,parseAmount,money,number,summarize,incomeInsights,validateData,validMonth} from './model.js';
 import {setupDataTools} from './data-tools.js';
@@ -10,7 +11,7 @@ import {setupTheme} from './theme.js';
 const $=id=>document.getElementById(id);
 const esc=value=>String(value).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const ico=name=>`<svg class="icon"><use href="#i-${name}"/></svg>`;
-const api=new Api();
+const api=CONFIG.apiUrl.includes('FINANCE_V2_LOCAL_PLACEHOLDER')?new LocalIncomeApi():new Api();
 setupTheme();
 let comparisonMode='average';
 try{const saved=localStorage.getItem('potok-comparison-mode');if(['total','average'].includes(saved))comparisonMode=saved;}catch{}
@@ -37,7 +38,12 @@ $('login-form').addEventListener('submit',async e=>{e.preventDefault();const att
 $('session-retry').addEventListener('click',restoreSession);
 $('session-reset').addEventListener('click',lock);
 window.addEventListener('online',restoreSession);
-window.addEventListener('storage',e=>{if((e.key===SESSION_KEY||e.key===null)&&e.newValue===null)lock();});
+window.addEventListener('storage',async e=>{
+  if(!api.isLocal){if((e.key===SESSION_KEY||e.key===null)&&e.newValue===null)lock();return;}
+  if(e.key!==null&&e.key!==LOCAL_INCOME_KEY)return;
+  try{data=validateData(await api.read());if($('workspace').hidden)openWorkspace(data);else render();}
+  catch{lock();}
+});
 $('show-password').addEventListener('click',()=>{const visible=$('password').type==='password';$('password').type=visible?'text':'password';$('show-password').textContent=visible?'Скрыть':'Показать';});
 $('logout').addEventListener('click',()=>{if(discardAllowed(view==='entries'&&entryMode==='month'?$('month-form'):null))lock();});
 document.querySelectorAll('.close-dialog').forEach(b=>b.addEventListener('click',()=>closeDialogSafely(b.closest('dialog'))));
@@ -300,7 +306,13 @@ $('source-confirm-form').addEventListener('submit',async e=>{
  closeButtons.forEach(b=>b.disabled=false);if(success&&operation.type==='trashSource')$('source-dialog').close();updateConfirmationButton();
 });
 setupDataTools({api,getData:()=>data,isBusy:()=>busy,canOpen:()=>discardAllowed(view==='entries'&&entryMode==='month'?$('month-form'):null),mutate,toast,errorMessage});
+async function openLocalWorkspace(){
+  $('lock-screen').hidden=true;$('logout').hidden=true;
+  try{openWorkspace(await api.read());banner('Локальный режим: доходы хранятся в этом браузере. Вход не нужен.');}
+  catch(error){$('login-form').hidden=true;$('session-status').hidden=false;$('session-message').textContent='Локальное хранилище недоступно: '+error.message;$('session-retry').hidden=true;$('lock-screen').hidden=false;}
+}
 window.addEventListener('beforeunload',e=>{if(busy||dirtyForms.size){e.preventDefault();e.returnValue='';}});
-if(!CONFIG.apiUrl)showLogin('Подключение к Google ещё настраивается. Ваши доходы не хранятся в коде сайта.');
+if(api.isLocal)openLocalWorkspace();
+else if(!CONFIG.apiUrl)showLogin('Подключение к Google ещё настраивается. Ваши доходы не хранятся в коде сайта.');
 else if(api.token)restoreSession();
 else showLogin();
