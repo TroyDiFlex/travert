@@ -5,5 +5,3 @@ node_modules/
 *.xlsx
 *.log
 .openai/
-# CI workflow восстанавливается вручную через сайт GitHub (токену не хватает прав)
-.github/workflows/test.yml
