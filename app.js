@@ -55,15 +55,40 @@ function setEntrySection(section,{updateHash=false}={}){
   if(!['expenses','income'].includes(section))section='expenses';
   entrySection=section;
   try{localStorage.setItem('travert-entry-section',section);}catch{}
-  $('entries-pane-expenses').hidden=section!=='expenses';
-  $('entries-pane-income').hidden=section!=='income';
+  document.querySelectorAll('[data-entry-section]').forEach(b=>{const selected=b.dataset.entrySection===section;b.classList.toggle('selected',selected);b.setAttribute('aria-pressed',String(selected));});
+  if($('entries-pane-expenses'))$('entries-pane-expenses').hidden=section!=='expenses';
+  if($('entries-pane-income'))$('entries-pane-income').hidden=section!=='income';
   if(section==='expenses')window.dispatchEvent(new window.CustomEvent('expenses-shown'));
+  updateQuickAdd();
   if(updateHash){
     const target=section==='expenses'?'#entries-expenses':'#entries-income';
     if(location.hash!==target)location.hash=target;
   }
 }
-function navigate(){if(!data)return;const entriesMatch=/^#entries(?:-(expenses|income))?$/.exec(location.hash);view=!entriesMatch?'overview':'entries';if(entriesMatch&&entriesMatch[1])setEntrySection(entriesMatch[1]);else if(entriesMatch)setEntrySection(entrySection);$('overview-view').hidden=view!=='overview';$('entries-view').hidden=view!=='entries';$('page-title').innerHTML=view==='overview'?'Обзор доходов<span class="title-dot">.</span>':'Ввод данных<span class="title-dot">.</span>';$('page-eyebrow').textContent=view==='overview'?'ВАШ ФИНАНСОВЫЙ ПУЛЬС':'РАСХОДЫ И ДОХОДЫ';$('page-description').textContent=view==='overview'?'От отдельных поступлений — к полной картине.':'Счета, категории, источники — каждая операция на своём месте.';document.querySelectorAll('[data-route]').forEach(a=>{const route=a.dataset.route,active=route==='overview'&&view==='overview'||view==='entries'&&(route==='expenses'&&entrySection==='expenses'||route==='income'&&entrySection==='income');a.classList.toggle('active',active);a.setAttribute('aria-current',active?'page':'false');});if(view==='overview')renderChart();else renderEntries();}
+function updateQuickAdd(){
+  const btn=$('quick-add');if(!btn)return;
+  if(view==='expenses'||(view==='entries'&&entrySection==='expenses')){btn.innerHTML=`${ico('plus')}Добавить расход`;}
+  else{btn.innerHTML=`${ico('plus')}Добавить доход`;}
+}
+function navigate(){
+  if(!data)return;
+  const hash=location.hash||'#overview';
+  const entriesMatch=/^#entries(?:-(expenses|income))?$/.exec(hash);
+  if(entriesMatch){view='entries';if(entriesMatch[1])setEntrySection(entriesMatch[1]);else setEntrySection(entrySection);}
+  else if(hash==='#expenses'){view='expenses';}
+  else{view='overview';}
+  if($('overview-view'))$('overview-view').hidden=view!=='overview';
+  if($('expenses-overview-view'))$('expenses-overview-view').hidden=view!=='expenses';
+  if($('entries-view'))$('entries-view').hidden=view!=='entries';
+  if(view==='overview'){$('page-title').innerHTML='Обзор доходов<span class="title-dot">.</span>';$('page-eyebrow').textContent='ВАШ ФИНАНСОВЫЙ ПУЛЬС';$('page-description').textContent='От отдельных поступлений — к полной картине.';}
+  else if(view==='expenses'){$('page-title').innerHTML='Обзор расходов<span class="title-dot">.</span>';$('page-eyebrow').textContent='ВАШ ФИНАНСОВЫЙ ПУЛЬС';$('page-description').textContent='От отдельных трат — к полной картине.';}
+  else{$('page-title').innerHTML='Ввод данных<span class="title-dot">.</span>';$('page-eyebrow').textContent='РАСХОДЫ И ДОХОДЫ';$('page-description').textContent='Счета, категории, источники — каждая операция на своём месте.';}
+  document.querySelectorAll('[data-route]').forEach(a=>{const route=a.dataset.route,active=(route==='overview'&&view==='overview')||(route==='expenses'&&view==='expenses')||(route==='entries'&&view==='entries');a.classList.toggle('active',active);a.setAttribute('aria-current',active?'page':'false');});
+  updateQuickAdd();
+  if(view==='overview')renderChart();
+  else if(view==='expenses')window.dispatchEvent(new window.CustomEvent('expenses-overview-shown'));
+  else renderEntries();
+}
 window.addEventListener('hashchange',navigate);
 function periodBounds(){if(period==='year')return [selectedYear+'-01',selectedYear+'-12'];if(period==='custom')return [customFrom,customTo];return ['',''];}
 function years(){const set=new Set([currentMonth().slice(0,4),tableYear,selectedYear]);data.entries.forEach(e=>set.add(e.month.slice(0,4)));return [...set].filter(y=>/^\d{4}$/.test(y)).sort();}
@@ -272,7 +297,8 @@ $('entry-mode').addEventListener('click',e=>{const b=e.target.closest('[data-mod
 $('table-container').addEventListener('click',e=>{const cell=e.target.closest('[data-cell-source]'),source=e.target.closest('[data-source-edit]');if(cell)openEdit(cell.dataset.cellSource,cell.dataset.cellMonth);if(source)openSource(source.dataset.sourceEdit);});
 function openEdit(sourceId,month=currentMonth()){if(view==='entries'&&entryMode==='month'&&!discardAllowed($('month-form')))return;if(!data.sources.length){openSource();return;}dirtyForms.delete($('edit-form'));$('edit-error').textContent='';$('edit-title').textContent=sourceId?'Изменить доход':'Добавить доход';$('edit-source').innerHTML=sourceOptionsHtml(data);if(sourceId)$('edit-source').value=sourceId;$('edit-month').value=month;fillEditAmount();$('edit-dialog').showModal();setTimeout(()=>$('edit-amount').focus(),0);}
 function fillEditAmount(){$('edit-amount').value=entryInputValue(data,$('edit-source').value,$('edit-month').value);}
-$('edit-source').addEventListener('change',fillEditAmount);$('edit-month').addEventListener('change',fillEditAmount);$('quick-add').addEventListener('click',()=>openEdit());
+$('edit-source').addEventListener('change',fillEditAmount);$('edit-month').addEventListener('change',fillEditAmount);$('quick-add').addEventListener('click',()=>{if(view==='expenses'||(view==='entries'&&entrySection==='expenses')){window.dispatchEvent(new window.CustomEvent('travert-add-expense'));}else openEdit();});
+$('entry-section-tabs')?.addEventListener('click',e=>{const b=e.target.closest('[data-entry-section]');if(!b||b.dataset.entrySection===entrySection)return;if(view==='entries'&&entryMode==='month'&&!discardAllowed($('month-form')))return;setEntrySection(b.dataset.entrySection,{updateHash:true});if(view==='entries')renderEntries();});
 $('edit-form').addEventListener('submit',e=>{e.preventDefault();try{const amount=parseAmount($('edit-amount').value),month=$('edit-month').value;if(!validMonth(month))throw new Error('Выберите корректный месяц.');mutate({type:'setEntries',entries:[{sourceId:$('edit-source').value,month,amount}]},e.target,'edit-error','Доход сохранён');}catch(error){$('edit-error').textContent=error.message;}});
 function renderMonth(){const month=$('entry-month').value||currentMonth();renderedEntryMonth=month;dirtyForms.delete($('month-form'));$('entry-month').value=month;$('month-fields').innerHTML=monthFieldsHtml(data,month);$('month-error').textContent='';monthTotal();}
 function monthTotal(){let total=0;try{document.querySelectorAll('[data-month-source]').forEach(i=>{total+=parseAmount(i.value)||0;});$('month-total').textContent='Итого: '+money(total);}catch{$('month-total').textContent='Проверьте суммы';}}

@@ -15,8 +15,8 @@ import {
   updateTransferCommand,
 } from './finance/core/commands.js';
 import { formatMoney, parseMoney } from './finance/core/money.js';
-import { incomeChart, incomeSourceSeries, chartGeometry } from './chart.js';
-import { monthLabel } from './model.js';
+import { incomeChart, incomeSourceSeries, chartGeometry, lineRevealStarts } from './chart.js';
+import { monthLabel, summarize, incomeInsights, validMonth, currentMonth } from './model.js';
 import { categoryIconSvg, getCategoryIcon, searchCategoryIcons } from './finance/icons.js';
 import { COLORS } from './model.js';
 
@@ -63,7 +63,8 @@ async function refresh() {
   renderCategories();
   renderFilters();
   renderExpenses();
-  renderExpenseAnalytics();
+  renderExpCategoryFilter();
+  renderExpOverview();
 }
 
 function accountById(id) { return accounts.find((a) => a.id === id); }
@@ -124,10 +125,32 @@ function filteredExpenses() {
     .filter((e) => filters.categoryId === 'all' || e.categoryId === filters.categoryId);
 }
 
-// --- Аналитика: те же графики, что в обзоре доходов ---
+// --- Обзор расходов: полный клон обзора доходов ---
 // Категории маппятся на источники модели доходов, поэтому incomeChart,
-// chartGeometry и сводка summarize переиспользуются без изменений.
-let expCurrency = 'RUB', expChartType = 'line', expComparison = 'average', expChart = null;
+// chartGeometry, summarize и incomeInsights переиспользуются без изменений.
+let expCurrency = 'RUB';
+let expPeriod = 'all';
+let expSelectedYear = currentMonth().slice(0, 4);
+let expCustomFrom = '';
+let expCustomTo = '';
+let expChartType = 'line';
+let expComparison = 'average';
+let expCategoryFilter = ['all'];
+let expChart = null;
+let expChartSelection = -1;
+let expTab = 'list';
+try {
+  const savedTab = localStorage.getItem('travert-exp-tab');
+  if (['list', 'accounts', 'categories'].includes(savedTab)) expTab = savedTab;
+} catch {}
+try {
+  const saved = localStorage.getItem('travert-exp-comparison');
+  if (['total', 'average'].includes(saved)) expComparison = saved;
+} catch {}
+try {
+  const saved = JSON.parse(localStorage.getItem('travert-exp-category-filter'));
+  if (Array.isArray(saved) && saved.every((id) => typeof id === 'string')) expCategoryFilter = [...new Set(saved)];
+} catch {}
 
 function expenseCurrencies() {
   return [...new Set(expenses.map((e) => e.currency))].sort();
@@ -135,125 +158,340 @@ function expenseCurrencies() {
 function expenseChartData(currency) {
   const sources = [...categories]
     .sort((a, b) => a.sortOrder - b.sortOrder || a.name.localeCompare(b.name, 'ru'))
-    .map((c) => ({ id: c.id, name: c.name, color: c.color, active: true, order: c.sortOrder }));
+    .map((c) => ({ id: c.id, name: c.name, color: c.color, active: c.active !== false, order: c.sortOrder }));
   const entries = expenses
     .filter((e) => e.currency === currency)
     .map((e) => ({ sourceId: e.categoryId, month: e.month, amount: e.amountMinor }));
   return { sources, entries };
 }
+function expPeriodBounds() {
+  if (expPeriod === 'year') return [`${expSelectedYear}-01`, `${expSelectedYear}-12`];
+  if (expPeriod === 'custom') return [expCustomFrom, expCustomTo];
+  return ['', ''];
+}
+function expYears(allMonths) {
+  const set = new Set([currentMonth().slice(0, 4), expSelectedYear]);
+  for (const m of allMonths) set.add(m.slice(0, 4));
+  return [...set].filter((y) => /^\d{4}$/.test(y)).sort();
+}
 const EXP_SYMBOLS = { RUB: '₽', USD: '$', EUR: '€' };
+const expMoney = (minor) => {
+  try { return formatMoney(minor, expCurrency); }
+  catch { return `${(minor / 100).toLocaleString('ru-RU')} ${expCurrency}`; }
+};
 
-function renderExpenseAnalytics() {
-  const currencies = expenseCurrencies();
-  if (!currencies.includes(expCurrency)) expCurrency = currencies[0] || 'RUB';
-  $('exp-currency').innerHTML = currencies.map((c) => `<button type="button" class="${c === expCurrency ? 'selected' : ''}" data-exp-currency="${c}" aria-pressed="${c === expCurrency}">${c}</button>`).join('')
-    || '<span class="muted">Нет данных</span>';
-  $('exp-chart-unit').textContent = `${EXP_SYMBOLS[expCurrency] || expCurrency} / месяц`;
-  document.querySelectorAll('#exp-comparison-mode [data-exp-comparison]').forEach((b) => {
-    const selected = b.dataset.expComparison === expComparison;
+function expCategoryLabel() {
+  if (!expCategoryFilter.length) return 'Категории не выбраны';
+  if (expCategoryFilter.length === 1) {
+    if (expCategoryFilter[0] === 'all') return 'Общий расход';
+    return categories.find((c) => c.id === expCategoryFilter[0])?.name || 'Общий расход';
+  }
+  return expCategoryFilter.includes('all')
+    ? `Общий расход + ${expCategoryFilter.length - 1}`
+    : `Выбрано категорий: ${expCategoryFilter.length}`;
+}
+
+function renderExpCategoryFilter() {
+  const panel = $('exp-source-filter-options');
+  if (!panel) return;
+  const valid = new Set(['all', ...categories.map((c) => c.id)]);
+  expCategoryFilter = expCategoryFilter.filter((id) => valid.has(id));
+  if (!expCategoryFilter.length) expCategoryFilter = ['all'];
+  const choices = [
+    { id: 'all', name: 'Общий расход', color: 'var(--accent)', active: true },
+    ...[...categories].sort((a, b) => a.sortOrder - b.sortOrder || a.name.localeCompare(b.name, 'ru')),
+  ];
+  panel.innerHTML = choices.map((c) => `<label class="source-filter-option" style="--source-color:${esc(c.color)}"><input type="checkbox" data-exp-filter-category value="${esc(c.id)}"><span class="source-checkbox" aria-hidden="true"></span><span class="source-option-name">${esc(c.name)}${c.active ? '' : '<small>Неактивная</small>'}</span><i class="source-dot" style="background:${esc(c.color)}" aria-hidden="true"></i></label>`).join('');
+  updateExpCategoryFilter();
+}
+
+function updateExpCategoryFilter() {
+  if (!$('exp-source-filter-label')) return;
+  $('exp-source-filter-label').textContent = expCategoryLabel();
+  $('exp-source-filter-trigger').setAttribute('aria-label', `Категории расходов: ${expCategoryLabel()}`);
+  document.querySelectorAll('[data-exp-filter-category]').forEach((input) => { input.checked = expCategoryFilter.includes(input.value); });
+  const all = $('exp-source-toggle-all');
+  if (all) {
+    const complete = expCategoryFilter.length === categories.length + 1;
+    all.checked = complete;
+    all.indeterminate = expCategoryFilter.length > 0 && !complete;
+  }
+}
+
+function renderExpPeriod(allMonths) {
+  document.querySelectorAll('[data-exp-period]').forEach((b) => {
+    const selected = b.dataset.expPeriod === expPeriod;
     b.classList.toggle('selected', selected);
     b.setAttribute('aria-pressed', String(selected));
   });
-  $('exp-comparison-kicker').textContent = expComparison === 'average' ? 'РАСХОД ЗА МЕСЯЦ С ЗАПИСЬЮ' : 'ВКЛАД В ОБЩИЙ РАСХОД';
-
-  const data = expenseChartData(expCurrency);
-  const model = incomeChart(data, '', '', ['all']);
-  const s = model.summary;
-  const total = s.total;
-  $('exp-hero-total').innerHTML = s.observed.length
-    ? `${esc(formatMoney(total, expCurrency)).replace(/[₽$€]/, '<span class="currency">$&</span>')}`
-    : '—';
-  $('exp-hero-caption').textContent = s.observed.length
-    ? `${s.observed.length} мес. с записями · ${s.recordCount} расходов`
-    : 'Добавьте первый расход';
-  renderExpenseDonut(s);
-  renderExpenseComparison(s);
-  renderExpenseChart(data, model);
+  let html = '';
+  if (expPeriod === 'year') {
+    const years = expYears(allMonths);
+    if (!years.includes(expSelectedYear)) expSelectedYear = years.at(-1) || currentMonth().slice(0, 4);
+    html = `<label class="sr-only" for="exp-filter-year">Год</label><select id="exp-filter-year">${years.map((y) => `<option value="${y}" ${y === expSelectedYear ? 'selected' : ''}>${y}</option>`).join('')}</select>`;
+  }
+  if (expPeriod === 'custom') {
+    html = `<label class="sr-only" for="exp-filter-from">Начало периода</label><input type="month" id="exp-filter-from" value="${esc(expCustomFrom)}"><span class="muted">—</span><label class="sr-only" for="exp-filter-to">Конец периода</label><input type="month" id="exp-filter-to" value="${esc(expCustomTo)}">`;
+  }
+  $('exp-period-controls').innerHTML = html;
+  $('exp-filter-year')?.addEventListener('change', (e) => { expSelectedYear = e.target.value; renderExpOverview(); });
+  for (const id of ['exp-filter-from', 'exp-filter-to']) {
+    $(id)?.addEventListener('change', () => {
+      const from = $('exp-filter-from').value, to = $('exp-filter-to').value;
+      if (!validMonth(from) || !validMonth(to) || from > to) { toast('Начало периода должно быть раньше конца.'); return; }
+      expCustomFrom = from; expCustomTo = to; renderExpOverview();
+    });
+  }
 }
 
-function renderExpenseDonut(s) {
+function renderExpOverview(chartOptions) {
+  if (!$('expenses-overview-view')) return;
+  const currencies = expenseCurrencies();
+  if (!currencies.includes(expCurrency)) expCurrency = currencies[0] || 'RUB';
+  const currencyBox = $('exp-overview-currency');
+  if (currencyBox) {
+    currencyBox.innerHTML = currencies.map((c) => `<button type="button" class="${c === expCurrency ? 'selected' : ''}" data-exp-overview-currency="${c}" aria-pressed="${c === expCurrency}">${c}</button>`).join('')
+      || '<span class="muted">Нет данных</span>';
+  }
+  if ($('exp-overview-chart-unit')) $('exp-overview-chart-unit').textContent = `${EXP_SYMBOLS[expCurrency] || expCurrency} / месяц`;
+  document.querySelectorAll('#exp-overview-comparison-mode [data-exp-overview-comparison]').forEach((b) => {
+    const selected = b.dataset.expOverviewComparison === expComparison;
+    b.classList.toggle('selected', selected);
+    b.setAttribute('aria-pressed', String(selected));
+  });
+  if ($('exp-overview-comparison-kicker')) $('exp-overview-comparison-kicker').textContent = expComparison === 'average' ? 'РАСХОД ЗА МЕСЯЦ С ЗАПИСЬЮ' : 'ВКЛАД В ОБЩИЙ РАСХОД';
+
+  const data = expenseChartData(expCurrency);
+  const [from, to] = expPeriodBounds();
+  const allMonths = [...new Set(data.entries.map((e) => e.month))].sort();
+  if (!expCustomFrom && allMonths.length) { expCustomFrom = allMonths[0]; expCustomTo = allMonths.at(-1); }
+  if (!allMonths.length && !expCustomFrom) { expCustomFrom = currentMonth(); expCustomTo = currentMonth(); }
+  renderExpPeriod(allMonths);
+  updateExpCategoryFilter();
+
+  const withNames = (model) => {
+    for (const s of [...model.lines, ...model.bars]) {
+      s.name = s.name.replace('Общий доход', 'Общий расход').replace('источников', 'категорий').replace('источники', 'категории').replace('Остальные источники', 'Остальные категории');
+    }
+    return model;
+  };
+  const model = withNames(incomeChart(data, from, to, expCategoryFilter));
+  const s = model.summary;
+  const insights = incomeInsights(data, from, to, expCategoryFilter);
+
+  if ($('exp-hero-total')) {
+    $('exp-hero-total').innerHTML = expCategoryFilter.length && s.observed.length
+      ? `${esc(expMoney(s.total)).replace(/[₽$€]/, '<span class="currency">$&</span>')}`
+      : '—';
+  }
+  if ($('exp-hero-caption')) {
+    $('exp-hero-caption').textContent = s.observed.length
+      ? `${s.observed.length} мес. с записями · ${expCategoryLabel()}`
+      : 'Добавьте первый расход';
+  }
+
+  const percent = (value) => (value === null ? '—' : `${value > 0 ? '+' : ''}${value.toLocaleString('ru-RU', { maximumFractionDigits: 1 })}%`);
+  const compared = (item) => (item.amount === null ? `${monthLabel(item.month, true)} · нет записи` : `${monthLabel(item.month, true)} · ${expMoney(item.amount)}`);
+  const metrics = [
+    ['Последний месяц', insights.latest ? expMoney(insights.latest.total) : '—', insights.latest ? monthLabel(insights.latest.month) : 'Нет записей', 'wallet'],
+    ['К предыдущему', percent(insights.previous.change), compared(insights.previous), 'arrow'],
+    ['Год к году', percent(insights.yearAgo.change), compared(insights.yearAgo), 'arrow'],
+    ['Среднее за 6 мес.', insights.rolling6.average === null ? '—' : expMoney(insights.rolling6.average), `${insights.rolling6.count} мес. с записями из 6`, 'chart'],
+    ['Среднее за 12 мес.', insights.rolling12.average === null ? '—' : expMoney(insights.rolling12.average), `${insights.rolling12.count} мес. с записями из 12`, 'chart'],
+    ['Лучший год', insights.bestYear?.year || '—', insights.bestYear ? `${expMoney(insights.bestYear.total)} · за всё время` : 'Нет записей', 'check'],
+  ];
+  if ($('exp-overview-metrics')) {
+    $('exp-overview-metrics').innerHTML = metrics.map((m) => `<article class="metric"><div class="metric-label">${esc(m[0])}${ico(m[3])}</div><div class="metric-value">${esc(m[1])}</div><div class="metric-foot">${esc(m[2])}</div></article>`).join('');
+  }
+  renderExpDonut(s);
+  renderExpComparison(s);
+  renderExpChart(data, model, chartOptions);
+  if ($('exp-overview-updated')) $('exp-overview-updated').textContent = `Обновлено ${new Date().toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' })}`;
+}
+
+function renderExpDonut(s) {
   const value = (x) => (expComparison === 'average' ? x.average : x.total);
   const sources = [...s.sources].sort((a, b) => value(b) - value(a));
   const total = sources.reduce((sum, x) => sum + value(x), 0);
-  const donut = $('exp-donut');
-  $('exp-share-count').textContent = `${sources.length} кат.`;
+  const donut = $('exp-overview-donut');
+  if (!donut) return;
+  $('exp-overview-share-count').textContent = `${sources.length} кат.`;
   if (!donut.querySelector('svg')) donut.innerHTML = '<svg viewBox="0 0 160 160" role="img"><circle cx="80" cy="80" r="63" stroke="var(--grid)"/></svg><div class="donut-center"><strong></strong><span></span></div>';
   const svg = donut.querySelector('svg');
   svg.setAttribute('aria-label', `Доли категорий расходов — ${expComparison === 'average' ? 'средний расход' : 'общий расход'}`);
   donut.querySelector('strong').textContent = total ? '100%' : '—';
-  donut.querySelector('span').textContent = total ? 'расходы' : 'нет расходов';
+  donut.querySelector('span').textContent = total ? (expComparison === 'average' ? 'средний расход' : 'общий расход') : 'нет расходов';
+  const circles = new Map([...svg.querySelectorAll('[data-source]')].map((circle) => [circle.dataset.source, circle]));
   const circumference = 2 * Math.PI * 63;
   let offset = 0;
-  const parts = sources.map((source) => {
+  for (const source of sources) {
+    let circle = circles.get(source.id);
+    if (!circle) {
+      circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+      circle.dataset.source = source.id;
+      circle.setAttribute('class', 'donut-segment');
+      for (const [name, val] of Object.entries({ cx: 80, cy: 80, r: 63 })) circle.setAttribute(name, val);
+      svg.append(circle);
+    }
     const fraction = total ? value(source) / total : 0, dash = Math.max(0, circumference * fraction - 3);
-    const rendered = `<circle class="donut-segment" data-source="${esc(source.id)}" cx="80" cy="80" r="63" stroke="${esc(source.color)}" style="stroke-dasharray:${dash} ${circumference - dash};stroke-dashoffset:${-offset}"/>`;
+    circle.setAttribute('stroke', source.color);
+    circle.style.strokeDasharray = `${dash} ${circumference - dash}`;
+    circle.style.strokeDashoffset = String(-offset);
     offset += circumference * fraction;
-    return rendered;
-  }).join('');
-  svg.querySelectorAll('[data-source]').forEach((circle) => circle.remove());
-  svg.insertAdjacentHTML('beforeend', parts);
-  $('exp-share-legend').innerHTML = sources.length ? sources.map((x) => `<div class="share-item"><i class="source-dot" style="background:${x.color}"></i><span class="label" title="${esc(x.name)}">${esc(x.name)}</span><strong>${total ? (100 * value(x) / total).toLocaleString('ru-RU', { maximumFractionDigits: 1 }) : '0'}%</strong></div>`).join('')
-    : '<p class="muted help">В этой валюте пока нет расходов.</p>';
+    circles.delete(source.id);
+  }
+  circles.forEach((circle) => circle.remove());
+  $('exp-overview-share-legend').innerHTML = sources.length
+    ? sources.map((x) => `<div class="share-item"><i class="source-dot" style="background:${x.color}"></i><span class="label" title="${esc(x.name)}">${esc(x.name)}</span><strong>${total ? (100 * value(x) / total).toLocaleString('ru-RU', { maximumFractionDigits: 1 }) : '0'}%</strong></div>`).join('')
+    : '<p class="muted help">В этом периоде пока нет расходов.</p>';
+  scheduleExpShareLayout();
 }
 
-function renderExpenseComparison(s) {
+let expShareLayoutFrame = 0;
+function scheduleExpShareLayout() {
+  cancelAnimationFrame(expShareLayoutFrame);
+  expShareLayoutFrame = requestAnimationFrame(updateExpShareLayout);
+}
+function updateExpShareLayout() {
+  const legend = $('exp-overview-share-legend');
+  if (!legend) return;
+  const card = $('exp-overview-share-card') || legend.closest('.share-card');
+  const body = legend.parentElement;
+  if (!card || !card.getClientRects().length) return;
+  const comparison = $('exp-overview-comparison-card') || document.querySelector('#expenses-overview-view .comparison-card');
+  const style = getComputedStyle(card), bodyStyle = getComputedStyle(body);
+  const width = body.clientWidth, compact = parseFloat(style.getPropertyValue('--donut-compact-size')) || 154;
+  const beside = comparison ? Math.abs(card.getBoundingClientRect().top - comparison.getBoundingClientRect().top) < 2 : false;
+  const probe = legend.cloneNode(true);
+  probe.removeAttribute('id'); probe.className = 'share-legend share-measure'; probe.setAttribute('aria-hidden', 'true');
+  probe.style.width = `${width}px`; card.append(probe);
+  const legendHeight = probe.getBoundingClientRect().height; probe.remove();
+  const available = beside && comparison
+    ? comparison.getBoundingClientRect().height
+      - parseFloat(style.paddingTop) - parseFloat(style.paddingBottom)
+      - parseFloat(style.borderTopWidth) - parseFloat(style.borderBottomWidth)
+      - card.querySelector('.section-heading').getBoundingClientRect().height - parseFloat(bodyStyle.paddingTop)
+    : 0;
+  const roomForRing = available - legendHeight - 20;
+  const narrow = width < compact + parseFloat(style.getPropertyValue('--share-row-gap') || 25) + 150;
+  const stacked = narrow || (legend.children.length > 0 && roomForRing >= Math.min(210, width));
+  const size = stacked ? Math.floor(Math.min(320, width, Math.max(compact, beside ? roomForRing : compact))) : compact;
+  card.dataset.shareLayout = stacked ? 'stacked' : 'row';
+  card.style.setProperty('--donut-size', `${size}px`);
+}
+
+function renderExpComparison(s) {
   const value = (x) => (expComparison === 'average' ? x.average : x.total);
   const sources = [...s.sources].sort((a, b) => value(b) - value(a) || b.total - a.total);
   const total = sources.reduce((sum, x) => sum + value(x), 0);
   const maximum = sources.length ? value(sources[0]) : 0;
-  const box = $('exp-comparison');
+  const box = $('exp-overview-comparison');
+  if (!box) return;
+  const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const rows = new Map([...box.querySelectorAll('.comparison-item')].map((row) => [row.dataset.source, row]));
+  const positions = new Map([...rows].map(([id, row]) => {
+    const fill = row.querySelector('.bar-fill'), trackWidth = fill.parentElement.getBoundingClientRect().width;
+    return [id, { top: row.getBoundingClientRect().top, width: trackWidth ? (fill.getBoundingClientRect().width / trackWidth) * 100 : 0 }];
+  }));
+  rows.forEach((row) => row.getAnimations({ subtree: true }).forEach((a) => a.cancel()));
   if (!sources.length) {
-    box.innerHTML = '<div class="empty-state"><h3>Пока нечего сравнивать</h3>Добавьте расход в этой валюте.</div>';
+    box.innerHTML = '<div class="empty-state"><h3>Пока нечего сравнивать</h3>Выберите другой период или добавьте расход.</div>';
     return;
   }
-  box.innerHTML = sources.map((x) => {
+  box.querySelector('.empty-state')?.remove();
+  const ordered = sources.map((x) => {
+    let row = rows.get(x.id);
+    if (!row) {
+      row = document.createElement('div'); row.className = 'comparison-item'; row.dataset.source = x.id;
+      row.innerHTML = '<div class="comparison-heading"><i class="source-dot"></i><span></span><strong></strong></div><div class="bar-track"><div class="bar-fill"></div></div><div class="comparison-meta"><span></span><span></span></div>';
+    }
     const category = categoryById(x.id);
-    return `<div class="comparison-item"><div class="comparison-heading"><i class="source-dot" style="background:${x.color}"></i><span title="${esc(x.name)}">${esc(x.name)}</span><strong>${esc(formatMoney(value(x), expCurrency))}</strong></div>`
-      + `<div class="bar-track"><div class="bar-fill" style="width:${maximum ? (value(x) / maximum) * 100 : 0}%;background:${x.color}"></div></div>`
-      + `<div class="comparison-meta"><span>${category?.active === false ? 'Неактивная' : 'Категория'} · ${x.count} мес. с записями</span><span>${total ? (100 * value(x) / total).toLocaleString('ru-RU', { maximumFractionDigits: 1 }) : '0'}%</span></div></div>`;
-  }).join('');
+    const name = row.querySelector('.comparison-heading span'), fill = row.querySelector('.bar-fill'), meta = row.querySelector('.comparison-meta');
+    name.textContent = x.name; name.title = x.name;
+    row.querySelector('.source-dot').style.background = x.color;
+    row.querySelector('strong').textContent = expMoney(value(x));
+    fill.style.width = `${maximum ? (value(x) / maximum) * 100 : 0}%`; fill.style.background = x.color;
+    meta.firstElementChild.textContent = `${category?.active === false ? 'Неактивная' : 'Категория'} · ${x.count} мес. с записями`;
+    meta.lastElementChild.hidden = false;
+    meta.lastElementChild.textContent = `${total ? (100 * value(x) / total).toLocaleString('ru-RU', { maximumFractionDigits: 1 }) : '0'}%`;
+    rows.delete(x.id);
+    return row;
+  });
+  rows.forEach((row) => row.remove());
+  ordered.forEach((row, index) => { if (box.children[index] !== row) box.insertBefore(row, box.children[index] || null); });
+  if (!reduceMotion) {
+    const motion = { duration: 550, easing: 'cubic-bezier(.22,1,.36,1)' };
+    const moves = ordered.map((row) => ({ row, previous: positions.get(row.dataset.source), top: row.getBoundingClientRect().top }));
+    moves.forEach(({ row, previous, top }) => {
+      if (!previous) return;
+      const off = previous.top - top, fill = row.querySelector('.bar-fill');
+      if (Math.abs(off) > 0.5) row.animate([{ transform: `translateY(${off}px)` }, { transform: 'translateY(0)' }], motion);
+      if (Math.abs(previous.width - parseFloat(fill.style.width)) > 0.01) fill.animate([{ width: `${previous.width}%` }, { width: fill.style.width }], motion);
+    });
+  }
 }
 
-function renderExpenseChart(data, model) {
-  const s = model.summary, container = $('exp-chart');
+function renderExpChart(data, model, { animate = true, newSourcesOnly = false } = {}) {
+  const s = model.summary, container = $('exp-overview-chart');
+  if (!container) return;
   const legend = expChartType === 'bars' ? model.bars : model.lines;
-  $('exp-chart-legend').innerHTML = legend.map((series) => `<span class="chart-legend-item"><i class="legend-line" style="background:${series.color}"></i><span>${esc(series.name.replace('Общий доход', 'Общий расход').replace('источников', 'категорий').replace('источники', 'категории'))}</span></span>`).join('');
+  $('exp-overview-chart-legend').innerHTML = legend.map((series) => `<span class="chart-legend-item"><i class="legend-line" style="background:${series.color}"></i><span>${esc(series.name)}</span></span>`).join('');
+  container.setAttribute('aria-label', `Расходы по месяцам. ${expCategoryLabel()}. Стрелки влево и вправо — просмотр месяцев.`);
   if (!s.observed.length) {
-    container.innerHTML = '<div class="empty-state"><h3>Здесь появится график расходов</h3>Добавьте расход в этой валюте.</div>';
-    $('exp-chart-range').textContent = 'Нет записей';
+    container.innerHTML = expCategoryFilter.length
+      ? '<div class="empty-state"><h3>Здесь появится ваш график</h3>Добавьте расход или выберите другой период.</div>'
+      : '<div class="empty-state"><h3>Выберите категории</h3>Отметьте их в списке над графиком.</div>';
+    $('exp-overview-chart-range').textContent = expCategoryFilter.length ? 'Нет записей' : '';
+    $('exp-overview-data-table').replaceChildren();
     expChart = null;
     return;
   }
-  const geometry = chartGeometry(model, expChartType, container.clientWidth || 600, container.clientHeight || 240, { animate: false });
-  const tooltipRows = incomeSourceSeries(data, '', '');
-  container.innerHTML = `${geometry.svg}<div id="exp-chart-tooltip" class="tooltip" hidden></div>`;
-  expChart = { ...geometry, s, model, tooltipRows };
-  $('exp-chart-range').textContent = `${monthLabel(s.months[0].month, true)} — ${monthLabel(s.months.at(-1).month, true)}`;
+  const [from, to] = expPeriodBounds();
+  const now = performance.now(), previous = newSourcesOnly && expChart?.type === expChartType ? expChart : null;
+  const lineReveals = animate && expChartType !== 'bars' ? lineRevealStarts(model, previous, now) : new Map();
+  const geometry = chartGeometry(model, expChartType, container.clientWidth, container.clientHeight, { animate, lineReveals, now });
+  const tooltipRows = expCategoryFilter.length === 1 && expCategoryFilter[0] === 'all'
+    ? incomeSourceSeries(data, from, to)
+    : expChartType === 'bars' ? model.bars : model.lines.filter((ser) => ser.id !== 'all');
+  container.innerHTML = `${geometry.svg}<div id="exp-overview-tooltip" class="tooltip" hidden></div>`;
+  expChart = { ...geometry, s, model, type: expChartType, lineReveals, tooltipRows };
+  expChartSelection = -1;
+  $('exp-overview-chart-range').textContent = `${monthLabel(s.months[0].month, true)} — ${monthLabel(s.months.at(-1).month, true)}`;
+  const series = model.lines.length ? model.lines : [{ id: 'all', name: 'Общий расход', months: s.months }];
+  $('exp-overview-data-table').innerHTML = `<table><caption>Расходы по месяцам за выбранный период</caption><thead><tr><th scope="col">Месяц</th>${series.map((item) => `<th scope="col">${esc(item.name)}</th>`).join('')}</tr></thead><tbody>${s.months.map((month, index) => `<tr><th scope="row">${monthLabel(month.month)}</th>${series.map((item) => { const point = item.months[index]; return `<td>${point.count ? esc(expMoney(point.total)) : 'Нет записи'}</td>`; }).join('')}</tr>`).join('')}</tbody></table>`;
 }
 
-function expenseChartTooltip(index) {
+function hideExpTooltip() {
+  if ($('exp-overview-tooltip')) $('exp-overview-tooltip').hidden = true;
+  $('exp-overview-chart')?.querySelector('#crosshair')?.setAttribute('opacity', '0');
+  $('exp-overview-chart')?.querySelectorAll('.hover-dot').forEach((dot) => dot.setAttribute('opacity', '0'));
+}
+function expOverviewTooltip(index) {
   if (!expChart) return;
   const { s, x, y, width, hoverSeries, tooltipRows } = expChart;
   index = Math.max(0, Math.min(s.months.length - 1, index));
-  const m = s.months[index], tip = $('exp-chart-tooltip');
-  tip.innerHTML = `<small>${monthLabel(m.month)} · Общий расход</small><b>${m.count ? esc(formatMoney(m.total, expCurrency)) : 'Нет записей'}</b>` + tooltipRows.map((series) => {
+  const m = s.months[index], tip = $('exp-overview-tooltip');
+  if (index === expChartSelection && !tip.hidden) return;
+  expChartSelection = index;
+  tip.style.transition = tip.hidden ? 'none' : '';
+  tip.innerHTML = `<small>${monthLabel(m.month)} · ${expCategoryFilter.includes('all') ? 'Общий расход' : 'Выбранные категории'}</small><b>${m.count ? esc(expMoney(m.total)) : 'Нет записей'}</b>` + tooltipRows.map((series) => {
     const point = series.months[index];
-    return `<div class="tooltip-row"><span title="${esc(series.name)}"><i class="source-dot" style="background:${series.color}"></i>${esc(series.name)}</span><span>${point.count ? esc(formatMoney(point.total, expCurrency)) : 'Нет записи'}</span></div>`;
+    let amount = 'Нет записи';
+    try { amount = point.count ? esc(formatMoney(point.total, expCurrency)) : amount; } catch { amount = point.count ? esc(expMoney(point.total)) : amount; }
+    return `<div class="tooltip-row"><span title="${esc(series.name)}"><i class="source-dot" style="background:${series.color}"></i>${esc(series.name)}</span><span>${amount}</span></div>`;
   }).join('');
   tip.hidden = false;
   const highest = hoverSeries.reduce((max, series) => Math.max(max, series.months[index].total), 0);
-  const chart = $('exp-chart'), gap = 16, pointX = (x(index) * chart.clientWidth) / width;
+  const chart = $('exp-overview-chart'), gap = 16, pointX = (x(index) * chart.clientWidth) / width;
   const tipWidth = tip.offsetWidth, tipHeight = tip.offsetHeight;
   const beside = pointX - tipWidth - gap >= 0 ? pointX - tipWidth - gap : pointX + gap;
   tip.style.transform = `translate3d(${Math.max(0, Math.min(chart.clientWidth - tipWidth, beside))}px,${Math.max(0, Math.min(chart.clientHeight - tipHeight - 20, y(highest) - tipHeight - 15))}px,0)`;
   const cross = chart.querySelector('#crosshair');
   if (cross) { cross.setAttribute('x1', x(index)); cross.setAttribute('x2', x(index)); cross.setAttribute('opacity', '.5'); }
   hoverSeries.forEach((series, i) => {
-    const point = series.months[index], dot = $('hover-dot-' + i);
+    const point = series.months[index], dot = chart.querySelector(`#hover-dot-${i}`);
     if (!dot) return;
-    dot.setAttribute('cx', x(index));
-    dot.setAttribute('cy', y(point.total));
-    dot.setAttribute('opacity', point.count ? '1' : '0');
+    dot.setAttribute('cx', x(index)); dot.setAttribute('cy', y(point.total)); dot.setAttribute('opacity', point.count ? '1' : '0');
   });
 }
 
@@ -704,47 +942,107 @@ $('remove-form').addEventListener('submit', async (e) => {
 $('filter-month').addEventListener('change', (e) => { filters.month = e.target.value; renderExpenses(); });
 $('filter-account').addEventListener('change', (e) => { filters.accountId = e.target.value; renderExpenses(); });
 $('filter-category').addEventListener('change', (e) => { filters.categoryId = e.target.value; renderExpenses(); });
-// --- Аналитика: валюта, тип графика, режим сравнения, ховер ---
-$('exp-currency').addEventListener('click', (e) => {
-  const b = e.target.closest('[data-exp-currency]');
-  if (b && b.dataset.expCurrency !== expCurrency) { expCurrency = b.dataset.expCurrency; renderExpenseAnalytics(); }
+// --- Обзор расходов: период, валюта, категории, тип графика, сравнение, ховер ---
+function setExpTab(tab) {
+  if (!['list', 'accounts', 'categories'].includes(tab)) tab = 'list';
+  expTab = tab;
+  try { localStorage.setItem('travert-exp-tab', tab); } catch {}
+  document.querySelectorAll('[data-exp-tab]').forEach((b) => {
+    const selected = b.dataset.expTab === tab;
+    b.classList.toggle('selected', selected);
+    b.setAttribute('aria-pressed', String(selected));
+  });
+  if ($('exp-pane-list')) $('exp-pane-list').hidden = tab !== 'list';
+  if ($('exp-pane-accounts')) $('exp-pane-accounts').hidden = tab !== 'accounts';
+  if ($('exp-pane-categories')) $('exp-pane-categories').hidden = tab !== 'categories';
+}
+$('exp-entry-tabs')?.addEventListener('click', (e) => {
+  const b = e.target.closest('[data-exp-tab]');
+  if (b) setExpTab(b.dataset.expTab);
 });
-$('exp-chart-type').addEventListener('click', (e) => {
-  const b = e.target.closest('[data-exp-chart]');
-  if (!b || b.dataset.expChart === expChartType) return;
-  expChartType = b.dataset.expChart;
-  document.querySelectorAll('#exp-chart-type [data-exp-chart]').forEach((x) => {
+setExpTab(expTab);
+$('exp-period-tabs')?.addEventListener('click', (e) => {
+  const b = e.target.closest('[data-exp-period]');
+  if (b && b.dataset.expPeriod !== expPeriod) { expPeriod = b.dataset.expPeriod; renderExpOverview(); }
+});
+$('exp-overview-currency')?.addEventListener('click', (e) => {
+  const b = e.target.closest('[data-exp-overview-currency]');
+  if (b && b.dataset.expOverviewCurrency !== expCurrency) { expCurrency = b.dataset.expOverviewCurrency; renderExpOverview(); }
+});
+$('exp-overview-chart-type')?.addEventListener('click', (e) => {
+  const b = e.target.closest('[data-exp-overview-chart]');
+  if (!b || b.dataset.expOverviewChart === expChartType) return;
+  expChartType = b.dataset.expOverviewChart;
+  document.querySelectorAll('#exp-overview-chart-type [data-exp-overview-chart]').forEach((x) => {
     const selected = x === b;
     x.classList.toggle('selected', selected);
     x.setAttribute('aria-pressed', String(selected));
   });
-  renderExpenseAnalytics();
+  renderExpOverview();
 });
-$('exp-comparison-mode').addEventListener('click', (e) => {
-  const b = e.target.closest('[data-exp-comparison]');
-  if (!b || !['total', 'average'].includes(b.dataset.expComparison) || b.dataset.expComparison === expComparison) return;
-  expComparison = b.dataset.expComparison;
-  renderExpenseAnalytics();
+$('exp-overview-comparison-mode')?.addEventListener('click', (e) => {
+  const b = e.target.closest('[data-exp-overview-comparison]');
+  if (!b || !['total', 'average'].includes(b.dataset.expOverviewComparison) || b.dataset.expOverviewComparison === expComparison) return;
+  expComparison = b.dataset.expOverviewComparison;
+  try { localStorage.setItem('travert-exp-comparison', expComparison); } catch {}
+  renderExpOverview();
 });
-$('exp-chart').addEventListener('pointermove', (e) => {
+function setExpFilterOpen(open) {
+  $('exp-source-filter-panel').hidden = !open;
+  $('exp-source-filter-trigger').setAttribute('aria-expanded', String(open));
+}
+$('exp-source-filter-trigger')?.addEventListener('click', () => setExpFilterOpen($('exp-source-filter-panel').hidden));
+document.addEventListener('focusin', (e) => { if ($('exp-source-filter') && !$('exp-source-filter').contains(e.target)) setExpFilterOpen(false); });
+document.addEventListener('pointerdown', (e) => { if ($('exp-source-filter') && !$('exp-source-filter').contains(e.target)) setExpFilterOpen(false); });
+$('exp-source-filter-options')?.addEventListener('change', (e) => {
+  const input = e.target.closest('[data-exp-filter-category]');
+  if (!input) return;
+  expCategoryFilter = input.checked ? [...new Set([...expCategoryFilter, input.value])] : expCategoryFilter.filter((id) => id !== input.value);
+  try { localStorage.setItem('travert-exp-category-filter', JSON.stringify(expCategoryFilter)); } catch {}
+  updateExpCategoryFilter();
+  renderExpOverview({ newSourcesOnly: true });
+});
+$('exp-source-toggle-all')?.addEventListener('change', () => {
+  expCategoryFilter = $('exp-source-toggle-all').checked ? ['all', ...categories.map((c) => c.id)] : [];
+  try { localStorage.setItem('travert-exp-category-filter', JSON.stringify(expCategoryFilter)); } catch {}
+  updateExpCategoryFilter();
+  renderExpOverview({ newSourcesOnly: true });
+});
+$('exp-overview-chart')?.addEventListener('pointermove', (e) => {
   if (!expChart) return;
-  const r = $('exp-chart').getBoundingClientRect();
-  expenseChartTooltip(Math.floor((((e.clientX - r.left) * expChart.width) / r.width - expChart.left) / expChart.step));
+  const r = $('exp-overview-chart').getBoundingClientRect();
+  expOverviewTooltip(Math.floor(((e.clientX - r.left) * expChart.width / r.width - expChart.left) / expChart.step));
 });
-$('exp-chart').addEventListener('pointerleave', () => {
-  if ($('exp-chart-tooltip')) $('exp-chart-tooltip').hidden = true;
-  $('exp-chart').querySelector('#crosshair')?.setAttribute('opacity', '0');
-  $('exp-chart').querySelectorAll('.hover-dot').forEach((dot) => dot.setAttribute('opacity', '0'));
+$('exp-overview-chart')?.addEventListener('pointerleave', hideExpTooltip);
+$('exp-overview-chart')?.addEventListener('blur', hideExpTooltip);
+$('exp-overview-chart')?.addEventListener('keydown', (e) => {
+  if (!expChart) return;
+  if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') { e.preventDefault(); expOverviewTooltip(expChartSelection + (e.key === 'ArrowRight' ? 1 : -1)); }
+  if (e.key === 'Escape') hideExpTooltip();
 });
+window.addEventListener('travert-add-expense', () => openExpense());
 let expResizeTimer = 0;
 window.addEventListener('resize', () => {
   clearTimeout(expResizeTimer);
-  expResizeTimer = setTimeout(() => { if (expenses.length) renderExpenseAnalytics(); }, 200);
+  expResizeTimer = setTimeout(() => {
+    if (!expenses.length) return;
+    if (!$('expenses-overview-view')?.hidden) renderExpOverview({ animate: false });
+    scheduleExpShareLayout();
+  }, 200);
 });
 // График под скрытой вкладкой не знает свою ширину: перерисовываем при показе.
-window.addEventListener('expenses-shown', () => {
-  if ((expenses.length || transfers.length) && !$('entries-pane-expenses')?.hidden) renderExpenseAnalytics();
+window.addEventListener('expenses-overview-shown', () => {
+  if ((expenses.length || transfers.length) && $('expenses-overview-view') && !$('expenses-overview-view').hidden) renderExpOverview({ animate: false });
 });
+window.addEventListener('expenses-shown', () => {
+  setExpTab(expTab);
+});
+try {
+  const expShareObserver = new ResizeObserver(scheduleExpShareLayout);
+  if ($('exp-overview-comparison-card')) expShareObserver.observe($('exp-overview-comparison-card'));
+  if ($('exp-overview-share-card')) expShareObserver.observe($('exp-overview-share-card'));
+} catch {}
+if (document.fonts?.ready) document.fonts.ready.then(() => scheduleExpShareLayout());
 $('export-btn').addEventListener('click', async () => {
   const recovery = await repo.exportRecovery();
   const blob = new Blob([JSON.stringify(recovery, null, 2)], { type: 'application/json' });

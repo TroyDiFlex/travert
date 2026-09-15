@@ -13,8 +13,8 @@
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="expenses.css">
   <script src="pwa.js?v=2" defer></script>
-  <script type="module" src="app.js?v=4"></script>
-  <script type="module" src="expenses-app.js?v=1"></script>
+  <script type="module" src="app.js?v=5"></script>
+  <script type="module" src="expenses-app.js?v=2"></script>
 </head>
 <body>
 <svg class="icon-defs" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><defs>
@@ -62,7 +62,7 @@
   <aside class="sidebar">
     <a class="brand" href="#overview"><span class="brand-mark">t</span><span>travert<span class="brand-dot">.</span></span></a>
     <div class="nav-label">ЛИЧНЫЕ ФИНАНСЫ</div>
-    <nav aria-label="Основная навигация"><a href="#overview" class="nav-item active" data-route="overview"><svg class="icon"><use href="#i-chart"/></svg><span>Обзор доходов</span></a><a href="#entries-expenses" class="nav-item" data-route="expenses"><svg class="icon"><use href="#i-wallet"/></svg><span>Расходы</span></a><a href="#entries-income" class="nav-item" data-route="income"><svg class="icon"><use href="#i-grid"/></svg><span>Ввод данных</span></a></nav>
+    <nav aria-label="Основная навигация"><a href="#overview" class="nav-item active" data-route="overview"><svg class="icon"><use href="#i-chart"/></svg><span>Обзор доходов</span></a><a href="#expenses" class="nav-item" data-route="expenses"><svg class="icon"><use href="#i-wallet"/></svg><span>Обзор расходов</span></a><a href="#entries" class="nav-item" data-route="entries"><svg class="icon"><use href="#i-grid"/></svg><span>Ввод данных</span></a></nav>
     <div class="sidebar-bottom">
       <button class="nav-item" id="theme-open"><svg class="icon"><use href="#i-sun"/></svg><span>Оформление</span></button>
       <button class="nav-item" id="logout"><svg class="icon"><use href="#i-logout"/></svg><span>Выйти</span></button>
@@ -87,27 +87,27 @@
       <section class="breakdowns"><article class="glass share-card"><div class="section-heading"><div><span class="card-kicker">СТРУКТУРА</span><h2>Доля источников</h2></div><span id="share-count" class="small-tag"></span></div><div class="share-body"><div id="donut" class="donut"></div><div id="share-legend" class="share-legend"></div></div></article><article class="glass comparison-card"><div class="section-heading"><div><span class="card-kicker" id="comparison-kicker">ДОХОД ЗА МЕСЯЦ С ЗАПИСЬЮ</span><h2>Сравнение источников</h2></div><svg class="icon muted"><use href="#i-arrow"/></svg></div><div id="comparison-mode" class="segmented comparison-mode" role="group" aria-label="Расчёт дохода по источникам"><button type="button" data-comparison="total" aria-pressed="false" aria-controls="comparison">Всего</button><button type="button" class="selected" data-comparison="average" aria-pressed="true" aria-controls="comparison">В среднем за месяц</button></div><div id="comparison" class="comparison" aria-live="polite"></div></article></section>
       <div class="bottom-note"><span>Расчёты по внесённым данным. Пропуск ≠ нулевой доход.</span><span id="updated-at"></span></div>
     </section>
+    <section id="expenses-overview-view" hidden>
+      <div class="filters"><div class="segmented period-tabs" id="exp-period-tabs" aria-label="Период"><button class="selected" data-exp-period="all">Всё время</button><button data-exp-period="year">Год</button><button data-exp-period="custom">Период</button></div><div id="exp-period-controls" class="period-controls"></div>
+        <div class="source-filter" id="exp-source-filter">
+          <button type="button" class="source-filter-trigger" id="exp-source-filter-trigger" aria-expanded="false" aria-controls="exp-source-filter-panel"><span id="exp-source-filter-label">Общий расход</span><svg class="icon source-chevron" aria-hidden="true"><use href="#i-chevron"/></svg></button>
+          <div class="source-filter-panel" id="exp-source-filter-panel" hidden>
+            <div class="source-filter-heading"><span id="exp-source-filter-title">Категории расходов</span><label class="source-toggle-all" title="Выбрать всё"><input type="checkbox" id="exp-source-toggle-all" aria-label="Выбрать всё"><span class="source-checkbox" aria-hidden="true"></span></label></div>
+            <div id="exp-source-filter-options" class="source-filter-options" role="group" aria-labelledby="exp-source-filter-title"></div>
+          </div>
+        </div>
+        <div class="segmented" id="exp-overview-currency" role="group" aria-label="Валюта"></div>
+      </div>
+      <section class="hero-card glass"><div class="chart-heading"><div><div class="card-kicker"><span class="accent-dot"></span> ДИНАМИКА РАСХОДОВ</div><div id="exp-hero-total" class="hero-total">—</div><div id="exp-hero-caption" class="muted"></div></div><div class="chart-heading-right"><div class="segmented chart-types" id="exp-overview-chart-type" aria-label="Тип графика"><button data-exp-overview-chart="line" class="selected" aria-pressed="true" aria-label="Линейный график" title="Линия"><svg viewBox="0 0 24 24"><path d="M3 18l6-9 5 4 7-10"/></svg></button><button data-exp-overview-chart="bars" aria-pressed="false" aria-label="Столбчатый график" title="Столбцы"><svg viewBox="0 0 24 24"><path d="M5 19V12M12 19V5M19 19V9"/></svg></button><button data-exp-overview-chart="smooth" aria-pressed="false" aria-label="Плавный график" title="Плавный"><svg viewBox="0 0 24 24"><path d="M3 17C8 17 5 7 11 12s6-8 10-8"/></svg></button></div><span class="chart-unit" id="exp-overview-chart-unit">₽ / месяц</span></div></div><div id="exp-overview-chart" class="chart" tabindex="0" role="img" aria-label="Расходы по месяцам. Стрелки влево и вправо — просмотр месяцев."></div><div class="chart-bottom"><span id="exp-overview-chart-range"></span><div id="exp-overview-chart-legend" class="chart-legend" aria-label="Легенда графика"></div></div><details class="chart-data"><summary>Таблица значений графика</summary><div id="exp-overview-data-table" class="chart-data-table"></div></details></section>
+      <section id="exp-overview-metrics" class="metrics" aria-label="Показатели расхода"></section>
+      <section class="breakdowns"><article class="glass share-card" id="exp-overview-share-card"><div class="section-heading"><div><span class="card-kicker">СТРУКТУРА</span><h2>Доля категорий</h2></div><span id="exp-overview-share-count" class="small-tag"></span></div><div class="share-body"><div id="exp-overview-donut" class="donut"></div><div id="exp-overview-share-legend" class="share-legend"></div></div></article><article class="glass comparison-card" id="exp-overview-comparison-card"><div class="section-heading"><div><span class="card-kicker" id="exp-overview-comparison-kicker">РАСХОД ЗА МЕСЯЦ С ЗАПИСЬЮ</span><h2>Сравнение категорий</h2></div><svg class="icon muted"><use href="#i-arrow"/></svg></div><div id="exp-overview-comparison-mode" class="segmented comparison-mode" role="group" aria-label="Расчёт расхода по категориям"><button type="button" data-exp-overview-comparison="total" aria-pressed="false" aria-controls="exp-overview-comparison">Всего</button><button type="button" class="selected" data-exp-overview-comparison="average" aria-pressed="true" aria-controls="exp-overview-comparison">В среднем за месяц</button></div><div id="exp-overview-comparison" class="comparison" aria-live="polite"></div></article></section>
+      <div class="bottom-note"><span>Расчёты по внесённым расходам. Пропуск ≠ нулевой расход.</span><span id="exp-overview-updated"></span></div>
+    </section>
     <section id="entries-view" hidden>
-      <div class="entry-toolbar"><span class="sync-pill" id="entries-sync-pill"><i class="sync-dot"></i><span id="sync-status">Открываем локальную книгу…</span></span></div>
+      <div class="entry-toolbar"><div class="segmented" id="entry-section-tabs" role="group" aria-label="Раздел ввода данных"><button type="button" data-entry-section="expenses" class="selected">Расходы</button><button type="button" data-entry-section="income">Доходы</button></div><span class="sync-pill" id="entries-sync-pill"><i class="sync-dot"></i><span id="sync-status">Открываем локальную книгу…</span></span><span class="header-actions"><button class="button subtle" id="export-btn" type="button">Скачать JSON</button><button class="button subtle" id="reset-btn" type="button">Сбросить демо</button></span></div>
       <div id="entries-pane-expenses" class="expenses-grid">
-      <div class="expenses-top"><span></span><span class="header-actions"><button class="button subtle" id="export-btn" type="button">Скачать JSON</button><button class="button subtle" id="reset-btn" type="button">Сбросить демо</button></span></div>
-      <section class="glass expenses-card" aria-labelledby="analytics-title">
-      <div class="card-head"><div><span class="card-kicker"><span class="accent-dot"></span> ДИНАМИКА РАСХОДОВ</span><h2 id="analytics-title">Аналитика</h2></div><div class="segmented" id="exp-currency" role="group" aria-label="Валюта"></div></div>
-      <div id="exp-hero-total" class="hero-total">—</div>
-      <div id="exp-hero-caption" class="muted"></div>
-      <div class="exp-chart-bar"><div class="segmented chart-types" id="exp-chart-type" aria-label="Тип графика"><button data-exp-chart="line" class="selected" aria-pressed="true" aria-label="Линейный график" title="Линия"><svg viewBox="0 0 24 24"><path d="M3 18l6-9 5 4 7-10"/></svg></button><button data-exp-chart="bars" aria-pressed="false" aria-label="Столбчатый график" title="Столбцы"><svg viewBox="0 0 24 24"><path d="M5 19V12M12 19V5M19 19V9"/></svg></button><button data-exp-chart="smooth" aria-pressed="false" aria-label="Плавный график" title="Плавный"><svg viewBox="0 0 24 24"><path d="M3 17C8 17 5 7 11 12s6-8 10-8"/></svg></button></div><span class="chart-unit" id="exp-chart-unit">₽ / месяц</span></div>
-      <div id="exp-chart" class="chart" tabindex="0" role="img" aria-label="Расходы по месяцам"></div>
-      <div class="chart-bottom"><span id="exp-chart-range"></span><div id="exp-chart-legend" class="chart-legend"></div></div>
-      <div class="breakdowns exp-breakdowns"><article class="glass share-card"><div class="section-heading"><div><span class="card-kicker">СТРУКТУРА</span><h2>Доля категорий</h2></div><span id="exp-share-count" class="small-tag"></span></div><div class="share-body"><div id="exp-donut" class="donut"></div><div id="exp-share-legend" class="share-legend"></div></div></article><article class="glass comparison-card"><div class="section-heading"><div><span class="card-kicker" id="exp-comparison-kicker">РАСХОД ЗА МЕСЯЦ С ЗАПИСЬЮ</span><h2>Сравнение категорий</h2></div></div><div id="exp-comparison-mode" class="segmented comparison-mode" role="group" aria-label="Расчёт расхода по категориям"><button type="button" data-exp-comparison="total" aria-pressed="false">Всего</button><button type="button" data-exp-comparison="average" class="selected" aria-pressed="true">В среднем за месяц</button></div><div id="exp-comparison" class="comparison"></div></article></div>
-      </section>
-      <section class="glass expenses-card" aria-labelledby="accounts-title">
-      <div class="card-head"><div><span class="card-kicker"><span class="accent-dot"></span> ОТКУДА ТРАТИМ</span><h2 id="accounts-title">Счета</h2></div><button class="button subtle" id="add-account" type="button"><svg class="icon"><use href="#i-plus"/></svg>Счёт</button></div>
-      <div id="accounts-list"></div>
-      </section>
-      <section class="glass expenses-card" aria-labelledby="categories-title">
-      <div class="card-head"><div><span class="card-kicker"><span class="accent-dot"></span> НА ЧТО ТРАТИМ</span><h2 id="categories-title">Категории</h2></div><button class="button subtle" id="add-category" type="button"><svg class="icon"><use href="#i-plus"/></svg>Категория</button></div>
-      <div id="categories-list"></div>
-      </section>
+      <div class="segmented" id="exp-entry-tabs" role="group" aria-label="Расходы: разделы"><button type="button" data-exp-tab="list" class="selected">Расходы</button><button type="button" data-exp-tab="accounts">Счета</button><button type="button" data-exp-tab="categories">Категории</button></div>
+      <div id="exp-pane-list">
       <section class="glass expenses-card" aria-labelledby="expenses-title">
       <div class="card-head"><div><span class="card-kicker"><span class="accent-dot"></span> КАЖДЫЙ РАСХОД</span><h2 id="expenses-title">Расходы</h2></div><button class="button primary" id="add-expense" type="button"><svg class="icon"><use href="#i-plus"/></svg>Добавить расход</button></div>
       <div class="filter-row">
@@ -118,6 +118,19 @@
       <div class="summary-line" id="expenses-summary"></div>
       <div id="expenses-list"></div>
       </section>
+      </div>
+      <div id="exp-pane-accounts" hidden>
+      <section class="glass expenses-card" aria-labelledby="accounts-title">
+      <div class="card-head"><div><span class="card-kicker"><span class="accent-dot"></span> ОТКУДА ТРАТИМ</span><h2 id="accounts-title">Счета</h2></div><button class="button subtle" id="add-account" type="button"><svg class="icon"><use href="#i-plus"/></svg>Счёт</button></div>
+      <div id="accounts-list"></div>
+      </section>
+      </div>
+      <div id="exp-pane-categories" hidden>
+      <section class="glass expenses-card" aria-labelledby="categories-title">
+      <div class="card-head"><div><span class="card-kicker"><span class="accent-dot"></span> НА ЧТО ТРАТИМ</span><h2 id="categories-title">Категории</h2></div><button class="button subtle" id="add-category" type="button"><svg class="icon"><use href="#i-plus"/></svg>Категория</button></div>
+      <div id="categories-list"></div>
+      </section>
+      </div>
       <div class="bottom-note"><span>Суммы в копейках/центах не складываются между валютами. Удаление — навсегда, без корзины: это прототип.</span><span>Сервер не подключён</span></div>
       </div>
       <div id="entries-pane-income" hidden>
