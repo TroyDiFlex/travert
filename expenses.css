@@ -1,0 +1,42 @@
+.expenses-page { max-width: 760px; margin: 0 auto; padding: 20px 16px 64px; }
+.expenses-header { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 18px; }
+.sync-pill { font-size: 13px; padding: 6px 12px; border-radius: 999px; border: 1px solid currentColor; white-space: nowrap; }
+.sync-pill.is-offline { color: #fbbf24; }
+.sync-pill.is-pending { color: #818cf8; }
+.sync-pill.is-saved { color: #34d399; }
+.expenses-main { display: grid; gap: 16px; }
+.expense-form-card, .expense-list-card { padding: 20px; }
+.expense-form-card h1, .expense-list-card h2 { margin: 4px 0 16px; font-size: 26px; }
+.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.form-grid label, #expense-form > label, #category-form label, #account-form label { display: grid; gap: 6px; margin-bottom: 12px; font-size: 14px; }
+#expense-form input, #expense-form select, #category-form input, #account-form select, #icon-search { padding: 10px 12px; border-radius: 10px; border: 1px solid #3a3a3a; background: #111; color: inherit; font-size: 16px; }
+.field-label { font-size: 14px; }
+.category-pick { display: flex; gap: 8px; align-items: center; }
+.category-chip { display: inline-flex; align-items: center; gap: 8px; padding: 8px 12px; border-radius: 12px; border: 1px dashed #555; background: none; color: inherit; font-size: 15px; cursor: pointer; }
+.category-chip .icon-badge { width: 26px; height: 26px; }
+.icon-badge { display: inline-flex; align-items: center; justify-content: center; width: 34px; height: 34px; border-radius: 10px; color: #fff; flex: none; }
+.icon-badge svg { width: 22px; height: 22px; }
+.color-options { display: flex; flex-wrap: wrap; gap: 8px; }
+.color-options button { width: 32px; height: 32px; border-radius: 50%; border: 2px solid transparent; cursor: pointer; }
+.color-options button[aria-pressed="true"] { border-color: #fff; }
+.category-icon-row { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+.expense-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.expense-row { display: flex; align-items: center; gap: 12px; padding: 10px 12px; border: 1px solid #2c2c2c; border-radius: 12px; }
+.expense-row .expense-main { flex: 1; min-width: 0; }
+.expense-row .expense-title { font-weight: 600; }
+.expense-row .expense-sub { font-size: 13px; color: #999; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.expense-row .expense-amount { font-weight: 700; white-space: nowrap; }
+.expense-row .icon-button { border: none; background: none; color: #888; font-size: 16px; cursor: pointer; padding: 6px; }
+.list-heading { display: flex; align-items: flex-end; justify-content: space-between; gap: 12px; }
+.month-filter { display: grid; gap: 6px; font-size: 13px; }
+.month-filter input { padding: 8px 10px; border-radius: 10px; border: 1px solid #3a3a3a; background: #111; color: inherit; }
+.icon-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(64px, 1fr)); gap: 8px; max-height: 50vh; overflow: auto; margin-top: 12px; }
+.icon-grid button { display: grid; gap: 4px; justify-items: center; padding: 8px 4px; border-radius: 10px; border: 1px solid #333; background: none; color: inherit; font-size: 11px; cursor: pointer; }
+.icon-grid button[aria-selected="true"] { border-color: #818cf8; }
+.icon-grid svg { width: 24px; height: 24px; }
+.icon-group-label { grid-column: 1 / -1; font-size: 12px; color: #888; margin-top: 6px; }
+.category-list { display: grid; gap: 8px; margin-top: 12px; max-height: 50vh; overflow: auto; }
+.category-list button { display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: 10px; border: 1px solid #333; background: none; color: inherit; font-size: 15px; cursor: pointer; text-align: left; }
+.category-list button[aria-current="true"] { border-color: #818cf8; }
+.toast { position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%); background: #1c1c1c; border: 1px solid #444; padding: 10px 16px; border-radius: 12px; }
+@media (max-width: 560px) { .form-grid { grid-template-columns: 1fr; } }
