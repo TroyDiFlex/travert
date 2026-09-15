@@ -716,7 +716,7 @@ function openExpense(id) {
   updateExpenseCategoryActions();
   expenseInitialState = expenseDraftState();
   $('expense-dialog').showModal();
-  setTimeout(() => $('expense-name').focus(), 0);
+  setTimeout(() => $('expense-amount').focus(), 0);
 }
 function setEntryKind(kind) {
   document.querySelectorAll('#expense-type [data-expense-type]').forEach((b) => {
@@ -857,6 +857,13 @@ $('transfer-from').addEventListener('change', updateTransferHints);
 $('transfer-to').addEventListener('change', updateTransferHints);
 $('transfer-from-amount').addEventListener('input', updateTransferHints);
 $('transfer-to-amount').addEventListener('input', updateTransferHints);
+$('transfer-swap').addEventListener('click', () => {
+  const from = $('transfer-from'), to = $('transfer-to');
+  const fromAmount = $('transfer-from-amount'), toAmount = $('transfer-to-amount');
+  [from.value, to.value] = [to.value, from.value];
+  [fromAmount.value, toAmount.value] = [toAmount.value, fromAmount.value];
+  updateTransferHints();
+});
 async function submitTransfer() {
   $('expense-error').textContent = '';
   const from = accountById($('transfer-from').value), to = accountById($('transfer-to').value);

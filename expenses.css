@@ -59,13 +59,15 @@
 .expense-category-actions { display: flex; align-items: center; gap: 3px; }
 .expense-category-actions .text-button { min-height: 28px; padding: 3px 6px; font-size: 11px; }
 .expense-category-field .expense-field-heading { min-height: 28px; }
-.transfer-route { position: relative; display: grid; grid-template-columns: minmax(0, 1fr) 36px minmax(0, 1fr); gap: 10px; margin: 0; padding: 15px; border: 1px solid var(--line); border-radius: 14px; background: var(--accent-soft); }
+.transfer-route { position: relative; display: grid; grid-template-columns: minmax(0, 1fr) 36px minmax(0, 1fr); gap: 10px; margin: 0; padding: 15px; border: 1px solid var(--line); border-radius: 14px; background: transparent; }
 .transfer-endpoint { min-width: 0; }
 .transfer-endpoint h3 { margin-bottom: 9px; color: var(--text); font-size: 12px; font-weight: 600; }
 .transfer-endpoint label { margin: 0; }
 .transfer-endpoint label + label { margin-top: 11px; }
 .transfer-endpoint label input, .transfer-endpoint label select { margin-top: 5px; }
-.transfer-connector { display: grid; place-items: center; align-self: center; width: 32px; height: 32px; border: 1px solid var(--line); border-radius: 50%; background: var(--panel-solid); color: var(--accent); }
+.transfer-connector { display: grid; place-items: center; align-self: center; width: 32px; height: 32px; min-height: 32px; padding: 0; border: 1px solid var(--line); border-radius: 50%; background: var(--panel-solid); color: var(--muted); transition: color .2s, border-color .2s, background .2s, transform .2s; }
+.transfer-connector:hover { color: var(--accent); border-color: var(--accent); background: var(--accent-soft); }
+.transfer-connector:active { transform: scale(.94); }
 .transfer-connector .icon { width: 15px; height: 15px; }
 .expense-dialog .form-footer { margin-top: 18px; }
 .expense-dialog .help { margin: 0; }
@@ -95,6 +97,10 @@
   .expense-form-grid { grid-template-columns: 1fr; gap: 12px; }
   .expense-field-wide { grid-column: auto; }
   .expense-category-field { grid-column: auto; }
+  #expense-fields { grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr); gap: 10px; }
+  #expense-fields .expense-field-wide { grid-column: 1 / -1; }
+  #expense-fields .expense-category-actions { display: none; }
+  #expense-fields input, #expense-fields select { min-width: 0; padding-left: 10px; padding-right: 10px; }
   .transfer-route { grid-template-columns: minmax(0, 1fr) 28px minmax(0, 1fr); gap: 6px; padding: 12px; }
   .transfer-connector { width: 28px; height: 28px; }
   .transfer-endpoint label input, .transfer-endpoint label select { padding-left: 10px; padding-right: 25px; }
@@ -103,6 +109,14 @@
   .reassign-row select { max-width: none; width: 100%; }
 }
 @media (max-width: 420px) {
-  .transfer-route { grid-template-columns: 1fr; gap: 8px; }
-  .transfer-connector { margin: 1px auto; transform: rotate(90deg); }
+  .expense-dialog .dialog-heading { margin-bottom: 10px; }
+  .expense-dialog #expense-type { margin: 8px 0 12px; }
+  .expense-form-grid { gap: 9px; }
+  .transfer-route { grid-template-columns: 1fr; gap: 5px; padding: 9px 10px; }
+  .transfer-endpoint h3 { margin-bottom: 6px; }
+  .transfer-endpoint label + label { margin-top: 8px; }
+  .transfer-endpoint label input, .transfer-endpoint label select { margin-top: 4px; }
+  .transfer-connector { margin: 0 auto; }
+  .transfer-connector .icon { transform: rotate(90deg); }
+  .expense-dialog .form-footer { padding-top: 10px; padding-bottom: calc(10px + env(safe-area-inset-bottom)); }
 }
