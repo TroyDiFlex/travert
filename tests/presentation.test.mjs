@@ -82,6 +82,10 @@ test('expense entry is compact, title-first, category-aware and guarded against 
   assert.match(app,/const title = e\.note \|\| c\?\.name \|\| 'Расход'/);
   assert.match(app,/if \(expenseSaving\) return;/);
   assert.match(css,/\.expense-form-grid \{ display: grid; grid-template-columns: 1fr 1fr;/);
+  assert.match(html,/<label for="expense-account">Счёт<\/label><\/div><select id="expense-account"/);
+  assert.match(html,/<fieldset class="transfer-route expense-field-wide">/);
+  assert.match(html,/<h3>Откуда<\/h3>.*<h3>Куда<\/h3>/);
+  assert.match(css,/\.transfer-route \{[^}]*grid-template-columns: minmax\(0, 1fr\) 36px minmax\(0, 1fr\)/);
 });
 
 test('chart exposes the selected monthly values as an accessible table',async()=>{
