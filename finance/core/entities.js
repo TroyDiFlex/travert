@@ -125,6 +125,22 @@ function normalizeTransaction(entity, context) {
     return transaction;
   }
 
+  if (transaction.kind === 'transfer') {
+    const from = requireActiveReference(context, ENTITY_TYPES.ACCOUNTS, transaction.fromAccountId, 'fromAccountId');
+    const to = requireActiveReference(context, ENTITY_TYPES.ACCOUNTS, transaction.toAccountId, 'toAccountId');
+    if (transaction.fromAccountId === transaction.toAccountId) {
+      fail('Перевод между одним и тем же счётом запрещён.', 'toAccountId', 'same-account');
+    }
+    assertMinorUnits(transaction.fromAmountMinor, 'fromAmountMinor', { positive: true });
+    assertMinorUnits(transaction.toAmountMinor, 'toAmountMinor', { positive: true });
+    requireCurrency(transaction.currency);
+    if (transaction.currency !== from.currency || transaction.currency !== to.currency) {
+      fail('Оба счёта перевода должны быть в валюте перевода.', 'currency', 'currency-mismatch');
+    }
+    transaction.accountIds = [transaction.fromAccountId, transaction.toAccountId];
+    return transaction;
+  }
+
   fail('Этот тип операции будет включён на следующем этапе.', 'kind', 'unsupported-transaction-kind');
 }
 

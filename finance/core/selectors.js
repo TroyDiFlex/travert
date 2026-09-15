@@ -28,6 +28,14 @@ export function selectExpenses(state, options = {}) {
     .sort((left, right) => right.date.localeCompare(left.date) || right.createdAt.localeCompare(left.createdAt));
 }
 
+export function selectTransfers(state, options = {}) {
+  return visible(state.viewEntities, 'transactions', options.includeDeleted)
+    .filter((transaction) => transaction.kind === 'transfer')
+    .filter((transaction) => !options.accountId || transaction.fromAccountId === options.accountId || transaction.toAccountId === options.accountId)
+    .filter((transaction) => !options.month || transaction.month === options.month)
+    .sort((left, right) => right.date.localeCompare(left.date) || right.createdAt.localeCompare(left.createdAt));
+}
+
 export function selectOverview(state) {
   return calculateLedger(state.viewEntities);
 }
@@ -49,11 +57,13 @@ export function selectCategoryUsage(state, categoryId) {
 export function selectAccountUsage(state, accountId) {
   const expenses = visible(state.viewEntities, 'transactions')
     .filter((transaction) => transaction.kind === 'expense' && transaction.accountId === accountId);
+  const transfers = visible(state.viewEntities, 'transactions')
+    .filter((transaction) => transaction.kind === 'transfer' && (transaction.fromAccountId === accountId || transaction.toAccountId === accountId));
   const totalByCurrency = {};
   for (const expense of expenses) {
     totalByCurrency[expense.currency] = (totalByCurrency[expense.currency] ?? 0) + expense.amountMinor;
   }
-  return { accountId, count: expenses.length, totalByCurrency, expenseIds: expenses.map((expense) => expense.id) };
+  return { accountId, count: expenses.length, totalByCurrency, expenseIds: expenses.map((expense) => expense.id), transferCount: transfers.length, transferIds: transfers.map((transfer) => transfer.id) };
 }
 
 export function selectExpenseSummary(state, filters = {}) {
@@ -87,6 +97,7 @@ export function runSelector(state, selector) {
     case 'accounts': return selectAccounts(state, selector);
     case 'categories': return selectCategories(state, selector);
     case 'expenses': return selectExpenses(state, selector);
+    case 'transfers': return selectTransfers(state, selector);
     case 'expense-summary': return selectExpenseSummary(state, selector);
     case 'category-usage': return selectCategoryUsage(state, selector.categoryId);
     case 'account-usage': return selectAccountUsage(state, selector.accountId);

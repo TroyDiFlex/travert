@@ -35,5 +35,9 @@
     { "id": "txn_seed_14", "date": "2026-09-10", "accountId": "account_card_main", "categoryId": "category_health", "amountMinor": 320000, "currency": "RUB", "note": "Стоматолог" },
     { "id": "txn_seed_15", "date": "2026-09-12", "accountId": "account_card_main", "categoryId": "category_food", "amountMinor": 125050, "currency": "RUB", "note": "Магазин у дома" },
     { "id": "txn_seed_16", "date": "2026-09-14", "accountId": "account_usd", "categoryId": "category_fun", "amountMinor": 999, "currency": "USD", "note": "Игра" }
+  ],
+  "transfers": [
+    { "id": "txn_seed_t1", "date": "2026-08-05", "fromAccountId": "account_card_main", "toAccountId": "account_cash", "fromAmountMinor": 2000000, "toAmountMinor": 2000000, "currency": "RUB", "note": "Снятие наличных" },
+    { "id": "txn_seed_t2", "date": "2026-09-07", "fromAccountId": "account_card_main", "toAccountId": "account_cash", "fromAmountMinor": 1000000, "toAmountMinor": 990000, "currency": "RUB", "note": "Банкомат с комиссией" }
   ]
 }

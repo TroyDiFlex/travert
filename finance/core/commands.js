@@ -5,9 +5,11 @@ export const COMMAND_TYPES = Object.freeze({
   CREATE_ACCOUNT: 'create-account',
   CREATE_CATEGORY: 'create-category',
   RECORD_EXPENSE: 'record-expense',
+  RECORD_TRANSFER: 'record-transfer',
   UPDATE_ACCOUNT: 'update-account',
   UPDATE_CATEGORY: 'update-category',
   UPDATE_EXPENSE: 'update-expense',
+  UPDATE_TRANSFER: 'update-transfer',
   DELETE_TRANSACTION: 'delete-transaction',
   DELETE_CATEGORY: 'delete-category',
   DELETE_ACCOUNT: 'delete-account',
@@ -20,7 +22,7 @@ function defaultUuid() {
 
 function makeCommand(type, payload, options = {}) {
   const uuid = options.uuid ?? defaultUuid;
-  const entityPrefix = type === COMMAND_TYPES.RECORD_EXPENSE ? 'txn' : type.includes('account') ? 'account' : 'category';
+  const entityPrefix = type === COMMAND_TYPES.RECORD_EXPENSE || type === COMMAND_TYPES.RECORD_TRANSFER ? 'txn' : type.includes('account') ? 'account' : 'category';
   return Object.freeze({
     protocolVersion: 2,
     type,
@@ -77,6 +79,22 @@ export function updateExpenseCommand(id, patch, options = {}) {
   return makeCommand(COMMAND_TYPES.UPDATE_EXPENSE, { patch: structuredClone(patch) }, { ...options, entityId: id });
 }
 
+export function recordTransferCommand(input, options) {
+  return makeCommand(COMMAND_TYPES.RECORD_TRANSFER, {
+    date: input.date,
+    fromAccountId: input.fromAccountId,
+    toAccountId: input.toAccountId,
+    fromAmountMinor: input.fromAmountMinor,
+    toAmountMinor: input.toAmountMinor,
+    currency: input.currency,
+    note: input.note ?? '',
+  }, options);
+}
+
+export function updateTransferCommand(id, patch, options = {}) {
+  return makeCommand(COMMAND_TYPES.UPDATE_TRANSFER, { patch: structuredClone(patch) }, { ...options, entityId: id });
+}
+
 export function deleteCategoryCommand(id, options = {}) {
   return makeCommand(COMMAND_TYPES.DELETE_CATEGORY, {}, { ...options, entityId: id });
 }
@@ -128,6 +146,14 @@ function collectDependencies(command, outbox, change) {
     ]) {
       if (typeof id !== 'string') continue;
       const dependency = pendingDependency(outbox, type, id);
+      if (dependency) dependencies.add(dependency);
+    }
+  }
+  if (command.type === COMMAND_TYPES.RECORD_TRANSFER || command.type === COMMAND_TYPES.UPDATE_TRANSFER) {
+    const payload = command.type === COMMAND_TYPES.RECORD_TRANSFER ? command.payload : (command.payload.patch ?? {});
+    for (const id of [payload.fromAccountId, payload.toAccountId]) {
+      if (typeof id !== 'string') continue;
+      const dependency = pendingDependency(outbox, ENTITY_TYPES.ACCOUNTS, id);
       if (dependency) dependencies.add(dependency);
     }
   }
@@ -208,6 +234,17 @@ function commandChange(command, entities) {
           ...command.payload,
         }, entities),
       };
+    case COMMAND_TYPES.RECORD_TRANSFER:
+      return {
+        entityType: ENTITY_TYPES.TRANSACTIONS,
+        id: command.entityId,
+        action: 'create',
+        expectedVersion: 0,
+        value: createEntity(command, ENTITY_TYPES.TRANSACTIONS, {
+          kind: 'transfer',
+          ...command.payload,
+        }, entities),
+      };
     case COMMAND_TYPES.UPDATE_ACCOUNT: {
       const current = entities.get(entityKey(ENTITY_TYPES.ACCOUNTS, command.entityId));
       return {
@@ -261,6 +298,40 @@ function commandChange(command, entities) {
         throw new FinanceValidationError('Некорректное изменение расхода.', 'patch', 'invalid-patch');
       }
       const allowed = ['date', 'accountId', 'categoryId', 'amountMinor', 'currency', 'note'];
+      const unknown = Object.keys(patch).filter((field) => !allowed.includes(field));
+      if (unknown.length) {
+        throw new FinanceValidationError(`Поле нельзя изменить: ${unknown[0]}.`, unknown[0], 'immutable-field');
+      }
+      if (Object.keys(patch).length === 0) {
+        throw new FinanceValidationError('Нет изменений для сохранения.', 'patch', 'empty-patch');
+      }
+      return {
+        entityType: ENTITY_TYPES.TRANSACTIONS,
+        id: command.entityId,
+        action: 'update',
+        expectedVersion: current.version,
+        value: validateEntity(ENTITY_TYPES.TRANSACTIONS, {
+          ...current,
+          ...patch,
+          updatedAt: command.createdAt,
+          lastOpId: command.opId,
+        }, { entities }),
+      };
+    }
+    case COMMAND_TYPES.UPDATE_TRANSFER: {
+      const key = entityKey(ENTITY_TYPES.TRANSACTIONS, command.entityId);
+      const current = entities.get(key);
+      if (!current || current.deletedAt) {
+        throw new FinanceValidationError('Изменяемый перевод не найден.', 'entityId', 'missing-entity');
+      }
+      if (current.kind !== 'transfer') {
+        throw new FinanceValidationError('Можно изменить только перевод.', 'entityId', 'unsupported-transaction-kind');
+      }
+      const patch = command.payload.patch;
+      if (!patch || typeof patch !== 'object' || Array.isArray(patch)) {
+        throw new FinanceValidationError('Некорректное изменение перевода.', 'patch', 'invalid-patch');
+      }
+      const allowed = ['date', 'fromAccountId', 'toAccountId', 'fromAmountMinor', 'toAmountMinor', 'currency', 'note'];
       const unknown = Object.keys(patch).filter((field) => !allowed.includes(field));
       if (unknown.length) {
         throw new FinanceValidationError(`Поле нельзя изменить: ${unknown[0]}.`, unknown[0], 'immutable-field');

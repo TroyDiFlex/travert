@@ -2,6 +2,7 @@ import {
   createAccountCommand,
   createCategoryCommand,
   recordExpenseCommand,
+  recordTransferCommand,
 } from '../core/commands.js';
 
 // Загружает демо-данные (finance/demo-seed.json) в открытую локальную книгу.
@@ -13,17 +14,20 @@ export async function seedDemoData(repository, seed) {
   if (!seed || !Array.isArray(seed.accounts) || !Array.isArray(seed.categories) || !Array.isArray(seed.expenses)) {
     throw new TypeError('Некорректный seed: нужны accounts, categories и expenses.');
   }
-  const [existingAccounts, existingCategories, existingExpenses] = await Promise.all([
+  const seedTransfers = Array.isArray(seed.transfers) ? seed.transfers : [];
+  const [existingAccounts, existingCategories, existingExpenses, existingTransfers] = await Promise.all([
     repository.query({ type: 'accounts', includeDeleted: true }),
     repository.query({ type: 'categories', includeDeleted: true }),
     repository.query({ type: 'expenses', includeDeleted: true }),
+    repository.query({ type: 'transfers', includeDeleted: true }),
   ]);
   const known = new Set([
     ...existingAccounts.map((entity) => `accounts:${entity.id}`),
     ...existingCategories.map((entity) => `categories:${entity.id}`),
     ...existingExpenses.map((entity) => `transactions:${entity.id}`),
+    ...existingTransfers.map((entity) => `transactions:${entity.id}`),
   ]);
-  const added = { accounts: 0, categories: 0, expenses: 0 };
+  const added = { accounts: 0, categories: 0, expenses: 0, transfers: 0 };
   const seedOpId = (id) => `op_seed_${id.replace(/[^A-Za-z0-9_-]/g, '_')}`;
 
   for (const account of seed.accounts) {
@@ -62,6 +66,22 @@ export async function seedDemoData(repository, seed) {
       { opId: seedOpId(expense.id), entityId: expense.id },
     ));
     added.expenses += 1;
+  }
+  for (const transfer of seedTransfers) {
+    if (known.has(`transactions:${transfer.id}`)) continue;
+    await repository.dispatch(recordTransferCommand(
+      {
+        date: transfer.date,
+        fromAccountId: transfer.fromAccountId,
+        toAccountId: transfer.toAccountId,
+        fromAmountMinor: transfer.fromAmountMinor,
+        toAmountMinor: transfer.toAmountMinor,
+        currency: transfer.currency,
+        note: transfer.note ?? '',
+      },
+      { opId: seedOpId(transfer.id), entityId: transfer.id },
+    ));
+    added.transfers += 1;
   }
 
   const pendingCount = await repository.query({ type: 'pending-count' });

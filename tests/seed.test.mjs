@@ -69,6 +69,15 @@ test('demo seed file is internally consistent', () => {
     assert.equal(expense.currency, account.currency, 'валюта расхода обязана совпадать со счётом');
     assert.ok(Number.isSafeInteger(expense.amountMinor) && expense.amountMinor > 0, 'сумма должна быть положительной');
   }
+  for (const transfer of seed.transfers ?? []) {
+    const from = accounts.get(transfer.fromAccountId);
+    const to = accounts.get(transfer.toAccountId);
+    assert.ok(from && to, 'перевод ссылается на известные счета');
+    assert.notEqual(transfer.fromAccountId, transfer.toAccountId, 'перевод не может быть внутри одного счёта');
+    assert.equal(transfer.currency, from.currency, 'валюта перевода совпадает со счётом списания');
+    assert.equal(transfer.currency, to.currency, 'валюта перевода совпадает со счётом зачисления');
+    assert.ok(transfer.fromAmountMinor > 0 && transfer.toAmountMinor > 0, 'обе суммы перевода положительные');
+  }
 });
 
 test('seed loads demo data once and is idempotent on rerun', async () => {
@@ -80,16 +89,19 @@ test('seed loads demo data once and is idempotent on rerun', async () => {
     accounts: seed.accounts.length,
     categories: seed.categories.length,
     expenses: seed.expenses.length,
+    transfers: (seed.transfers ?? []).length,
   });
 
   const expenses = await repository.query({ type: 'expenses' });
   assert.equal(expenses.length, seed.expenses.length);
+  const transfers = await repository.query({ type: 'transfers' });
+  assert.equal(transfers.length, (seed.transfers ?? []).length);
   const summary = await repository.query({ type: 'expense-summary' });
   assert.equal(summary.count, seed.expenses.length);
   assert.ok(Object.keys(summary.totalByCurrency).length >= 2, 'демо должно покрывать несколько валют');
 
   const second = await seedDemoData(repository, seed);
-  assert.deepEqual(second.added, { accounts: 0, categories: 0, expenses: 0 });
+  assert.deepEqual(second.added, { accounts: 0, categories: 0, expenses: 0, transfers: 0 });
   assert.equal(second.pendingCount, first.pendingCount);
   assert.equal((await repository.query({ type: 'expenses' })).length, seed.expenses.length);
 });

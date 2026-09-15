@@ -13,10 +13,15 @@ export function calculateLedger(entities) {
   const expenseByCategory = new Map();
 
   for (const transaction of transactions) {
-    if (transaction.kind !== 'expense') continue;
-    addTo(balanceByAccount, transaction.accountId, -transaction.amountMinor);
-    addTo(expenseByCurrency, transaction.currency, transaction.amountMinor);
-    addTo(expenseByCategory, `${transaction.currency}:${transaction.categoryId}`, transaction.amountMinor);
+    if (transaction.kind === 'expense') {
+      addTo(balanceByAccount, transaction.accountId, -transaction.amountMinor);
+      addTo(expenseByCurrency, transaction.currency, transaction.amountMinor);
+      addTo(expenseByCategory, `${transaction.currency}:${transaction.categoryId}`, transaction.amountMinor);
+    } else if (transaction.kind === 'transfer') {
+      // Перевод не расход и не доход: только движение между счетами.
+      addTo(balanceByAccount, transaction.fromAccountId, -transaction.fromAmountMinor);
+      addTo(balanceByAccount, transaction.toAccountId, transaction.toAmountMinor);
+    }
   }
 
   return { balanceByAccount, expenseByCurrency, expenseByCategory };

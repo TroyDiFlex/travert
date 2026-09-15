@@ -6,12 +6,16 @@ import {
   createCategoryCommand,
   deleteAccountCommand,
   deleteCategoryCommand,
+  deleteTransactionCommand,
   planLocalCommand,
   recordExpenseCommand,
+  recordTransferCommand,
   updateCategoryCommand,
   updateExpenseCommand,
+  updateTransferCommand,
 } from '../finance/core/commands.js';
-import { selectAccountUsage, selectCategoryUsage, selectExpenseSummary } from '../finance/core/selectors.js';
+import { selectAccountUsage, selectCategoryUsage, selectExpenseSummary, selectTransfers } from '../finance/core/selectors.js';
+import { calculateLedger } from '../finance/core/ledger.js';
 import { searchCategoryIcons } from '../finance/icons.js';
 
 const T0 = '2026-09-14T08:00:00.000Z';
@@ -116,4 +120,51 @@ test('icon registry searches in Russian and falls back to neutral', () => {
   assert.ok(searchCategoryIcons('кофе').some((icon) => icon.id === 'local:cafe'));
   assert.ok(searchCategoryIcons('бензин').some((icon) => icon.id === 'local:fuel'));
   assert.ok(searchCategoryIcons('несуществующий запрос 12345').length === 0);
+});
+
+test('transfer moves money between accounts without touching expenses', () => {
+  const snapshot = seed(emptySnapshot());
+  append(snapshot, recordTransferCommand({
+    date: '2026-09-15', fromAccountId: 'account_main', toAccountId: 'account_cash',
+    fromAmountMinor: 100000, toAmountMinor: 99000, currency: 'RUB', note: 'Снятие',
+  }, options('op_tr1', 'txn_tr1', T1)));
+
+  const state = stateFrom(snapshot);
+  assert.equal(selectTransfers(state).length, 1);
+  assert.equal(selectExpenseSummary(state, {}).count, 1);
+  const ledger = calculateLedger([...snapshot.entities.values()]);
+  assert.equal(ledger.balanceByAccount.get('account_main'), -125050 - 100000);
+  assert.equal(ledger.balanceByAccount.get('account_cash'), 99000);
+  assert.equal(ledger.expenseByCurrency.get('RUB'), 125050);
+});
+
+test('transfer rejects same account, zero amounts and currency mismatch', () => {
+  const snapshot = seed(emptySnapshot());
+  const base = {
+    date: '2026-09-15', fromAccountId: 'account_main', toAccountId: 'account_cash',
+    fromAmountMinor: 1000, toAmountMinor: 1000, currency: 'RUB',
+  };
+  assert.throws(() => append(snapshot, recordTransferCommand(
+    { ...base, toAccountId: 'account_main' }, options('op_same', 'txn_same', T1))), /одним и тем же/);
+  assert.throws(() => append(snapshot, recordTransferCommand(
+    { ...base, toAmountMinor: 0 }, options('op_zero', 'txn_zero', T1))), /больше нуля/);
+  assert.throws(() => append(snapshot, recordTransferCommand(
+    { ...base, toAccountId: 'account_cash', currency: 'USD' }, options('op_cur', 'txn_cur', T1))), /валют/);
+  assert.throws(() => append(snapshot, recordTransferCommand(
+    { ...base, fromAccountId: 'missing' }, options('op_miss', 'txn_miss', T1))), /не найдена/);
+});
+
+test('transfer can be edited and deleted', () => {
+  const snapshot = seed(emptySnapshot());
+  append(snapshot, recordTransferCommand({
+    date: '2026-09-15', fromAccountId: 'account_main', toAccountId: 'account_cash',
+    fromAmountMinor: 100000, toAmountMinor: 100000, currency: 'RUB',
+  }, options('op_tr1', 'txn_tr1', T1)));
+  append(snapshot, updateTransferCommand('txn_tr1', { toAmountMinor: 99500, note: 'Комиссия банкомата' }, options('op_tr2', 'txn_tr1', T1)));
+  const updated = snapshot.entities.get('transactions:txn_tr1');
+  assert.equal(updated.toAmountMinor, 99500);
+  assert.equal(updated.note, 'Комиссия банкомата');
+  assert.throws(() => append(snapshot, updateTransferCommand('txn_1', { note: 'x' }, options('op_wrong', 'txn_1', T1))), /только перевод/);
+  append(snapshot, deleteTransactionCommand('txn_tr1'), { opId: 'op_tr3', entityId: 'txn_tr1', createdAt: T1 });
+  assert.equal(selectTransfers(stateFrom(snapshot)).length, 0);
 });
