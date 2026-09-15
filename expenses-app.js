@@ -125,9 +125,9 @@ function filteredExpenses() {
     .filter((e) => filters.categoryId === 'all' || e.categoryId === filters.categoryId);
 }
 
-// --- Обзор расходов: полный клон обзора доходов ---
-// Категории маппятся на источники модели доходов, поэтому incomeChart,
-// chartGeometry, summarize и incomeInsights переиспользуются без изменений.
+// --- Обзор расходов ---
+// Категории маппятся на источники общей модели графиков, но показатели и подписи
+// остаются специфичными для расходов.
 let expCurrency = 'RUB';
 let expPeriod = 'all';
 let expSelectedYear = currentMonth().slice(0, 4);
@@ -292,16 +292,18 @@ function renderExpOverview(chartOptions) {
 
   const percent = (value) => (value === null ? '—' : `${value > 0 ? '+' : ''}${value.toLocaleString('ru-RU', { maximumFractionDigits: 1 })}%`);
   const compared = (item) => (item.amount === null ? `${monthLabel(item.month, true)} · нет записи` : `${monthLabel(item.month, true)} · ${expMoney(item.amount)}`);
+  const topCategory = s.sources[0] || null;
+  const topCategoryShare = topCategory && s.total ? 100 * topCategory.total / s.total : 0;
   const metrics = [
     ['Последний месяц', insights.latest ? expMoney(insights.latest.total) : '—', insights.latest ? monthLabel(insights.latest.month) : 'Нет записей', 'wallet'],
-    ['К предыдущему', percent(insights.previous.change), compared(insights.previous), 'arrow'],
+    ['К прошлому месяцу', percent(insights.previous.change), compared(insights.previous), 'arrow'],
     ['Год к году', percent(insights.yearAgo.change), compared(insights.yearAgo), 'arrow'],
-    ['Среднее за 6 мес.', insights.rolling6.average === null ? '—' : expMoney(insights.rolling6.average), `${insights.rolling6.count} мес. с записями из 6`, 'chart'],
-    ['Среднее за 12 мес.', insights.rolling12.average === null ? '—' : expMoney(insights.rolling12.average), `${insights.rolling12.count} мес. с записями из 12`, 'chart'],
-    ['Лучший год', insights.bestYear?.year || '—', insights.bestYear ? `${expMoney(insights.bestYear.total)} · за всё время` : 'Нет записей', 'check'],
+    ['Среднее в месяц', s.observed.length ? expMoney(s.average) : '—', s.observed.length ? `${s.observed.length} мес. с расходами` : 'Нет записей', 'chart'],
+    ['Пиковый месяц', s.best ? expMoney(s.best.total) : '—', s.best ? monthLabel(s.best.month) : 'Нет записей', 'arrow'],
+    ['Главная категория', topCategory?.name || '—', topCategory ? `${topCategoryShare.toLocaleString('ru-RU', { maximumFractionDigits: 1 })}% · ${expMoney(topCategory.total)}` : 'Нет записей', 'check', true],
   ];
   if ($('exp-overview-metrics')) {
-    $('exp-overview-metrics').innerHTML = metrics.map((m) => `<article class="metric"><div class="metric-label">${esc(m[0])}${ico(m[3])}</div><div class="metric-value">${esc(m[1])}</div><div class="metric-foot">${esc(m[2])}</div></article>`).join('');
+    $('exp-overview-metrics').innerHTML = metrics.map((m) => `<article class="metric"><div class="metric-label">${esc(m[0])}${ico(m[3])}</div><div class="metric-value${m[4] ? ' name' : ''}">${esc(m[1])}</div><div class="metric-foot">${esc(m[2])}</div></article>`).join('');
   }
   renderExpDonut(s);
   renderExpComparison(s);
@@ -311,7 +313,9 @@ function renderExpOverview(chartOptions) {
 
 function renderExpDonut(s) {
   const value = (x) => (expComparison === 'average' ? x.average : x.total);
-  const sources = [...s.sources].sort((a, b) => value(b) - value(a));
+  // Preserve one category order between modes. Only arc sizes should animate;
+  // reordering circles makes every segment rotate through its neighbours.
+  const sources = s.sources;
   const total = sources.reduce((sum, x) => sum + value(x), 0);
   const donut = $('exp-overview-donut');
   if (!donut) return;
@@ -449,7 +453,7 @@ function renderExpChart(data, model, { animate = true, newSourcesOnly = false } 
   const [from, to] = expPeriodBounds();
   const now = performance.now(), previous = newSourcesOnly && expChart?.type === expChartType ? expChart : null;
   const lineReveals = animate && expChartType !== 'bars' ? lineRevealStarts(model, previous, now) : new Map();
-  const geometry = chartGeometry(model, expChartType, container.clientWidth, container.clientHeight, { animate, lineReveals, now });
+  const geometry = chartGeometry(model, expChartType, container.clientWidth, container.clientHeight, { animate, lineReveals, now, idPrefix: 'expense-' });
   const tooltipRows = expCategoryFilter.length === 1 && expCategoryFilter[0] === 'all'
     ? incomeSourceSeries(data, from, to)
     : expChartType === 'bars' ? model.bars : model.lines.filter((ser) => ser.id !== 'all');

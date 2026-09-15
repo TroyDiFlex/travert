@@ -43,7 +43,7 @@ export function incomeChart(data,from,to,selection=['all']) {
   return {summary,lines,bars};
 }
 
-export function chartGeometry(model,type,containerWidth,containerHeight,{animate=true,lineReveals=null,now=0}={}) {
+export function chartGeometry(model,type,containerWidth,containerHeight,{animate=true,lineReveals=null,now=0,idPrefix=''}={}) {
   const {summary:s,lines,bars}=model,width=Math.max(280,containerWidth),height=containerHeight;
   const left=44,right=12,top=12,bottom=34,plotW=width-left-right,plotH=height-top-bottom;
   const values=type==='bars'?s.months.map(m=>m.total):lines.flatMap(line=>line.months.map(m=>m.total));
@@ -65,7 +65,7 @@ export function chartGeometry(model,type,containerWidth,containerHeight,{animate
     s.months.forEach((m,i)=>{
       if(!m.count)return;
       const w=Math.min(step*.58,44),bx=x(i)-w/2,by=y(m.total),h=Math.max(m.total?1:2,y(0)-by);
-      defs+=`<clipPath id="bar-clip-${i}"><rect x="${bx}" y="${by}" width="${w}" height="${h}" rx="${Math.min(step*.15,4)}"/></clipPath>`;
+      defs+=`<clipPath id="${idPrefix}bar-clip-${i}"><rect x="${bx}" y="${by}" width="${w}" height="${h}" rx="${Math.min(step*.15,4)}"/></clipPath>`;
       let total=0;
       const pieces=bars.map((series,j)=>{
         const month=series.months[i];
@@ -75,15 +75,15 @@ export function chartGeometry(model,type,containerWidth,containerHeight,{animate
       }).join('');
       const zeroColor=bars.find(series=>series.months[i].count)?.color||'var(--accent)';
       // A recorded zero remains visible; a missing month has no column.
-      fills+=`<g class="bar-stack" style="transform-origin:0 ${y(0)}px;--bar-delay:${Math.round(i/Math.max(1,n-1)*180)}ms" clip-path="url(#bar-clip-${i})">${m.total?pieces:`<rect class="bar" style="--series-color:${zeroColor}" x="${bx}" y="${by}" width="${w}" height="2"/>`}</g>`;
+      fills+=`<g class="bar-stack" style="transform-origin:0 ${y(0)}px;--bar-delay:${Math.round(i/Math.max(1,n-1)*180)}ms" clip-path="url(#${idPrefix}bar-clip-${i})">${m.total?pieces:`<rect class="bar" style="--series-color:${zeroColor}" x="${bx}" y="${by}" width="${w}" height="2"/>`}</g>`;
     });
   }else{
     lines.forEach((series,j)=>{
       const start=lineReveals===null?now:lineReveals.get(series.id);
       const reveal=animate&&start!==undefined&&now-start<LINE_REVEAL_MS;
-      const clip=reveal?` clip-path="url(#chart-reveal-clip-${j})"`:'';
-      if(reveal)defs+=`<clipPath id="chart-reveal-clip-${j}" clipPathUnits="userSpaceOnUse"><rect class="chart-reveal" style="--line-delay:${Math.min(0,start-now)}ms" width="${width}" height="${height}"/></clipPath>`;
-      defs+=`<linearGradient id="chart-fill-${j}" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="${series.color}" stop-opacity=".23"/><stop offset="100%" stop-color="${series.color}" stop-opacity="0"/></linearGradient>`;
+      const clip=reveal?` clip-path="url(#${idPrefix}chart-reveal-clip-${j})"`:'';
+      if(reveal)defs+=`<clipPath id="${idPrefix}chart-reveal-clip-${j}" clipPathUnits="userSpaceOnUse"><rect class="chart-reveal" style="--line-delay:${Math.min(0,start-now)}ms" width="${width}" height="${height}"/></clipPath>`;
+      defs+=`<linearGradient id="${idPrefix}chart-fill-${j}" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="${series.color}" stop-opacity=".23"/><stop offset="100%" stop-color="${series.color}" stop-opacity="0"/></linearGradient>`;
       let lineFills='',lineStrokes='';
       const segments=[];let segment=[];
       series.months.forEach((m,i)=>{if(m.count)segment.push([x(i),y(m.total)]);else if(segment.length){segments.push(segment);segment=[];}});
@@ -94,7 +94,7 @@ export function chartGeometry(model,type,containerWidth,containerHeight,{animate
           const p=points[i-1],q=points[i],mid=(p[0]+q[0])/2;
           path+=type==='smooth'?` C ${mid} ${p[1]}, ${mid} ${q[1]}, ${q[0]} ${q[1]}`:` L ${q.join(' ')}`;
         }
-        lineFills+=`<path d="${path} L ${points.at(-1)[0]} ${y(0)} L ${points[0][0]} ${y(0)} Z" fill="url(#chart-fill-${j})"/>`;
+        lineFills+=`<path d="${path} L ${points.at(-1)[0]} ${y(0)} L ${points[0][0]} ${y(0)} Z" fill="url(#${idPrefix}chart-fill-${j})"/>`;
         lineStrokes+=`<path class="data-line" data-series="${j}" style="--series-color:${series.color}" d="${path}"/>`;
         if(points.length===1)lineStrokes+=`<circle class="chart-point" style="--series-color:${series.color}" cx="${points[0][0]}" cy="${points[0][1]}" r="4.5"/>`;
       }

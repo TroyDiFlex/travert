@@ -75,6 +75,13 @@ test('each line has its own gradient, color, hover dot and independent missing-d
  assert.equal(bPaths.length,2);assert.ok(bPaths.every(([,d])=>!/[CL]/.test(d)));
  assert.doesNotMatch(svg,/NaN|Infinity|undefined/);
 });
+test('multiple charts can namespace their SVG definitions without collisions',()=>{
+ const first=chartGeometry(model(['all','a']),'line',900,272).svg;
+ const second=chartGeometry(model(['all','a']),'line',900,272,{idPrefix:'expense-'}).svg;
+ assert.match(first,/id="chart-fill-0"/);assert.match(first,/url\(#chart-fill-0\)/);
+ assert.match(second,/id="expense-chart-fill-0"/);assert.match(second,/url\(#expense-chart-fill-0\)/);
+ assert.doesNotMatch(second,/id="chart-fill-0"/);
+});
 test('smooth and straight lines share colors but use different path interpolation',()=>{
  const m=model(['all','a']);
  assert.match(chartGeometry(m,'smooth',900,272).svg,/ C /);

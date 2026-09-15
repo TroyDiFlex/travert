@@ -55,9 +55,20 @@ test('entry view splits into expenses and income sections with deep links',async
   assert.match(html,/<dialog id="expense-dialog">/);
   const app=await readFile(new URL('../app.js',import.meta.url),'utf8');
   assert.match(app,/#entries\(\?:-\(expenses\|income\)\)\?\$/);
-  assert.match(app,/travert-entry-section/);
+  assert.match(app,/setEntrySection\(entriesMatch\[1\]\|\|'expenses'\)/);
+  assert.doesNotMatch(app,/travert-entry-section/);
   assert.match(app,/expenses-shown/);
   assert.match(app,/expenses-overview-shown/);
+});
+
+test('expense overview uses expense-specific metrics and stable donut order',async()=>{
+  const app=await readFile(new URL('../expenses-app.js',import.meta.url),'utf8');
+  for(const label of ['Последний месяц','К прошлому месяцу','Год к году','Среднее в месяц','Пиковый месяц','Главная категория'])assert.match(app,new RegExp(label));
+  assert.doesNotMatch(app,/\['Лучший год'/);
+  assert.match(app,/const sources = s\.sources;/);
+  assert.match(app,/idPrefix: 'expense-'/);
+  const css=await readFile(new URL('../expenses.css',import.meta.url),'utf8');
+  assert.match(css,/#exp-entry-tabs \{ justify-self: start; width: max-content;/);
 });
 
 test('chart exposes the selected monthly values as an accessible table',async()=>{

@@ -16,7 +16,6 @@ setupTheme();
 let comparisonMode='average';
 try{const saved=localStorage.getItem('travert-comparison-mode');if(['total','average'].includes(saved))comparisonMode=saved;}catch{}
 let data=null,view='overview',period='all',chartType='line',sourceFilter=['all'],entrySection='expenses',selectedYear=currentMonth().slice(0,4),selectedMonth=currentMonth(),customFrom='',customTo='',tableYear=currentMonth().slice(0,4),entryMode=matchMedia('(max-width:650px)').matches?'month':'table',sourceColor=COLORS[0],busy=false,chartSelection=-1,toastTimer,authAttempt=0,restoring=false;
-try{const savedSection=localStorage.getItem('travert-entry-section');if(['expenses','income'].includes(savedSection))entrySection=savedSection;}catch{}
 const dirtyForms=new Set();let renderedEntryMonth=currentMonth();
 const sourceFilterUi=setupSourceFilter({getSources:()=>data?.sources||[],getSelection:()=>sourceFilter,setSelection:value=>{sourceFilter=value;},onChange:options=>renderOverview(options)});
 function markDirty(form){dirtyForms.add(form);}
@@ -54,7 +53,6 @@ document.querySelectorAll('[data-route]').forEach(link=>link.addEventListener('c
 function setEntrySection(section,{updateHash=false}={}){
   if(!['expenses','income'].includes(section))section='expenses';
   entrySection=section;
-  try{localStorage.setItem('travert-entry-section',section);}catch{}
   document.querySelectorAll('[data-entry-section]').forEach(b=>{const selected=b.dataset.entrySection===section;b.classList.toggle('selected',selected);b.setAttribute('aria-pressed',String(selected));});
   if($('entries-pane-expenses'))$('entries-pane-expenses').hidden=section!=='expenses';
   if($('entries-pane-income'))$('entries-pane-income').hidden=section!=='income';
@@ -74,7 +72,7 @@ function navigate(){
   if(!data)return;
   const hash=location.hash||'#overview';
   const entriesMatch=/^#entries(?:-(expenses|income))?$/.exec(hash);
-  if(entriesMatch){view='entries';if(entriesMatch[1])setEntrySection(entriesMatch[1]);else setEntrySection(entrySection);}
+  if(entriesMatch){view='entries';setEntrySection(entriesMatch[1]||'expenses');}
   else if(hash==='#expenses'){view='expenses';}
   else{view='overview';}
   if($('overview-view'))$('overview-view').hidden=view!=='overview';
