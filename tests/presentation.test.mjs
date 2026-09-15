@@ -46,7 +46,7 @@ test('entry view splits into expenses and income sections with deep links',async
   assert.deepEqual(routes.map(([, ,route])=>route),['overview','expenses','income']);
   assert.match(html,/<a href="#entries-expenses"[^>]*data-route="expenses"/);
   assert.match(html,/<a href="#entries-income"[^>]*data-route="income"/);
-  assert.match(html,/<button data-entry-section="expenses" class="selected"/);
+  assert.doesNotMatch(html,/data-entry-section/);
   assert.match(html,/<div id="entries-pane-expenses"/);
   assert.match(html,/<div id="entries-pane-income" hidden>/);
   assert.match(html,/<dialog id="expense-dialog">/);

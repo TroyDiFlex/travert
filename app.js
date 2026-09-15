@@ -55,10 +55,6 @@ function setEntrySection(section,{updateHash=false}={}){
   if(!['expenses','income'].includes(section))section='expenses';
   entrySection=section;
   try{localStorage.setItem('travert-entry-section',section);}catch{}
-  document.querySelectorAll('[data-entry-section]').forEach(b=>{
-    const selected=b.dataset.entrySection===section;
-    b.classList.toggle('selected',selected);b.setAttribute('aria-pressed',String(selected));
-  });
   $('entries-pane-expenses').hidden=section!=='expenses';
   $('entries-pane-income').hidden=section!=='income';
   if(section==='expenses')window.dispatchEvent(new window.CustomEvent('expenses-shown'));
@@ -67,7 +63,6 @@ function setEntrySection(section,{updateHash=false}={}){
     if(location.hash!==target)location.hash=target;
   }
 }
-$('entry-section-tabs').addEventListener('click',e=>{const b=e.target.closest('[data-entry-section]');if(b)setEntrySection(b.dataset.entrySection,{updateHash:true});});
 function navigate(){if(!data)return;const entriesMatch=/^#entries(?:-(expenses|income))?$/.exec(location.hash);view=!entriesMatch?'overview':'entries';if(entriesMatch&&entriesMatch[1])setEntrySection(entriesMatch[1]);else if(entriesMatch)setEntrySection(entrySection);$('overview-view').hidden=view!=='overview';$('entries-view').hidden=view!=='entries';$('page-title').innerHTML=view==='overview'?'Обзор доходов<span class="title-dot">.</span>':'Ввод данных<span class="title-dot">.</span>';$('page-eyebrow').textContent=view==='overview'?'ВАШ ФИНАНСОВЫЙ ПУЛЬС':'РАСХОДЫ И ДОХОДЫ';$('page-description').textContent=view==='overview'?'От отдельных поступлений — к полной картине.':'Счета, категории, источники — каждая операция на своём месте.';document.querySelectorAll('[data-route]').forEach(a=>{const route=a.dataset.route,active=route==='overview'&&view==='overview'||view==='entries'&&(route==='expenses'&&entrySection==='expenses'||route==='income'&&entrySection==='income');a.classList.toggle('active',active);a.setAttribute('aria-current',active?'page':'false');});if(view==='overview')renderChart();else renderEntries();}
 window.addEventListener('hashchange',navigate);
 function periodBounds(){if(period==='year')return [selectedYear+'-01',selectedYear+'-12'];if(period==='custom')return [customFrom,customTo];return ['',''];}
