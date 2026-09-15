@@ -3,9 +3,9 @@
 <head>
   <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#080808"><meta name="robots" content="noindex,nofollow">
-  <meta name="description" content="Travert — учёт расходов. Работает офлайн, данные хранятся на устройстве.">
+  <meta name="description" content="Траверт — личные финансы. Расходы, счета и категории. Работает офлайн.">
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; object-src 'none'; base-uri 'self'; form-action 'self'">
-  <meta name="referrer" content="no-referrer"><title>Travert · Расходы</title>
+  <meta name="referrer" content="no-referrer"><title>Траверт · Расходы</title>
   <link id="site-icon" rel="icon" href="icon.svg?v=4" type="image/svg+xml" sizes="any">
   <script src="theme-head.js?v=1"></script>
   <link rel="stylesheet" href="style.css">
@@ -13,43 +13,90 @@
   <script type="module" src="expenses.js"></script>
 </head>
 <body>
-<div class="expenses-page">
-  <header class="expenses-header">
+<svg class="icon-defs" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><defs>
+<symbol id="i-chart" viewBox="0 0 24 24"><path d="M4 4v16h16M8 14l4-5 4 3 5-7"/></symbol>
+<symbol id="i-grid" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="4"/><path d="M3 9h18M9 9v12"/></symbol>
+<symbol id="i-wallet" viewBox="0 0 24 24"><path d="M4 7V5a2 2 0 012-2h12v4M18 11h3v6h-3a3 3 0 010-6Z"/><path d="M21 11V9a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2h14a2 2 0 002-2v-2"/></symbol>
+<symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+<symbol id="i-close" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></symbol>
+<symbol id="i-check" viewBox="0 0 24 24"><path d="M5 12l4 4L19 6"/></symbol>
+</defs></svg>
+<div class="workspace">
+  <aside class="sidebar">
     <span class="brand"><span class="brand-mark">т</span><span>траверт<span class="brand-dot">.</span></span></span>
-    <nav class="header-nav"><a class="text-button" href="income.html">Старые доходы</a><span id="sync-status" class="sync-pill" role="status">Открываем книгу…</span></nav>
-  </header>
-  <main class="expenses-main">
-    <section class="glass expense-form-card" aria-labelledby="expense-form-title">
-      <div class="card-kicker">НОВЫЙ РАСХОД</div>
-      <h1 id="expense-form-title">Потратили — записали<span class="title-dot">.</span></h1>
-      <form id="expense-form">
-        <div class="form-grid">
-          <label>Дата<input id="expense-date" type="date" required></label>
-          <label>Сумма <span id="expense-currency" class="muted"></span><input id="expense-amount" type="text" inputmode="decimal" placeholder="0" autocomplete="off" required></label>
-        </div>
-        <div class="form-grid">
-          <label>Счёт<select id="expense-account" required></select><button type="button" class="text-button" id="add-account">+ счёт</button></label>
-          <div class="category-field"><span class="field-label">Категория</span><div class="category-pick"><button type="button" id="category-chip" class="category-chip">Выбрать…</button><button type="button" class="text-button" id="add-category">+ категория</button></div></div>
-        </div>
-        <label>Заметка <span class="muted">(необязательно)</span><input id="expense-note" type="text" maxlength="500" placeholder="Например, продукты на неделю" autocomplete="off"></label>
-        <p class="error" id="expense-error" role="alert"></p>
-        <button type="submit" class="button primary" id="expense-submit">Сохранить расход</button>
-      </form>
-      <p class="muted help" id="sync-note">Сохраняется сразу на это устройство — работает без интернета. <span id="pending-note"></span></p>
+    <div class="nav-label">ЛИЧНЫЕ ФИНАНСЫ</div>
+    <nav aria-label="Основная навигация">
+      <a href="#/expenses" class="nav-item" data-route="expenses"><svg class="icon"><use href="#i-wallet"/></svg><span>Расходы</span></a>
+      <a href="#/accounts" class="nav-item" data-route="accounts"><svg class="icon"><use href="#i-grid"/></svg><span>Счета и категории</span></a>
+      <a href="#/overview" class="nav-item" data-route="overview"><svg class="icon"><use href="#i-chart"/></svg><span>Обзор</span></a>
+    </nav>
+    <div class="sidebar-bottom">
+      <div class="sidebar-sync" id="side-sync" role="status">Открываем книгу…</div>
+      <a href="income.html" class="nav-item"><svg class="icon"><use href="#i-chart"/></svg><span>Архив доходов</span></a>
+      <div class="sidebar-caption">Меньше догадок.<br>Больше ясности.</div>
+    </div>
+  </aside>
+  <main class="main">
+    <header class="page-header"><div><div class="eyebrow" id="page-eyebrow">ТРАВЕРТ · УЧЁТ РАСХОДОВ</div><h1 id="page-title">Расходы<span class="title-dot">.</span></h1><p id="page-description">Траты по категориям — сразу на устройстве, без интернета.</p></div><div class="header-actions"><button class="button primary" id="quick-expense"><svg class="icon"><use href="#i-plus"/></svg><span>Расход</span></button></div></header>
+
+    <section id="view-expenses">
+      <div class="metrics" id="expense-metrics" aria-label="Итоги расходов"></div>
+      <section class="glass analytics-card" aria-label="Графики расходов">
+        <div class="section-heading"><div><span class="card-kicker">ДИНАМИКА</span><h2 id="months-title">Траты по месяцам</h2></div><span class="small-tag" id="analytics-currency"></span></div>
+        <div id="months-chart" class="months-chart"></div>
+        <div class="section-heading"><div><span class="card-kicker">СТРУКТУРА</span><h2>Категории месяца</h2></div></div>
+        <div id="category-shares" class="category-shares"></div>
+        <p class="muted help" id="analytics-note"></p>
+      </section>
+      <section class="glass expense-form-card" id="expense-form-card" aria-labelledby="expense-form-title">
+        <div class="card-kicker">НОВЫЙ РАСХОД</div>
+        <h2 id="expense-form-title">Потратили — записали<span class="title-dot">.</span></h2>
+        <form id="expense-form">
+          <div class="form-grid">
+            <label>Дата<input id="expense-date" type="date" required></label>
+            <label>Сумма <span id="expense-currency" class="muted"></span><input id="expense-amount" type="text" inputmode="decimal" placeholder="0" autocomplete="off" required></label>
+          </div>
+          <div class="form-grid">
+            <label>Счёт<select id="expense-account" required></select></label>
+            <div class="category-field"><span class="field-label">Категория</span><div class="category-pick"><button type="button" id="category-chip" class="category-chip">Выбрать…</button></div></div>
+          </div>
+          <label>Заметка <span class="muted">(необязательно)</span><input id="expense-note" type="text" maxlength="500" placeholder="Например, продукты на неделю" autocomplete="off"></label>
+          <p class="error" id="expense-error" role="alert"></p>
+          <button type="submit" class="button primary" id="expense-submit">Сохранить расход</button>
+        </form>
+      </section>
+      <section class="glass expense-list-card" aria-labelledby="expense-list-title">
+        <div class="list-heading"><div><div class="card-kicker">ИСТОРИЯ</div><h2 id="expense-list-title">Расходы</h2></div><label class="month-filter">Месяц<input id="expense-month" type="month"></label></div>
+        <p id="expense-empty" class="muted">Пока пусто. Первый расход появится здесь после сохранения.</p>
+        <ul id="expense-list" class="expense-list"></ul>
+      </section>
     </section>
-    <section class="glass expense-list-card" aria-labelledby="expense-list-title">
-      <div class="list-heading"><div><div class="card-kicker">ИСТОРИЯ</div><h2 id="expense-list-title">Расходы</h2></div><label class="month-filter">Месяц<input id="expense-month" type="month"></label></div>
-      <p id="expense-empty" class="muted">Пока пусто. Первый расход появится здесь после сохранения.</p>
-      <ul id="expense-list" class="expense-list"></ul>
+
+    <section id="view-accounts" hidden>
+      <section class="glass manage-card" aria-labelledby="accounts-title">
+        <div class="list-heading"><div><div class="card-kicker">ДЕНЬГИ</div><h2 id="accounts-title">Счета</h2></div><button type="button" class="button subtle" id="add-account"><svg class="icon"><use href="#i-plus"/></svg><span>Счёт</span></button></div>
+        <ul id="account-list" class="manage-list"></ul>
+      </section>
+      <section class="glass manage-card" aria-labelledby="categories-title">
+        <div class="list-heading"><div><div class="card-kicker">СТРУКТУРА</div><h2 id="categories-title">Категории</h2></div><button type="button" class="button subtle" id="add-category"><svg class="icon"><use href="#i-plus"/></svg><span>Категория</span></button></div>
+        <ul id="category-list-full" class="manage-list"></ul>
+      </section>
     </section>
+
+    <section id="view-overview" hidden>
+      <section class="glass manage-card"><div class="card-kicker">ДАЛЬШЕ</div><h2>Обзор появится следующим</h2>
+      <p class="muted">Сюда приедут доходы, переводы между счетами и общая картина: остатки, бюджеты и накопления. Сейчас работают расходы, счета и категории — этого достаточно для ежедневного учёта.</p></section>
+    </section>
+
+    <div class="bottom-note"><span>Всё хранится на этом устройстве. Отправка на другие устройства появится позже.</span><span id="pending-note"></span></div>
   </main>
 </div>
 <dialog id="category-list-dialog" aria-labelledby="category-list-title">
-  <div class="dialog-heading"><div><div class="card-kicker">КАТЕГОРИЯ</div><h2 id="category-list-title">Выбор категории</h2></div><button type="button" class="icon-button close-dialog" aria-label="Закрыть">✕</button></div>
+  <div class="dialog-heading"><div><div class="card-kicker">КАТЕГОРИЯ</div><h2 id="category-list-title">Выбор категории</h2></div><button type="button" class="icon-button close-dialog" aria-label="Закрыть"><svg class="icon"><use href="#i-close"/></svg></button></div>
   <div id="category-list" class="category-list"></div>
 </dialog>
 <dialog id="category-dialog" aria-labelledby="category-dialog-title">
-  <form id="category-form"><div class="dialog-heading"><div><div class="card-kicker">КАТЕГОРИЯ</div><h2 id="category-dialog-title">Новая категория</h2></div><button type="button" class="icon-button close-dialog" aria-label="Закрыть">✕</button></div>
+  <form id="category-form"><div class="dialog-heading"><div><div class="card-kicker">КАТЕГОРИЯ</div><h2 id="category-dialog-title">Новая категория</h2></div><button type="button" class="icon-button close-dialog" aria-label="Закрыть"><svg class="icon"><use href="#i-close"/></svg></button></div>
   <label>Название<input id="category-name" type="text" required maxlength="120" placeholder="Например, Продукты"></label>
   <fieldset><legend>Цвет</legend><div id="category-colors" class="color-options"></div></fieldset>
   <div class="category-icon-row"><span class="field-label">Иконка</span><button type="button" id="category-icon-pick" class="category-chip">Выбрать…</button></div>
@@ -57,12 +104,12 @@
   <div class="form-footer"><button type="button" class="button subtle close-dialog">Отмена</button><button type="submit" class="button primary">Сохранить</button></div></form>
 </dialog>
 <dialog id="icon-dialog" aria-labelledby="icon-dialog-title">
-  <div class="dialog-heading"><div><div class="card-kicker">ИКОНКА</div><h2 id="icon-dialog-title">Выбор иконки</h2></div><button type="button" class="icon-button close-dialog" aria-label="Закрыть">✕</button></div>
+  <div class="dialog-heading"><div><div class="card-kicker">ПАК ИКОНОК</div><h2 id="icon-dialog-title">Выбор иконки</h2></div><button type="button" class="icon-button close-dialog" aria-label="Закрыть"><svg class="icon"><use href="#i-close"/></svg></button></div>
   <label>Поиск<input id="icon-search" type="search" placeholder="Например, кофе или такси" autocomplete="off"></label>
   <div id="icon-grid" class="icon-grid" role="listbox" aria-label="Иконки категорий"></div>
 </dialog>
 <dialog id="account-dialog" aria-labelledby="account-dialog-title">
-  <form id="account-form"><div class="dialog-heading"><div><div class="card-kicker">СЧЁТ</div><h2 id="account-dialog-title">Новый счёт</h2></div><button type="button" class="icon-button close-dialog" aria-label="Закрыть">✕</button></div>
+  <form id="account-form"><div class="dialog-heading"><div><div class="card-kicker">СЧЁТ</div><h2 id="account-dialog-title">Новый счёт</h2></div><button type="button" class="icon-button close-dialog" aria-label="Закрыть"><svg class="icon"><use href="#i-close"/></svg></button></div>
   <label>Название<input id="account-name" type="text" required maxlength="120" placeholder="Например, Карта"></label>
   <div class="form-grid"><label>Тип<select id="account-kind"><option value="cash">Наличные</option><option value="bank" selected>Банк</option><option value="savings">Накопления</option></select></label>
   <label>Валюта<select id="account-currency"><option value="RUB" selected>RUB ₽</option><option value="USD">USD $</option><option value="EUR">EUR €</option></select></label></div>

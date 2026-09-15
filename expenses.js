@@ -1,13 +1,25 @@
-import { CATEGORY_COLORS, ExpensesController, UNCATEGORIZED_ID } from './finance/controller.js';
+import { ACCOUNT_KIND_LABELS, CATEGORY_COLORS, ExpensesController, UNCATEGORIZED_ID } from './finance/controller.js';
 import { iconSvg, searchIcons } from './finance/icons.js';
+import {
+  categoryTotals,
+  formatMonthShort,
+  lastMonths,
+  monthlyTotals,
+  pickDisplayCurrency,
+  totalsByCurrency,
+} from './finance/stats.js';
 
 const controller = new ExpensesController();
 
 const elements = {};
 for (const id of [
-  'sync-status', 'sync-note', 'pending-note', 'expense-form', 'expense-date', 'expense-amount', 'expense-currency',
+  'side-sync', 'pending-note', 'page-title', 'page-description', 'quick-expense',
+  'view-expenses', 'view-accounts', 'view-overview',
+  'expense-metrics', 'months-chart', 'analytics-currency', 'analytics-note', 'category-shares',
+  'expense-form', 'expense-date', 'expense-amount', 'expense-currency',
   'expense-account', 'expense-note', 'expense-error', 'expense-submit',
   'category-chip', 'category-list-dialog', 'category-list', 'expense-list', 'expense-empty', 'expense-month',
+  'account-list', 'category-list-full',
   'category-dialog', 'category-form', 'category-name', 'category-colors',
   'category-icon-pick', 'category-error', 'icon-dialog', 'icon-search', 'icon-grid',
   'account-dialog', 'account-form', 'account-name', 'account-kind', 'account-currency',
@@ -25,6 +37,12 @@ const state = {
   categoryId: UNCATEGORIZED_ID,
   iconId: 'local:basket',
   color: CATEGORY_COLORS[6],
+};
+
+const ROUTES = {
+  '/expenses': { view: 'viewExpenses', title: 'Расходы', description: 'Траты по категориям — сразу на устройстве, без интернета.' },
+  '/accounts': { view: 'viewAccounts', title: 'Счета и категории', description: 'Откуда тратим и как раскладываем траты.' },
+  '/overview': { view: 'viewOverview', title: 'Обзор', description: 'Общая картина — следующий раздел.' },
 };
 
 function showToast(message) {
@@ -57,18 +75,86 @@ function todayLocal() {
   return `${now.getFullYear()}-${month}-${day}`;
 }
 
-function renderStatus() {
-  const pill = elements.syncStatus;
-  if (!state.online) {
-    pill.textContent = 'Офлайн · сохраняем';
-    pill.className = 'sync-pill is-offline';
-  } else {
-    pill.textContent = '✓ Всё сохранено';
-    pill.className = 'sync-pill is-saved';
+function escapeHtml(value) {
+  return String(value).replace(/[&<>"']/g, (char) => ({
+    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;',
+  })[char]);
+}
+
+function currentRoute() {
+  const hash = window.location.hash.replace(/^#/, '') || '/expenses';
+  return ROUTES[hash] ? hash : '/expenses';
+}
+
+function applyRoute() {
+  const route = ROUTES[currentRoute()];
+  for (const [hash, config] of Object.entries(ROUTES)) {
+    elements[config.view].hidden = hash !== currentRoute();
   }
-  elements.pendingNote.textContent = state.pending > 0
-    ? `Записей на устройстве: ${state.pending}. Отправка на другие устройства появится позже.`
-    : '';
+  for (const link of document.querySelectorAll('.nav-item[data-route]')) {
+    link.classList.toggle('active', `#/${link.dataset.route}` === currentRoute());
+  }
+  elements.pageTitle.innerHTML = `${escapeHtml(route.title)}<span class="title-dot">.</span>`;
+  elements.pageDescription.textContent = route.description;
+}
+
+function renderStatus() {
+  if (!state.online) {
+    elements.sideSync.textContent = 'Офлайн · сохраняем на устройстве';
+  } else if (state.pending > 0) {
+    elements.sideSync.textContent = `На устройстве: ${state.pending}`;
+  } else {
+    elements.sideSync.textContent = 'Всё на устройстве ✓';
+  }
+  elements.pendingNote.textContent = state.pending > 0 ? `Ждут отправки: ${state.pending}` : '';
+}
+
+function renderMetrics(currency) {
+  const now = new Date();
+  const month = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+  const monthTotal = state.expenses
+    .filter((item) => item.month === month && item.currency === currency)
+    .reduce((sum, item) => sum + item.amountMinor, 0);
+  const cards = [
+    ['Потрачено в этом месяце', controller.formatAmount(monthTotal, currency), formatMonthShort(month)],
+    ['Операций всего', String(state.expenses.length), 'расходы'],
+    ['Счетов', String(state.accounts.length), 'валюты не смешиваем'],
+  ];
+  elements.expenseMetrics.innerHTML = cards.map(([label, value, foot]) =>
+    `<article class="metric"><div class="metric-label">${escapeHtml(label)}</div><div class="metric-value">${escapeHtml(value)}</div><div class="metric-foot">${escapeHtml(foot)}</div></article>`).join('');
+}
+
+function renderAnalytics() {
+  const currency = pickDisplayCurrency(state.expenses);
+  const months = lastMonths(6);
+  const series = monthlyTotals(state.expenses, months, currency);
+  const max = Math.max(1, ...series.map((point) => point.totalMinor));
+  elements.analyticsCurrency.textContent = currency;
+  elements.monthsChart.innerHTML = series.map((point) => {
+    const height = Math.round((point.totalMinor / max) * 100);
+    const title = `${formatMonthShort(point.month)}: ${controller.formatAmount(point.totalMinor, currency)}`;
+    return `<div class="month-bar" title="${escapeHtml(title)}"><div class="month-fill" style="height:${height}%"></div><span>${escapeHtml(formatMonthShort(point.month))}</span></div>`;
+  }).join('');
+
+  const activeMonth = [...series].reverse().find((point) => point.totalMinor > 0)?.month
+    ?? months[months.length - 1];
+  const shares = categoryTotals(state.expenses, { month: activeMonth, currency });
+  const monthTotal = shares.reduce((sum, share) => sum + share.totalMinor, 0);
+  elements.categoryShares.innerHTML = shares.length === 0
+    ? '<p class="muted">В этом месяце трат пока нет.</p>'
+    : shares.map((share) => {
+      const category = categoryById(share.categoryId) ?? { name: 'Без категории', iconId: 'local:circle', color: '#94a3b8' };
+      const percent = monthTotal === 0 ? 0 : Math.round((share.totalMinor / monthTotal) * 100);
+      return `<div class="share-row">${iconBadge(category.iconId, category.color)}
+        <div class="share-main"><div class="share-top"><span>${escapeHtml(category.name)}</span><span>${escapeHtml(controller.formatAmount(share.totalMinor, currency))}</span></div>
+        <div class="share-track"><div class="share-fill" style="width:${percent}%;background:${category.color}"></div></div></div>
+        <span class="share-percent">${percent}%</span></div>`;
+    }).join('');
+
+  const others = Object.entries(totalsByCurrency(state.expenses)).filter(([code]) => code !== currency);
+  elements.analyticsNote.textContent = others.length === 0
+    ? `Показаны итоги в ${currency} за последние 6 месяцев.`
+    : `Показаны итоги в ${currency}. Другие валюты: ${others.map(([code, total]) => controller.formatAmount(total, code)).join(', ')}.`;
 }
 
 function renderAccounts() {
@@ -127,28 +213,24 @@ function renderExpenses() {
   }
 }
 
-function escapeHtml(value) {
-  return String(value).replace(/[&<>"']/g, (char) => ({
-    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;',
-  })[char]);
-}
-
-async function refresh() {
-  const [accounts, categories, expenses, pending] = await Promise.all([
-    controller.listAccounts(),
-    controller.listCategories(),
-    controller.listExpenses(),
-    controller.pendingCount(),
-  ]);
-  state.accounts = accounts;
-  state.categories = categories;
-  state.expenses = expenses;
-  state.pending = pending;
-  if (!categoryById(state.categoryId)) state.categoryId = UNCATEGORIZED_ID;
-  renderAccounts();
-  renderCategoryChip();
-  renderExpenses();
-  renderStatus();
+function renderManageLists() {
+  elements.accountList.innerHTML = '';
+  for (const account of state.accounts) {
+    const row = document.createElement('li');
+    row.className = 'manage-row';
+    row.innerHTML = `<div class="expense-main"><div class="expense-title">${escapeHtml(account.name)}</div>
+      <div class="expense-sub">${escapeHtml(ACCOUNT_KIND_LABELS[account.kind] ?? account.kind)} · ${escapeHtml(account.currency)}</div></div>`;
+    elements.accountList.append(row);
+  }
+  elements.categoryListFull.innerHTML = '';
+  for (const category of state.categories) {
+    const row = document.createElement('li');
+    row.className = 'manage-row';
+    row.innerHTML = `${iconBadge(category.iconId, category.color)}
+      <div class="expense-main"><div class="expense-title">${escapeHtml(category.name)}</div>
+      <div class="expense-sub">${category.system ? 'Системная' : 'Своя'}</div></div>`;
+    elements.categoryListFull.append(row);
+  }
 }
 
 function renderCategoryList() {
@@ -166,6 +248,27 @@ function renderCategoryList() {
     });
     list.append(button);
   }
+}
+
+async function refresh() {
+  const [accounts, categories, expenses, pending] = await Promise.all([
+    controller.listAccounts(),
+    controller.listCategories(),
+    controller.listExpenses(),
+    controller.pendingCount(),
+  ]);
+  state.accounts = accounts;
+  state.categories = categories;
+  state.expenses = expenses;
+  state.pending = pending;
+  if (!categoryById(state.categoryId)) state.categoryId = UNCATEGORIZED_ID;
+  renderAccounts();
+  renderCategoryChip();
+  renderMetrics(pickDisplayCurrency(expenses));
+  renderAnalytics();
+  renderExpenses();
+  renderManageLists();
+  renderStatus();
 }
 
 function renderColorOptions() {
@@ -228,6 +331,14 @@ async function init() {
   await controller.open();
   controller.onUpdate(() => { refresh().catch(() => {}); });
   await refresh();
+  applyRoute();
+
+  window.addEventListener('hashchange', applyRoute);
+  elements.quickExpense.addEventListener('click', () => {
+    window.location.hash = '#/expenses';
+    document.getElementById('expense-form-card').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    elements.expenseAmount.focus({ preventScroll: true });
+  });
 
   elements.expenseAccount.addEventListener('change', renderAccounts);
 
@@ -246,7 +357,7 @@ async function init() {
       elements.expenseAmount.value = '';
       elements.expenseNote.value = '';
       await refresh();
-      showToast('Расход сохранён на устройстве.');
+      showToast('Расход записан.');
     } catch (error) {
       showError(elements.expenseError, error);
     } finally {
@@ -327,5 +438,5 @@ async function init() {
 }
 
 init().catch((error) => {
-  elements.syncStatus.textContent = 'Не открылось: ' + (error?.message ?? error);
+  elements.sideSync.textContent = 'Не открылось: ' + (error?.message ?? error);
 });
