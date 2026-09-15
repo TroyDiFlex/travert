@@ -555,16 +555,16 @@ function renderExpenses() {
   box.innerHTML = rows.map((row) => {
     if (row.kind === 'transfer') {
       const t = row.item;
-      return `<div class="expense-row"><span class="cat-icon category-chip" style="padding:0;border:0;background:none"><span class="cat-icon" style="background:var(--accent)">⇄</span></span>`
-        + `<div class="expense-info"><b>Перевод · ${esc(transferTitle(t))}</b><small>${esc(prettyDate(t.date))}${t.note ? ' · ' + esc(t.note) : ''}${t.fromAmountMinor !== t.toAmountMinor ? ` · разница ${esc(formatMoney(t.fromAmountMinor - t.toAmountMinor, t.currency))}` : ''}</small></div>`
-        + `<span class="expense-amount">−${esc(formatMoney(t.fromAmountMinor, t.currency))} / +${esc(formatMoney(t.toAmountMinor, t.currency))}</span>`
+      return `<div class="expense-row expense-row-transfer"><span class="expense-icon" style="background:var(--accent)" aria-hidden="true">⇄</span>`
+        + `<div class="expense-info"><b>Перевод</b><small class="transfer-parties">${esc(transferTitle(t))}</small><small>${esc(prettyDate(t.date))}${t.note ? ' · ' + esc(t.note) : ''}${t.fromAmountMinor !== t.toAmountMinor ? ` · разница ${esc(formatMoney(t.fromAmountMinor - t.toAmountMinor, t.currency))}` : ''}</small></div>`
+        + `<span class="expense-amount transfer-amount" aria-label="Ушло ${esc(formatMoney(t.fromAmountMinor, t.currency))}, пришло ${esc(formatMoney(t.toAmountMinor, t.currency))}"><span>−${esc(formatMoney(t.fromAmountMinor, t.currency))}</span><span class="transfer-amount-separator" aria-hidden="true">/</span><span>+${esc(formatMoney(t.toAmountMinor, t.currency))}</span></span>`
         + `<div class="row-actions"><button class="icon-button" type="button" data-edit-transfer="${esc(t.id)}" aria-label="Изменить">${ico('dots')}</button>`
         + `<button class="icon-button" type="button" data-del-transfer="${esc(t.id)}" aria-label="Удалить">${ico('trash')}</button></div></div>`;
     }
     const e = row.item;
     const a = accountById(e.accountId), c = categoryById(e.categoryId);
     const title = e.note || c?.name || 'Расход';
-    return `<div class="expense-row"><span class="cat-icon category-chip" style="padding:0;border:0;background:none"><span class="cat-icon" style="background:${esc(c?.color || '#666')}">${categoryIconSvg(c?.iconId || 'local:circle')}</span></span>`
+    return `<div class="expense-row"><span class="expense-icon" style="background:${esc(c?.color || '#666')}" aria-hidden="true">${categoryIconSvg(c?.iconId || 'local:circle')}</span>`
       + `<div class="expense-info"><b>${esc(title)}</b><small>${esc(prettyDate(e.date))} · ${esc(a?.name || 'Удалённый счёт')} · ${esc(c?.name || 'Удалённая категория')}</small></div>`
       + `<span class="expense-amount">${esc(formatMoney(e.amountMinor, e.currency))}</span>`
       + `<div class="row-actions"><button class="icon-button" type="button" data-edit-expense="${esc(e.id)}" aria-label="Изменить">${ico('dots')}</button>`

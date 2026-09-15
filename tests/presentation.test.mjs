@@ -88,6 +88,16 @@ test('expense entry is compact, title-first, category-aware and guarded against 
   assert.match(css,/\.transfer-route \{[^}]*grid-template-columns: minmax\(0, 1fr\) 36px minmax\(0, 1fr\)/);
 });
 
+test('expense rows and transfer form keep a usable mobile layout',async()=>{
+  const app=await readFile(new URL('../expenses-app.js',import.meta.url),'utf8');
+  const css=await readFile(new URL('../expenses.css',import.meta.url),'utf8');
+  assert.match(app,/class="expense-row expense-row-transfer"/);
+  assert.match(app,/class="expense-amount transfer-amount"/);
+  assert.match(css,/@media \(max-width: 650px\)[\s\S]*grid-template-areas: "icon info info" "icon amount actions"/);
+  assert.match(css,/@media \(max-width: 650px\)[\s\S]*\.expense-dialog \.form-footer \{ position: sticky;/);
+  assert.match(css,/@media \(max-width: 420px\)[\s\S]*\.transfer-route \{ grid-template-columns: 1fr;/);
+});
+
 test('chart exposes the selected monthly values as an accessible table',async()=>{
  assert.match(html,/<details class="chart-data">/);
  assert.match(html,/<div id="chart-data-table" class="chart-data-table"><\/div>/);

@@ -14,7 +14,10 @@
 .account-info, .expense-info { min-width: 0; flex: 1; }
 .account-info b, .expense-info b { display: block; font-weight: 550; overflow-wrap: anywhere; }
 .account-info small, .expense-info small { display: block; color: var(--muted); font-size: 11px; margin-top: 2px; }
+.expense-icon { display: grid; place-items: center; width: 36px; height: 36px; border-radius: 10px; color: #fff; flex: 0 0 36px; }
+.expense-icon .icon { width: 19px; height: 19px; }
 .expense-amount { font-variant-numeric: tabular-nums; font-weight: 600; white-space: nowrap; }
+.transfer-amount { display: flex; align-items: center; gap: 5px; }
 .row-actions { display: flex; gap: 4px; }
 .row-actions .icon-button { min-width: 38px; min-height: 38px; }
 .row-actions .icon-button .icon { width: 16px; height: 16px; }
@@ -74,14 +77,32 @@
 @media (max-width: 650px) {
   .expenses-body { padding: 0 0 60px; }
   .expenses-card { padding: 18px 15px; }
-  .expense-amount { font-size: 13px; }
-  .expense-dialog { padding: 20px 18px; }
+  .filter-row { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.35fr); }
+  .filter-row input, .filter-row select { width: 100%; min-width: 0; }
+  .filter-row select:last-child { grid-column: 1 / -1; }
+  .expense-row { display: grid; grid-template-columns: 42px minmax(0, 1fr) auto; grid-template-areas: "icon info info" "icon amount actions"; column-gap: 10px; row-gap: 8px; align-items: center; padding: 14px 0; }
+  .expense-icon { grid-area: icon; align-self: start; width: 42px; height: 42px; border-radius: 12px; }
+  .expense-info { grid-area: info; width: 100%; }
+  .expense-info b { overflow-wrap: normal; word-break: normal; }
+  .expense-info small { line-height: 1.45; overflow-wrap: break-word; }
+  .transfer-parties { color: var(--text); }
+  .expense-amount { grid-area: amount; justify-self: start; font-size: 13px; }
+  .transfer-amount { align-items: flex-start; flex-direction: column; gap: 0; line-height: 1.45; }
+  .transfer-amount-separator { display: none; }
+  .row-actions { grid-area: actions; justify-self: end; }
+  .row-actions .icon-button { min-width: 40px; min-height: 40px; }
+  .expense-dialog { width: calc(100% - 20px); max-height: calc(100dvh - 20px); padding: 18px 16px; }
   .expense-form-grid { grid-template-columns: 1fr; gap: 12px; }
   .expense-field-wide { grid-column: auto; }
   .expense-category-field { grid-column: auto; }
-  .transfer-route { grid-template-columns: 1fr; gap: 8px; padding: 14px; }
-  .transfer-connector { margin: 1px auto; transform: rotate(90deg); }
-  .expense-dialog .form-footer { margin-top: 16px; }
+  .transfer-route { grid-template-columns: minmax(0, 1fr) 28px minmax(0, 1fr); gap: 6px; padding: 12px; }
+  .transfer-connector { width: 28px; height: 28px; }
+  .transfer-endpoint label input, .transfer-endpoint label select { padding-left: 10px; padding-right: 25px; }
+  .expense-dialog .form-footer { position: sticky; z-index: 2; bottom: -18px; margin: 16px -16px -18px; padding: 12px 16px calc(12px + env(safe-area-inset-bottom)); border-top: 1px solid var(--line); background: var(--panel-solid); }
   .reassign-row { flex-wrap: wrap; }
   .reassign-row select { max-width: none; width: 100%; }
+}
+@media (max-width: 420px) {
+  .transfer-route { grid-template-columns: 1fr; gap: 8px; }
+  .transfer-connector { margin: 1px auto; transform: rotate(90deg); }
 }
