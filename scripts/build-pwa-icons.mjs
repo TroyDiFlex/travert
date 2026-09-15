@@ -39,7 +39,7 @@ for (const [theme, background, palette] of themes) for (const accent of palette)
   for (const size of [192,512]) await sharp(Buffer.from(svg)).resize(size,size).png().toFile(fileURLToPath(new URL(`icons/themes/${key}-${size}.png`,root)));
   await sharp(Buffer.from(maskable)).resize(512,512).flatten({background:accent}).png().toFile(fileURLToPath(new URL(`icons/themes/${key}-maskable.png`,root)));
   await sharp(Buffer.from(maskable)).resize(180,180).flatten({background:accent}).png().toFile(fileURLToPath(new URL(`icons/themes/${key}-apple.png`,root)));
-  const manifest = {id:'../',name:'Travert',short_name:'Travert',description:'Личные финансы: доходы и расходы',lang:'ru',start_url:'../',scope:'../',display:'standalone',background_color:background,theme_color:background,icons:[
+  const manifest = {id:'/travert/',name:'Travert',short_name:'Travert',description:'Личные финансы: доходы и расходы',lang:'ru',start_url:'/travert/',scope:'/travert/',display:'standalone',background_color:background,theme_color:background,icons:[
     {src:`../icons/themes/${key}-192.png?v=1`,sizes:'192x192',type:'image/png',purpose:'any'},
     {src:`../icons/themes/${key}-512.png?v=1`,sizes:'512x512',type:'image/png',purpose:'any'},
     {src:`../icons/themes/${key}-maskable.png?v=1`,sizes:'512x512',type:'image/png',purpose:'maskable'}
