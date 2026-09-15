@@ -39,6 +39,7 @@
 .radio-card input { width: 17px; height: 17px; min-height: 17px; margin: 2px 0 0; accent-color: var(--accent); }
 .radio-card small { display: block; color: var(--muted); font-size: 11px; margin-top: 3px; }
 .exp-chart-bar { display: flex; align-items: center; justify-content: flex-end; gap: 12px; margin: 14px 0 2px; }
+#expense-type { width: fit-content; max-width: 100%; margin: 18px 0 4px; }
 .exp-breakdowns { margin-top: 18px; }
 .exp-breakdowns .glass { border-radius: 15px; }
 .expenses-empty { text-align: center; padding: 34px 16px; color: var(--muted); }

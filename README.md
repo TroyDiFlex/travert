@@ -11,7 +11,7 @@
 </p>
 
 <p align="center">
-  <a href="expenses.html">Открыть расходы</a> ·
+  <a href="index.html#entries-expenses">Открыть расходы</a> ·
   <a href="docs/finance-v2.md">Архитектура finance-v2</a>
 </p>
 
@@ -29,7 +29,7 @@
 python -m http.server 8000
 ```
 
-Затем открыть `http://localhost:8000/expenses.html`. Двойным кликом по файлу не открывать: браузер режет ES-модули через `file://`.
+Затем открыть `http://localhost:8000/index.html#entries-expenses`. Двойным кликом по файлу не открывать: браузер режет ES-модули через `file://`.
 
 Проверки: `node scripts/check-js.mjs`, затем `node --test tests/*.test.mjs`.
 

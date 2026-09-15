@@ -445,9 +445,20 @@ $('expense-type').addEventListener('click', (e) => {
   if (!b || b.dataset.expenseType === entryKind()) return;
   // При смене типа всегда создаём новую операцию: молчаливая смена типа у существующей запрещена ядром.
   $('expense-id').value = '';
-  setEntryKind(b.dataset.expenseType);
-  $('expense-kicker').textContent = b.dataset.expenseType === 'transfer' ? 'ПЕРЕВОД' : 'РАСХОД';
-  $('expense-title').textContent = b.dataset.expenseType === 'transfer' ? 'Новый перевод' : 'Новый расход';
+  $('expense-error').textContent = '';
+  if (b.dataset.expenseType === 'transfer') {
+    if (accounts.length < 2) { toast('Для перевода нужно минимум два счёта.'); return; }
+    setEntryKind('transfer');
+    fillTransferForm(null);
+    $('expense-kicker').textContent = 'ПЕРЕВОД';
+    $('expense-title').textContent = 'Новый перевод';
+    setTimeout(() => $('transfer-from-amount').focus(), 0);
+  } else {
+    setEntryKind('expense');
+    $('expense-kicker').textContent = 'РАСХОД';
+    $('expense-title').textContent = 'Новый расход';
+    setTimeout(() => $('expense-amount').focus(), 0);
+  }
 });
 function transferAccountOptions(selected) {
   return accounts.map((a) => `<option value="${esc(a.id)}">${esc(a.name)} · ${esc(a.currency)}</option>`).join('');
@@ -469,13 +480,7 @@ function updateTransferHints() {
     } else feeHint.hidden = true;
   } catch { feeHint.hidden = true; }
 }
-function openTransfer(id) {
-  if (accounts.length < 2) { toast('Для перевода нужно минимум два счёта.'); return; }
-  setEntryKind('transfer');
-  const t = id ? transfers.find((x) => x.id === id) : null;
-  $('expense-kicker').textContent = 'ПЕРЕВОД';
-  $('expense-title').textContent = t ? 'Изменить перевод' : 'Новый перевод';
-  $('expense-id').value = t?.id || '';
+function fillTransferForm(t) {
   $('transfer-from').innerHTML = transferAccountOptions();
   $('transfer-to').innerHTML = transferAccountOptions();
   if (t) { $('transfer-from').value = t.fromAccountId; $('transfer-to').value = t.toAccountId; }
@@ -483,12 +488,20 @@ function openTransfer(id) {
     $('transfer-to').value = [...$('transfer-to').options].map((o) => o.value).find((v) => v !== $('transfer-from').value) || $('transfer-to').value;
   }
   $('transfer-date').value = t?.date || todayIso();
-  const cur = t ? t.currency : (accountById($('transfer-from').value)?.currency || 'RUB');
   $('transfer-from-amount').value = t ? (t.fromAmountMinor / 100).toString().replace('.', ',') : '';
   $('transfer-to-amount').value = t ? (t.toAmountMinor / 100).toString().replace('.', ',') : '';
   $('transfer-note').value = t?.note || '';
   $('expense-error').textContent = '';
   updateTransferHints();
+}
+function openTransfer(id) {
+  if (accounts.length < 2) { toast('Для перевода нужно минимум два счёта.'); return; }
+  setEntryKind('transfer');
+  const t = id ? transfers.find((x) => x.id === id) : null;
+  $('expense-kicker').textContent = 'ПЕРЕВОД';
+  $('expense-title').textContent = t ? 'Изменить перевод' : 'Новый перевод';
+  $('expense-id').value = t?.id || '';
+  fillTransferForm(t);
   $('expense-dialog').showModal();
   setTimeout(() => $('transfer-from-amount').focus(), 0);
 }
@@ -727,6 +740,10 @@ let expResizeTimer = 0;
 window.addEventListener('resize', () => {
   clearTimeout(expResizeTimer);
   expResizeTimer = setTimeout(() => { if (expenses.length) renderExpenseAnalytics(); }, 200);
+});
+// График под скрытой вкладкой не знает свою ширину: перерисовываем при показе.
+window.addEventListener('expenses-shown', () => {
+  if ((expenses.length || transfers.length) && !$('entries-pane-expenses')?.hidden) renderExpenseAnalytics();
 });
 $('export-btn').addEventListener('click', async () => {
   const recovery = await repo.exportRecovery();

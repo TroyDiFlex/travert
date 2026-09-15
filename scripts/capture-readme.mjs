@@ -98,7 +98,7 @@ async function capture(page,name,description) {
 }
 
 async function entries(page,mode) {
-  await page.locator('[data-route="entries"]').click();
+  await page.locator('[data-route="income"]').click();
   await page.locator('#entries-view').waitFor({state:'visible'});
   await page.locator(`[data-mode="${mode}"]`).click();
   if (mode === 'month') await page.locator('#entry-month').fill('2026-08');

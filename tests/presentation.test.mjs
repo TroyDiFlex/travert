@@ -41,6 +41,21 @@ test('comparison toggle redraws both the bars and the share donut',async()=>{
   assert.doesNotMatch(handler,/renderComparison\(summarize\(data/);
 });
 
+test('entry view splits into expenses and income sections with deep links',async()=>{
+  const routes=[...html.matchAll(/<a\b([^>]*\bdata-route="([^"]+)"[^>]*)>/g)];
+  assert.deepEqual(routes.map(([, ,route])=>route),['overview','expenses','income']);
+  assert.match(html,/<a href="#entries-expenses"[^>]*data-route="expenses"/);
+  assert.match(html,/<a href="#entries-income"[^>]*data-route="income"/);
+  assert.match(html,/<button data-entry-section="expenses" class="selected"/);
+  assert.match(html,/<div id="entries-pane-expenses"/);
+  assert.match(html,/<div id="entries-pane-income" hidden>/);
+  assert.match(html,/<dialog id="expense-dialog">/);
+  const app=await readFile(new URL('../app.js',import.meta.url),'utf8');
+  assert.match(app,/#entries\(\?:-\(expenses\|income\)\)\?\$/);
+  assert.match(app,/travert-entry-section/);
+  assert.match(app,/expenses-shown/);
+});
+
 test('chart exposes the selected monthly values as an accessible table',async()=>{
  assert.match(html,/<details class="chart-data">/);
  assert.match(html,/<div id="chart-data-table" class="chart-data-table"><\/div>/);
