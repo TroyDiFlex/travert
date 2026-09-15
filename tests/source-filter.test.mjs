@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
 import {setupSourceFilter,sourceSelectionLabel} from '../source-filter.js';
 
-const html=await readFile(new URL('../index.html',import.meta.url),'utf8');
+const html=await readFile(new URL('../income.html',import.meta.url),'utf8');
 
 function picker(){
  const nodes=new Map();let focused=null,renders=0,selected=['all'];
@@ -75,3 +75,4 @@ test('outside click and leaving focus close the picker; inside interaction keeps
 test('stored selection is de-duplicated and malformed storage falls back safely',()=>{
  const p=picker();p.storage.value='["all","a","a"]';assert.deepEqual(p.controller.restore(),['all','a']);p.storage.value='{broken';assert.deepEqual(p.controller.restore(),['all']);
 });
+

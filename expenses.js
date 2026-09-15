@@ -5,7 +5,7 @@ const controller = new ExpensesController();
 
 const elements = {};
 for (const id of [
-  'sync-status', 'expense-form', 'expense-date', 'expense-amount', 'expense-currency',
+  'sync-status', 'sync-note', 'pending-note', 'expense-form', 'expense-date', 'expense-amount', 'expense-currency',
   'expense-account', 'expense-note', 'expense-error', 'expense-submit',
   'category-chip', 'category-list-dialog', 'category-list', 'expense-list', 'expense-empty', 'expense-month',
   'category-dialog', 'category-form', 'category-name', 'category-colors',
@@ -60,15 +60,15 @@ function todayLocal() {
 function renderStatus() {
   const pill = elements.syncStatus;
   if (!state.online) {
-    pill.textContent = 'Офлайн · сохраняем на устройстве';
+    pill.textContent = 'Офлайн · сохраняем';
     pill.className = 'sync-pill is-offline';
-  } else if (state.pending > 0) {
-    pill.textContent = `Ожидают отправки: ${state.pending}`;
-    pill.className = 'sync-pill is-pending';
   } else {
-    pill.textContent = 'Сохранено на устройстве';
+    pill.textContent = '✓ Всё сохранено';
     pill.className = 'sync-pill is-saved';
   }
+  elements.pendingNote.textContent = state.pending > 0
+    ? `Записей на устройстве: ${state.pending}. Отправка на другие устройства появится позже.`
+    : '';
 }
 
 function renderAccounts() {
@@ -189,20 +189,13 @@ function renderIconGrid() {
   const found = searchIcons(query);
   const grid = elements.iconGrid;
   grid.innerHTML = '';
-  let lastGroup = null;
   for (const icon of found) {
-    if (icon.group !== lastGroup) {
-      lastGroup = icon.group;
-      const label = document.createElement('div');
-      label.className = 'icon-group-label';
-      label.textContent = lastGroup;
-      grid.append(label);
-    }
     const button = document.createElement('button');
     button.type = 'button';
-    button.setAttribute('role', 'option');
+    button.setAttribute('aria-label', icon.label);
+    button.title = icon.label;
     button.setAttribute('aria-selected', String(icon.id === state.iconId));
-    button.innerHTML = `${iconSvg(icon.id)}<span>${escapeHtml(icon.label)}</span>`;
+    button.innerHTML = iconSvg(icon.id);
     button.addEventListener('click', () => {
       state.iconId = icon.id;
       renderIconPick();

@@ -13,11 +13,11 @@ catch { ({chromium} = await import('../.local/node_modules/playwright/index.mjs'
 
 const root = new URL('../',import.meta.url);
 const output = new URL('../docs/screenshots/',import.meta.url);
-const files = new Set(['index.html','style.css','app.js','api.js','config.js','model.js','chart.js','pwa.js','icon.svg','manifest.webmanifest','icons/icon-192.png','icons/icon-512.png','icons/icon-maskable-512.png','icons/apple-touch-icon.png']);
+const files = new Set(['income.html','style.css','app.js','api.js','config.js','model.js','chart.js','pwa.js','icon.svg','manifest.webmanifest','icons/icon-192.png','icons/icon-512.png','icons/icon-maskable-512.png','icons/apple-touch-icon.png']);
 const types = {html:'text/html; charset=utf-8',js:'text/javascript; charset=utf-8',css:'text/css; charset=utf-8',svg:'image/svg+xml',png:'image/png',webmanifest:'application/manifest+json'};
 const server = http.createServer(async (req,res) => {
   try {
-    const name = new URL(req.url,'http://localhost').pathname.slice(1) || 'index.html';
+    const name = new URL(req.url,'http://localhost').pathname.slice(1) || 'income.html';
     if (!files.has(name)) { res.writeHead(404).end(); return; }
     res.setHeader('Content-Type',types[name.split('.').at(-1)]);
     res.setHeader('Cache-Control','no-store');
